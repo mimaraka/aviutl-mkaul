@@ -58,7 +58,25 @@ namespace mkaul {
 
 			// ü‚ğ•`‰æ(•¡”)
 			void draw_lines(
-				const Point<float>* p_points,
+				const Point<float>* points,
+				size_t n_points,
+				const Color_I8& color_i8,
+				const Stroke& stroke
+			);
+
+			// ƒxƒWƒF‹Èü‚ğ•`‰æ
+			void draw_bezier(
+				const Point<float>& point_0,
+				const Point<float>& point_1,
+				const Point<float>& point_2,
+				const Point<float>& point_3,
+				const Color_I8& color_i8,
+				const Stroke& stroke
+			);
+
+			// ƒxƒWƒF‹Èü‚ğ•`‰æ(•¡”)
+			void draw_beziers(
+				const Point<float>* points,
 				size_t n_points,
 				const Color_I8& color_i8,
 				const Stroke& stroke
@@ -91,14 +109,14 @@ namespace mkaul {
 			);
 
 			// ‘È‰~‚ğ•`‰æ(ü)(‹éŒ`w’è)
-			bool draw_ellipse(
+			void draw_ellipse(
 				const Rectangle<float>& rectangle,
 				const Color_I8& color_i8,
 				const Stroke& stroke
 			);
 
 			// ‘È‰~‚ğ•`‰æ(“h‚è)(’†S“_w’è)
-			bool fill_ellipse(
+			void fill_ellipse(
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
@@ -106,7 +124,7 @@ namespace mkaul {
 			);
 
 			// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
-			bool fill_ellipse(
+			void fill_ellipse(
 				const Rectangle<float>& rectangle,
 				const Color_I8& color_i8
 			);

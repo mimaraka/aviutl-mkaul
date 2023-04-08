@@ -145,7 +145,7 @@ namespace mkaul {
 
 		// ü‚ğ•`‰æ(•¡”)
 		void Graphics_Gdiplus::draw_lines(
-			const Point<float>* p_pt,
+			const Point<float>* points,
 			size_t n_points,
 			const Color_I8& col_i8,
 			const Stroke& stroke
@@ -155,20 +155,75 @@ namespace mkaul {
 				Gdiplus::Pen pen(0);
 				apply_pen_style(&pen, col_i8, stroke);
 
-				auto pts = new Gdiplus::Point[n_points];
+				auto gdiplus_points = new Gdiplus::Point[n_points];
 
 				for (size_t i = 0; i < n_points; i++) {
-					pts[i].X = p_pt[i].x;
-					pts[i].Y = p_pt[i].y;
+					gdiplus_points[i].X = points[i].x;
+					gdiplus_points[i].Y = points[i].y;
 				}
 
 				p_graphics_buffer->DrawLines(
 					&pen,
-					pts,
+					gdiplus_points,
 					(int)n_points
 				);
 
-				delete pts;
+				delete[] gdiplus_points;
+			}
+		}
+
+
+		// ƒxƒWƒF‹Èü‚ğ•`‰æ
+		void Graphics_Gdiplus::draw_bezier(
+			const Point<float>& point_0,
+			const Point<float>& point_1,
+			const Point<float>& point_2,
+			const Point<float>& point_3,
+			const Color_I8& color_i8,
+			const Stroke& stroke
+		)
+		{
+			if (p_graphics_buffer) {
+				Gdiplus::Pen pen(0);
+				apply_pen_style(&pen, color_i8, stroke);
+
+				p_graphics_buffer->DrawBezier(
+					&pen,
+					Gdiplus::PointF(point_0.x, point_0.y),
+					Gdiplus::PointF(point_1.x, point_1.y),
+					Gdiplus::PointF(point_2.x, point_2.y),
+					Gdiplus::PointF(point_3.x, point_3.y)
+				);
+			}
+		}
+
+
+		// ƒxƒWƒF‹Èü‚ğ•`‰æ(•¡”)
+		void Graphics_Gdiplus::draw_beziers(
+			const Point<float>* points,
+			size_t n_points,
+			const Color_I8& color_i8,
+			const Stroke& stroke
+		)
+		{
+			if (p_graphics_buffer) {
+				Gdiplus::Pen pen(0);
+				apply_pen_style(&pen, color_i8, stroke);
+
+				auto gdiplus_points = new Gdiplus::Point[n_points];
+
+				for (size_t i = 0; i < n_points; i++) {
+					gdiplus_points[i].X = points[i].x;
+					gdiplus_points[i].Y = points[i].y;
+				}
+
+				p_graphics_buffer->DrawBeziers(
+					&pen,
+					gdiplus_points,
+					(int)n_points
+				);
+
+				delete[] gdiplus_points;
 			}
 		}
 
@@ -178,13 +233,13 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			float round_radius_x = 0,
 			float round_radius_y = 0,
-			const Color_I8& col_i8 = 0,
+			const Color_I8& color_i8 = 0,
 			const Stroke& stroke = Stroke()
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(0);
-				apply_pen_style(&pen, col_i8, stroke);
+				apply_pen_style(&pen, color_i8, stroke);
 				
 				// ŠpŠÛ‹éŒ`‚ğ•`‰æ
 				if (round_radius_x > 0 || round_radius_y > 0) {
@@ -211,16 +266,16 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			float round_radius_x = 0,
 			float round_radius_y = 0,
-			const Color_I8& col_i8 = 0
+			const Color_I8& color_i8 = 0
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
-						col_i8.a,
-						col_i8.r,
-						col_i8.g,
-						col_i8.b
+						color_i8.a,
+						color_i8.r,
+						color_i8.g,
+						color_i8.b
 					)
 				);
 				
@@ -240,6 +295,112 @@ namespace mkaul {
 						)
 					);
 				}
+			}
+		}
+
+
+		// ‘È‰~‚ğ•`‰æ(ü)(’†S“_w’è)
+		void Graphics_Gdiplus::draw_ellipse(
+			const Point<float>& point,
+			float radius_x,
+			float radius_y,
+			const Color_I8& color_i8 = 0,
+			const Stroke& stroke = Stroke()
+		)
+		{
+			if (p_graphics_buffer) {
+				Gdiplus::Pen pen(0);
+				apply_pen_style(&pen, color_i8, stroke);
+
+				Gdiplus::RectF rect_f(
+					point.x - radius_x,
+					point.y - radius_y,
+					point.x + radius_x,
+					point.y + radius_y
+				);
+
+				p_graphics_buffer->DrawEllipse(&pen, rect_f);
+			}
+		}
+
+
+		// ‘È‰~‚ğ•`‰æ(ü)(‹éŒ`w’è)
+		void Graphics_Gdiplus::draw_ellipse(
+			const Rectangle<float>& rectangle,
+			const Color_I8& color_i8 = 0,
+			const Stroke& stroke = Stroke()
+		)
+		{
+			if (p_graphics_buffer) {
+				Gdiplus::Pen pen(0);
+				apply_pen_style(&pen, color_i8, stroke);
+
+				Gdiplus::RectF rect_f(
+					rectangle.left,
+					rectangle.top,
+					rectangle.right,
+					rectangle.bottom
+				);
+
+				p_graphics_buffer->DrawEllipse(&pen, rect_f);
+			}
+		}
+
+
+		// ‘È‰~‚ğ•`‰æ(“h‚è)(’†S“_w’è)
+		void Graphics_Gdiplus::fill_ellipse(
+			const Point<float>& point,
+			float radius_x,
+			float radius_y,
+			const Color_I8& color_i8
+		)
+		{
+			if (p_graphics_buffer) {
+				Gdiplus::SolidBrush brush(
+					Gdiplus::Color(
+						color_i8.a,
+						color_i8.r,
+						color_i8.g,
+						color_i8.b
+					)
+				);
+
+				Gdiplus::RectF rect_f(
+					point.x - radius_x,
+					point.y - radius_y,
+					point.x + radius_x,
+					point.y + radius_y
+				);
+
+				p_graphics_buffer->FillEllipse(&brush, rect_f);
+			}
+		}
+
+
+		// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
+		void Graphics_Gdiplus::fill_ellipse(
+			const Rectangle<float>& rectangle,
+			const Color_I8& color_i8
+		)
+		{
+			if (p_graphics_buffer) {
+				Gdiplus::SolidBrush brush(
+					Gdiplus::Color(
+						color_i8.a,
+						color_i8.r,
+						color_i8.g,
+						color_i8.b
+					)
+				);
+
+				Gdiplus::RectF rect_f(
+					rectangle.left,
+					rectangle.top,
+					rectangle.right,
+					rectangle.bottom
+				);
+
+				p_graphics_buffer->FillEllipse(&brush, rect_f);
 			}
 		}
 	}
