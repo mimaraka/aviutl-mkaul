@@ -22,12 +22,12 @@ namespace mkaul {
 	public:
 		T r, g, b, a;
 
-		inline bool operator == (const Color& col) const
+		bool operator == (const Color& col) const
 		{
 			return this->r == col.r && this->g == col.g && this->b == col.b && this->a == col.a;
 		}
 
-		inline Color operator + (const Color& col) const
+		Color operator + (const Color& col) const
 		{
 			return {
 				this->r + col.r,
@@ -37,7 +37,7 @@ namespace mkaul {
 			};
 		}
 
-		inline Color operator - (const Color& col) const
+		Color operator - (const Color& col) const
 		{
 			return {
 				this->r - col.r,
@@ -47,7 +47,7 @@ namespace mkaul {
 			};
 		}
 
-		inline Color(
+		Color(
 			T r_ = (T)0,
 			T g_ = (T)0,
 			T b_ = (T)0,
@@ -94,7 +94,7 @@ namespace mkaul {
 
 	// Color (float)
 	struct Color_F : public Color<float> {
-		inline void operator = (COLORREF cr)
+		void operator = (COLORREF cr)
 		{
 			this->r = GetRValue(cr) / (float)MAX;
 			this->g = GetGValue(cr) / (float)MAX;
@@ -102,7 +102,7 @@ namespace mkaul {
 			this->a = 1.f;
 		}
 
-		inline Color_F(COLORREF cr = (COLORREF)0l)
+		Color_F(COLORREF cr = (COLORREF)0l)
 		{
 			r = GetRValue(cr) / (float)MAX;
 			g = GetGValue(cr) / (float)MAX;
@@ -110,7 +110,7 @@ namespace mkaul {
 			a = 1.f;
 		}
 
-		inline Color_F(const Color_I8& col_i8)
+		Color_F(const Color_I8& col_i8)
 		{
 			r = col_i8.r / (float)MAX;
 			g = col_i8.g / (float)MAX;
@@ -170,7 +170,7 @@ namespace mkaul {
 
 	// Color (int)
 	struct Color_I8 : public Color<int> {
-		inline void operator = (COLORREF cr)
+		void operator = (COLORREF cr)
 		{
 			this->r = GetRValue(cr);
 			this->g = GetGValue(cr);
@@ -178,7 +178,7 @@ namespace mkaul {
 			this->a = MAX;
 		}
 
-		inline Color_I8(COLORREF cr = (COLORREF)0l)
+		Color_I8(COLORREF cr = (COLORREF)0l)
 		{
 			r = GetRValue(cr);
 			g = GetGValue(cr);
@@ -186,7 +186,7 @@ namespace mkaul {
 			a = MAX;
 		}
 
-		inline Color_I8(const Color_F& col_f)
+		Color_I8(const Color_F& col_f)
 		{
 			r = (int)(col_f.r * MAX);
 			g = (int)(col_f.g * MAX);

@@ -16,11 +16,37 @@ namespace mkaul {
 	struct Rectangle {
 		T left, top, right, bottom;
 
-		inline Rectangle(T l = 0, T t = 0, T r = 0, T b = 0) :
-			left(l), top(t), right(r), bottom(b)
+		bool operator == (const Rectangle<T>& rc) const
+		{
+			return (
+				this->left == rc.left &&
+				this->top == rc.top &&
+				this->right == rc.right &&
+				this->bottom == rc.bottom
+				);
+		}
+
+		void operator = (const RECT& rc)
+		{
+			this->left = (T)rc.left;
+			this->top = (T)rc.top;
+			this->right = (T)rc.right;
+			this->bottom = (T)rc.bottom;
+		}
+
+		Rectangle(
+			T l = 0,
+			T t = 0,
+			T r = 0,
+			T b = 0
+		) :
+			left(l),
+			top(t),
+			right(r),
+			bottom(b)
 		{}
 
-		inline Rectangle(RECT rc) :
+		Rectangle(RECT rc) :
 			left((T)rc.left),
 			top((T)rc.top),
 			right((T)rc.right),
@@ -28,7 +54,7 @@ namespace mkaul {
 		{}
 
 		template <typename U>
-		void convert_to(Rectangle<U>* r)
+		inline void convert_to(Rectangle<U>* r)
 		{
 			r->left = (U)left;
 			r->top = (U)top;
