@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ヘッダー ファイル\graphics">
+      <UniqueIdentifier>{83aade43-4d84-48a6-9e8c-e74a67d60363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\graphics">
+      <UniqueIdentifier>{40f0834b-8a4d-48f4-9a60-f7632126758c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mkaul.hpp">
@@ -30,20 +36,20 @@
     <ClInclude Include="rectangle.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="graphics.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics_gdiplus.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics_directx.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="color.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="graphics.hpp">
+      <Filter>ヘッダー ファイル\graphics</Filter>
+    </ClInclude>
     <ClInclude Include="graphics_common.hpp">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_directx.hpp">
+      <Filter>ヘッダー ファイル\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_gdiplus.hpp">
+      <Filter>ヘッダー ファイル\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -54,13 +60,13 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="graphics.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\graphics</Filter>
     </ClCompile>
     <ClCompile Include="graphics_directx.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\graphics</Filter>
     </ClCompile>
     <ClCompile Include="graphics_gdiplus.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
