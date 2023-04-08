@@ -154,10 +154,10 @@ namespace mkaul {
 		// ‹éŒ`‚ğ•`‰æ(ü)
 		bool Graphics::draw_rectangle(
 			const Rectangle<float>& rectangle,
-			const Stroke& stroke,
-			const Color_F& col_f,
 			float round_radius_x,
-			float round_radius_y
+			float round_radius_y,
+			const Color_F& col_f,
+			const Stroke& stroke
 		)
 		{
 			switch (drawing_method) {
@@ -191,9 +191,9 @@ namespace mkaul {
 		// ‹éŒ`‚ğ•`‰æ(“h‚è)
 		bool Graphics::fill_rectangle(
 			const Rectangle<float>& rectangle,
-			const Color_F& color_f,
 			float round_radius_x,
-			float round_radius_y
+			float round_radius_y,
+			const Color_F& color_f
 		)
 		{
 			switch (drawing_method) {
@@ -211,6 +211,140 @@ namespace mkaul {
 					rectangle,
 					round_radius_x,
 					round_radius_y,
+					color_f
+				);
+				break;
+
+			default:
+				return false;
+			}
+
+			return true;
+		}
+
+
+		// ‘È‰~‚ğ•`‰æ(ü)(’†S“_w’è)
+		bool Graphics::draw_ellipse(
+			const Point<float>& point,
+			float radius_x,
+			float radius_y,
+			const Color_F& col_f = 0,
+			const Stroke& stroke = Stroke()
+		)
+		{
+			switch (drawing_method) {
+			case Drawing_Method::Gdiplus:
+				graphics_gdiplus.draw_ellipse(
+					point,
+					radius_x,
+					radius_y,
+					col_f,
+					stroke
+				);
+				break;
+
+			case Drawing_Method::Directx:
+				graphics_directx.draw_ellipse(
+					point,
+					radius_x,
+					radius_y,
+					col_f,
+					stroke
+				);
+				break;
+
+			default:
+				return false;
+			}
+
+			return true;
+		}
+
+
+		// ‘È‰~‚ğ•`‰æ(ü)(‹éŒ`w’è)
+		bool Graphics::draw_ellipse(
+			const Rectangle<float>& rectangle,
+			const Color_F& col_f = 0,
+			const Stroke& stroke = Stroke()
+		)
+		{
+			switch (drawing_method) {
+			case Drawing_Method::Gdiplus:
+				graphics_gdiplus.draw_ellipse(
+					rectangle,
+					col_f,
+					stroke
+				);
+				break;
+
+			case Drawing_Method::Directx:
+				graphics_directx.draw_ellipse(
+					rectangle,
+					col_f,
+					stroke
+				);
+				break;
+
+			default:
+				return false;
+			}
+
+			return true;
+		}
+
+
+		// ‘È‰~‚ğ•`‰æ(“h‚è)(’†S“_w’è)
+		bool Graphics::fill_ellipse(
+			const Point<float>& point,
+			float radius_x,
+			float radius_y,
+			const Color_F& color_f
+		)
+		{
+			switch (drawing_method) {
+			case Drawing_Method::Gdiplus:
+				graphics_gdiplus.fill_ellipse(
+					point,
+					radius_x,
+					radius_y,
+					color_f
+				);
+				break;
+
+			case Drawing_Method::Directx:
+				graphics_directx.fill_ellipse(
+					point,
+					radius_x,
+					radius_y,
+					color_f
+				);
+				break;
+
+			default:
+				return false;
+			}
+
+			return true;
+		}
+
+
+		// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
+		bool Graphics::fill_ellipse(
+			const Rectangle<float>& rectangle,
+			const Color_F& color_f
+		)
+		{
+			switch (drawing_method) {
+			case Drawing_Method::Gdiplus:
+				graphics_gdiplus.fill_ellipse(
+					rectangle,
+					color_f
+				);
+				break;
+
+			case Drawing_Method::Directx:
+				graphics_directx.fill_ellipse(
+					rectangle,
 					color_f
 				);
 				break;

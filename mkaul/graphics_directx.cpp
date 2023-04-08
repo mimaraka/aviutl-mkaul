@@ -192,14 +192,14 @@ namespace mkaul {
 
 		// ü‚ğ•`‰æ(•¡”)
 		void Graphics_Directx::draw_lines(
-			Point<float>* p_pt,
+			Point<float>* p_points,
 			size_t n_points,
 			const Color_F& color_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_render_target) {
-				p_brush->SetColor(color_f.d2d1_colorf());
+				p_brush->SetColor(col_f.d2d1_colorf());
 
 				p_render_target->DrawLine(
 					D2D1::Point2F(pt_from.x, pt_from.y),

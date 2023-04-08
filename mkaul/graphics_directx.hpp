@@ -64,15 +64,15 @@ namespace mkaul {
 
 			// ü‚ğ•`‰æ
 			void draw_line(
-				const Point<float>& pt_from,
-				const Point<float>& pt_to,
+				const Point<float>& point_from,
+				const Point<float>& point_to,
 				const Color_F& color_f,
 				const Stroke& stroke
 			);
 
 			// ü‚ğ•`‰æ(•¡”)
 			void draw_lines(
-				Point<float>* p_pt,
+				Point<float>* p_point,
 				size_t n_points,
 				const Color_F& color_f,
 				const Stroke& stroke
@@ -80,7 +80,7 @@ namespace mkaul {
 
 			// ‹éŒ`‚ğ•`‰æ(ü)
 			void draw_rectangle(
-				const Rectangle<float>& rect,
+				const Rectangle<float>& rectangle,
 				float round_radius_x,
 				float round_radius_y,
 				const Color_F& color_f,
@@ -89,7 +89,7 @@ namespace mkaul {
 
 			// ‹éŒ`‚ğ•`‰æ(“h‚è)
 			void fill_rectangle(
-				const Rectangle<float>& rect,
+				const Rectangle<float>& rectangle,
 				float round_radius_x,
 				float round_radius_y,
 				const Color_F& color_f
@@ -97,7 +97,7 @@ namespace mkaul {
 
 			// ‘È‰~‚ğ•`‰æ(ü)(’†S“_w’è)
 			void draw_ellipse(
-				const Point<float>& pt,
+				const Point<float>& point,
 				float radius_x,
 				float radius_y,
 				const Color_F& color_f,
@@ -106,22 +106,22 @@ namespace mkaul {
 
 			// ‘È‰~‚ğ•`‰æ(ü)(‹éŒ`w’è)
 			void draw_ellipse(
-				const Rectangle<float>& rect,
+				const Rectangle<float>& rectangle,
 				const Color_F& color_f,
 				const Stroke& stroke
 			);
 
 			// ‘È‰~‚ğ•`‰æ(“h‚è)(’†S“_w’è)
 			void fill_ellipse(
-				const Point<float>& pt,
-				const Color_F& color_f,
+				const Point<float>& point,
 				float radius_x,
-				float radius_y
+				float radius_y,
+				const Color_F& color_f
 			);
 
 			// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
 			void fill_ellipse(
-				const Rectangle<float>& rect,
+				const Rectangle<float>& rectangle,
 				const Color_F& color_f
 			);
 		};

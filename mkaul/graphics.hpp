@@ -47,45 +47,61 @@ namespace mkaul {
 			// ƒŠƒTƒCƒY
 			void resize();
 
+			// ü‚ğ•`‰æ
+			bool draw_line(
+				const Point<float>& point_from,
+				const Point<float>& point_to,
+				const Color_F& color_f,
+				const Stroke& stroke
+			);
+
+			// ü‚ğ•`‰æ(•¡”)
+			bool draw_lines(
+				const Point<float>* p_points,
+				size_t n_points,
+				const Color_F& color_f,
+				const Stroke& stroke
+			);
+
 			// ‹éŒ`‚ğ•`‰æ(ü)
 			bool draw_rectangle(
 				const Rectangle<float>& rectangle,
-				const Stroke& stroke,
-				const Color_F& color_f,
 				float round_radius_x,
-				float round_radius_y
+				float round_radius_y,
+				const Color_F& color_f,
+				const Stroke& stroke
 			);
 
 			// ‹éŒ`‚ğ•`‰æ(“h‚è)
 			bool fill_rectangle(
 				const Rectangle<float>& rectangle,
-				const Color_F& color_f,
 				float round_radius_x,
-				float round_radius_y
+				float round_radius_y,
+				const Color_F& color_f
 			);
 
 			// ‘È‰~‚ğ•`‰æ(ü)(’†S“_w’è)
 			bool draw_ellipse(
 				const Point<float>& point,
-				const Stroke& stroke,
-				const Color_F& color_f,
 				float radius_x,
-				float radius_y
+				float radius_y,
+				const Color_F& color_f,
+				const Stroke& stroke
 			);
 
 			// ‘È‰~‚ğ•`‰æ(ü)(‹éŒ`w’è)
 			bool draw_ellipse(
 				const Rectangle<float>& rectangle,
-				const Stroke& stroke,
-				const Color_F& color_f
+				const Color_F& color_f,
+				const Stroke& stroke
 			);
 
 			// ‘È‰~‚ğ•`‰æ(“h‚è)(’†S“_w’è)
 			bool fill_ellipse(
 				const Point<float>& point,
-				const Color_F& color_f,
 				float radius_x,
-				float radius_y
+				float radius_y,
+				const Color_F& color_f
 			);
 
 			// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
