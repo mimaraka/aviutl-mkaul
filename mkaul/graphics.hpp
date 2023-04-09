@@ -13,20 +13,34 @@
 
 namespace mkaul {
 	namespace graphics {
+		// 描画方式
+		enum class Drawing_Method {
+			Null,
+			Gdiplus,
+			Directx
+		};
+
+
+		// グラフィック統括クラス
 		class Graphics {
 		private:
-			enum class Drawing_Method {
-				Null,
-				Gdiplus,
-				Directx
-			} static drawing_method;
+			static Drawing_Method drawing_method;
 			Graphics_Gdiplus graphics_gdiplus;
 			Graphics_Directx graphics_directx;
 			HWND hwnd;
 
 		public:
-			
-
+			enum class Anchor_Position {
+				Left,
+				Top,
+				Right,
+				Bottom,
+				Left_Top,
+				Right_Top,
+				Left_Bottom,
+				Right_Bottom,
+				Center
+			};
 			// コンストラクタ
 			Graphics() :
 				graphics_gdiplus(),
@@ -58,6 +72,24 @@ namespace mkaul {
 			// 線を描画(複数)
 			bool draw_lines(
 				const Point<float>* p_points,
+				size_t n_points,
+				const Color_F& color_f,
+				const Stroke& stroke
+			);
+
+			// ベジェ曲線を描画
+			void draw_bezier(
+				const Point<float>& point_0,
+				const Point<float>& point_1,
+				const Point<float>& point_2,
+				const Point<float>& point_3,
+				const Color_F& color_f,
+				const Stroke& stroke
+			);
+
+			// ベジェ曲線を描画(複数)
+			void draw_beziers(
+				const Point<float>* points,
 				size_t n_points,
 				const Color_F& color_f,
 				const Stroke& stroke
@@ -108,6 +140,13 @@ namespace mkaul {
 			bool fill_ellipse(
 				const Rectangle<float>& rectangle,
 				const Color_F& color_f
+			);
+
+			// ビットマップを描画
+			bool draw_bitmap(
+				const Bitmap& bitmap,
+				const Point<float>& point,
+				Anchor_Position anchor_pos
 			);
 		};
 	}

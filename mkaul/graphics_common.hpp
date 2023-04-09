@@ -9,6 +9,18 @@
 #include "point.hpp"
 #include "rectangle.hpp"
 #include "color.hpp"
+#include <Windows.h>
+#include <gdiplus.h>
+#include <d2d1.h>
+#include <dwrite.h>
+#include <wincodec.h>
+#include <wincodecsdk.h>
+
+
+#pragma comment(lib, "gdiplus.lib")
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "WindowsCodecs.lib" )
 
 
 
@@ -62,6 +74,35 @@ namespace mkaul {
 				dashes_count(dashes_count_),
 				dash_offset(dash_offset_)
 			{}
+		};
+
+
+		// ビットマップ
+		class Bitmap {
+		private:
+			ID2D1Bitmap* p_d2d1_bitmap;
+			Gdiplus::Bitmap* p_gdiplus_bitmap;
+			size_t width;
+			size_t height;
+
+		public:
+			Bitmap() :
+				p_d2d1_bitmap(nullptr),
+				p_gdiplus_bitmap(nullptr),
+				width(0),
+				height(0)
+			{}
+
+			// 空の画像を作成
+			void create(size_t width_, size_t height_);
+
+			// リソースから読み込み
+			bool load_from_resource();
+			// ファイル名から読み込み
+			bool load_from_filename();
+
+			size_t get_width();
+			size_t get_height();
 		};
 	}
 }

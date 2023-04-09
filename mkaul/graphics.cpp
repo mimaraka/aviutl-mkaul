@@ -4,15 +4,13 @@
 //		developed by mimaraka
 //----------------------------------------------------------------------------------
 
-#pragma once
-
 #include "graphics.hpp"
 
 
 
 namespace mkaul {
 	namespace graphics {
-		Graphics::Drawing_Method Graphics::drawing_method = Graphics::Drawing_Method::Null;
+		Drawing_Method Graphics::drawing_method = Drawing_Method::Null;
 
 		// •`‰æŠÂ‹«‚Ì€”õ
 		inline bool Graphics::startup(Drawing_Method drawing_method_)
@@ -86,6 +84,7 @@ namespace mkaul {
 			return result;
 		}
 
+
 		// I—¹(ƒCƒ“ƒXƒ^ƒ“ƒX–ˆ)
 		inline bool Graphics::exit_instance()
 		{
@@ -105,6 +104,7 @@ namespace mkaul {
 			return true;
 		}
 
+
 		// •`‰æŠJn
 		bool Graphics::begin_draw()
 		{
@@ -123,6 +123,7 @@ namespace mkaul {
 
 			return true;
 		}
+
 
 		// •`‰æI—¹
 		bool Graphics::end_draw()
@@ -151,13 +152,47 @@ namespace mkaul {
 		}
 
 
+		// ü‚ğ•`‰æ
+		bool Graphics::draw_line(
+			const Point<float>& point_from,
+			const Point<float>& point_to,
+			const Color_F& color_f = 0,
+			const Stroke& stroke = Stroke()
+		)
+		{
+			switch (drawing_method) {
+			case Drawing_Method::Gdiplus:
+				graphics_gdiplus.draw_line(
+					point_from,
+					point_to,
+					color_f,
+					stroke
+				);
+				break;
+
+			case Drawing_Method::Directx:
+				graphics_directx.draw_line(
+					point_from,
+					point_to,
+					color_f,
+					stroke
+				);
+				break;
+
+			default:
+				return false;
+			}
+			return true;
+		}
+
+
 		// ‹éŒ`‚ğ•`‰æ(ü)
 		bool Graphics::draw_rectangle(
 			const Rectangle<float>& rectangle,
-			float round_radius_x,
-			float round_radius_y,
-			const Color_F& col_f,
-			const Stroke& stroke
+			float round_radius_x = 0.f,
+			float round_radius_y = 0.f,
+			const Color_F& color_f = 0,
+			const Stroke& stroke = Stroke()
 		)
 		{
 			switch (drawing_method) {
@@ -166,7 +201,7 @@ namespace mkaul {
 					rectangle,
 					round_radius_x,
 					round_radius_y,
-					col_f,
+					color_f,
 					stroke
 				);
 				break;
@@ -176,7 +211,7 @@ namespace mkaul {
 					rectangle,
 					round_radius_x,
 					round_radius_y,
-					col_f,
+					color_f,
 					stroke
 				);
 				break;
@@ -184,16 +219,16 @@ namespace mkaul {
 			default:
 				return false;
 			}
-
 			return true;
 		}
+
 
 		// ‹éŒ`‚ğ•`‰æ(“h‚è)
 		bool Graphics::fill_rectangle(
 			const Rectangle<float>& rectangle,
-			float round_radius_x,
-			float round_radius_y,
-			const Color_F& color_f
+			float round_radius_x = 0.f,
+			float round_radius_y = 0.f,
+			const Color_F& color_f = 0
 		)
 		{
 			switch (drawing_method) {
@@ -218,7 +253,6 @@ namespace mkaul {
 			default:
 				return false;
 			}
-
 			return true;
 		}
 
@@ -256,7 +290,6 @@ namespace mkaul {
 			default:
 				return false;
 			}
-
 			return true;
 		}
 
@@ -288,7 +321,6 @@ namespace mkaul {
 			default:
 				return false;
 			}
-
 			return true;
 		}
 
@@ -323,7 +355,6 @@ namespace mkaul {
 			default:
 				return false;
 			}
-
 			return true;
 		}
 
@@ -352,7 +383,6 @@ namespace mkaul {
 			default:
 				return false;
 			}
-
 			return true;
 		}
 	}

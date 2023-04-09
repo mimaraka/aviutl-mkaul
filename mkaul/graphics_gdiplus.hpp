@@ -6,11 +6,7 @@
 
 #pragma once
 
-#include <Windows.h>
-#include <gdiplus.h>
 #include "graphics_common.hpp"
-
-#pragma comment(lib, "gdiplus.lib")
 
 
 

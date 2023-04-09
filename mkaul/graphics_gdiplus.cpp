@@ -4,8 +4,6 @@
 //		developed by mimaraka
 //----------------------------------------------------------------------------------
 
-#pragma once
-
 #include "graphics_gdiplus.hpp"
 
 

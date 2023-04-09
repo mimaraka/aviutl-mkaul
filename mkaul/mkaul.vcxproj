@@ -156,9 +156,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphics.cpp" />
+    <ClCompile Include="graphics_common.cpp" />
     <ClCompile Include="graphics_directx.cpp" />
     <ClCompile Include="graphics_gdiplus.cpp" />
-    <ClCompile Include="mkaul.cpp" />
     <ClCompile Include="rectangle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
