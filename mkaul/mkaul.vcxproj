@@ -145,8 +145,8 @@
   <ItemGroup>
     <ClInclude Include="color.hpp" />
     <ClInclude Include="common.hpp" />
-    <ClInclude Include="graphics.hpp" />
     <ClInclude Include="graphics_common.hpp" />
+    <ClInclude Include="graphics.hpp" />
     <ClInclude Include="graphics_directx.hpp" />
     <ClInclude Include="graphics_gdiplus.hpp" />
     <ClInclude Include="mkaul.hpp" />
@@ -156,7 +156,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphics.cpp" />
-    <ClCompile Include="graphics_common.cpp" />
     <ClCompile Include="graphics_directx.cpp" />
     <ClCompile Include="graphics_gdiplus.cpp" />
     <ClCompile Include="rectangle.cpp" />

@@ -10,6 +10,27 @@
 
 namespace mkaul {
 	namespace graphics {
+		void Bitmap_Gdiplus::create(size_t width_, size_t height_)
+		{
+			p_bitmap = new Gdiplus::Bitmap((int)width_, (int)height_);
+		}
+
+		void Bitmap_Gdiplus::release()
+		{
+			delete p_bitmap;
+		}
+
+		size_t Bitmap_Gdiplus::get_width()
+		{
+			return p_bitmap->GetWidth();
+		}
+
+		size_t Bitmap_Gdiplus::get_height()
+		{
+			return p_bitmap->GetHeight();
+		}
+
+
 		ULONG_PTR Graphics_Gdiplus::gdiplus_token = NULL;
 
 		// 描画環境の用意
@@ -36,8 +57,9 @@ namespace mkaul {
 		}
 
 		// Strokeの情報をPenに反映
-		inline void Graphics_Gdiplus::apply_pen_style(Gdiplus::Pen* p_pen, const Color_I8& col_i8, const Stroke& stroke)
+		inline void Graphics_Gdiplus::apply_pen_style(Gdiplus::Pen* p_pen, const Color_F& col_f, const Stroke& stroke)
 		{
+			Color_I8 col_i8(col_f);
 			p_pen->SetColor(
 				Gdiplus::Color(
 					col_i8.a,
@@ -63,7 +85,7 @@ namespace mkaul {
 		}
 
 		// 初期化(インスタンス毎)
-		inline bool Graphics_Gdiplus::init_instance(HWND hwnd)
+		inline bool Graphics_Gdiplus::init(HWND hwnd)
 		{
 			RECT rect_wnd;
 			::GetClientRect(hwnd, &rect_wnd);
@@ -71,18 +93,16 @@ namespace mkaul {
 		}
 
 		// 終了(インスタンス毎)
-		inline bool Graphics_Gdiplus::exit_instance()
+		inline void Graphics_Gdiplus::exit()
 		{
 			if (p_bitmap_buffer) {
 				delete p_bitmap_buffer;
 				p_bitmap_buffer = nullptr;
-				return true;
 			}
-			else return false;
 		}
 
 		// 描画開始
-		inline void Graphics_Gdiplus::begin_draw(HWND hwnd)
+		inline void Graphics_Gdiplus::begin_draw()
 		{
 			delete p_graphics_buffer;
 			delete p_bitmap_buffer;
@@ -95,7 +115,7 @@ namespace mkaul {
 		}
 
 		// 描画終了(&バッファ送信)
-		inline bool Graphics_Gdiplus::end_draw(HWND hwnd)
+		inline bool Graphics_Gdiplus::end_draw()
 		{
 			if (p_graphics_buffer) {
 				delete p_graphics_buffer;
@@ -124,13 +144,13 @@ namespace mkaul {
 		void Graphics_Gdiplus::draw_line(
 			const Point<float>& pt_from,
 			const Point<float>& pt_to,
-			const Color_I8& col_i8,
+			const Color_F& col_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(0);
-				apply_pen_style(&pen, col_i8, stroke);
+				apply_pen_style(&pen, col_f, stroke);
 
 				p_graphics_buffer->DrawLine(
 					&pen,
@@ -145,13 +165,13 @@ namespace mkaul {
 		void Graphics_Gdiplus::draw_lines(
 			const Point<float>* points,
 			size_t n_points,
-			const Color_I8& col_i8,
+			const Color_F& col_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(0);
-				apply_pen_style(&pen, col_i8, stroke);
+				apply_pen_style(&pen, col_f, stroke);
 
 				auto gdiplus_points = new Gdiplus::Point[n_points];
 
@@ -177,13 +197,13 @@ namespace mkaul {
 			const Point<float>& point_1,
 			const Point<float>& point_2,
 			const Point<float>& point_3,
-			const Color_I8& color_i8,
+			const Color_F& color_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(0);
-				apply_pen_style(&pen, color_i8, stroke);
+				apply_pen_style(&pen, color_f, stroke);
 
 				p_graphics_buffer->DrawBezier(
 					&pen,
@@ -200,13 +220,13 @@ namespace mkaul {
 		void Graphics_Gdiplus::draw_beziers(
 			const Point<float>* points,
 			size_t n_points,
-			const Color_I8& color_i8,
+			const Color_F& color_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(0);
-				apply_pen_style(&pen, color_i8, stroke);
+				apply_pen_style(&pen, color_f, stroke);
 
 				auto gdiplus_points = new Gdiplus::Point[n_points];
 
@@ -231,13 +251,13 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			float round_radius_x = 0,
 			float round_radius_y = 0,
-			const Color_I8& color_i8 = 0,
+			const Color_F& color_f = 0,
 			const Stroke& stroke = Stroke()
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(0);
-				apply_pen_style(&pen, color_i8, stroke);
+				apply_pen_style(&pen, color_f, stroke);
 				
 				// 角丸矩形を描画
 				if (round_radius_x > 0 || round_radius_y > 0) {
@@ -264,16 +284,16 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			float round_radius_x = 0,
 			float round_radius_y = 0,
-			const Color_I8& color_i8 = 0
+			const Color_F& color_f = 0
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
-						color_i8.a,
-						color_i8.r,
-						color_i8.g,
-						color_i8.b
+						color_f.a,
+						color_f.r,
+						color_f.g,
+						color_f.b
 					)
 				);
 				
@@ -302,13 +322,13 @@ namespace mkaul {
 			const Point<float>& point,
 			float radius_x,
 			float radius_y,
-			const Color_I8& color_i8 = 0,
+			const Color_F& color_f = 0,
 			const Stroke& stroke = Stroke()
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(0);
-				apply_pen_style(&pen, color_i8, stroke);
+				apply_pen_style(&pen, color_f, stroke);
 
 				Gdiplus::RectF rect_f(
 					point.x - radius_x,
@@ -325,13 +345,13 @@ namespace mkaul {
 		// 楕円を描画(線)(矩形指定)
 		void Graphics_Gdiplus::draw_ellipse(
 			const Rectangle<float>& rectangle,
-			const Color_I8& color_i8 = 0,
+			const Color_F& color_f = 0,
 			const Stroke& stroke = Stroke()
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(0);
-				apply_pen_style(&pen, color_i8, stroke);
+				apply_pen_style(&pen, color_f, stroke);
 
 				Gdiplus::RectF rect_f(
 					rectangle.left,
@@ -350,16 +370,16 @@ namespace mkaul {
 			const Point<float>& point,
 			float radius_x,
 			float radius_y,
-			const Color_I8& color_i8
+			const Color_F& color_f
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
-						color_i8.a,
-						color_i8.r,
-						color_i8.g,
-						color_i8.b
+						color_f.a,
+						color_f.r,
+						color_f.g,
+						color_f.b
 					)
 				);
 
@@ -378,16 +398,16 @@ namespace mkaul {
 		// 楕円を描画(塗り)(矩形指定)
 		void Graphics_Gdiplus::fill_ellipse(
 			const Rectangle<float>& rectangle,
-			const Color_I8& color_i8
+			const Color_F& color_f
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
-						color_i8.a,
-						color_i8.r,
-						color_i8.g,
-						color_i8.b
+						color_f.a,
+						color_f.r,
+						color_f.g,
+						color_f.b
 					)
 				);
 

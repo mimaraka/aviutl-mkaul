@@ -10,41 +10,54 @@
 
 namespace mkaul {
 	namespace graphics {
-		ID2D1Factory* Graphics_Directx::p_factory = nullptr;
-		IDWriteFactory* Graphics_Directx::p_write_factory = nullptr;
-		IWICImagingFactory* Graphics_Directx::p_imaging_factory = nullptr;
+		void Bitmap_Directx::release()
+		{
+			p_bitmap->Release();
+		}
+
+		size_t Bitmap_Directx::get_width()
+		{
+			return (p_bitmap->GetPixelSize()).width;
+		}
+
+		size_t Bitmap_Directx::get_height()
+		{
+			return (p_bitmap->GetPixelSize()).height;
+		}
+
+
 
 		// 描画環境の用意
 		bool Graphics_Directx::startup()
 		{
-			HRESULT hresult;
+			HRESULT hr;
 
 			// ID2D1Factoryの作成
-			hresult = ::D2D1CreateFactory(
+			hr = ::D2D1CreateFactory(
 				D2D1_FACTORY_TYPE_MULTI_THREADED,
 				&p_factory
 			);
-			if (FAILED(hresult))
+			if (FAILED(hr))
 				return false;
 
 			// IWICImagingFactoryの作成
-			hresult = ::CoCreateInstance(
+			hr = ::CoCreateInstance(
 				CLSID_WICImagingFactory,
 				NULL,
 				CLSCTX_INPROC_SERVER,
 				IID_IWICImagingFactory,
 				reinterpret_cast<void**>(&p_imaging_factory)
 			);
-			if (FAILED(hresult))
+			if (FAILED(hr))
 				return false;
 
 			// IDWriteFactoryの作成
-			hresult = ::DWriteCreateFactory(
+			hr = ::DWriteCreateFactory(
 				DWRITE_FACTORY_TYPE_SHARED,
 				__uuidof(IDWriteFactory),
 				reinterpret_cast<IUnknown**>(&p_write_factory)
 			);
-			if (FAILED(hresult))
+			if (FAILED(hr))
 				return false;
 
 			return true;
@@ -85,12 +98,36 @@ namespace mkaul {
 		}
 
 
+		// ファクトリー取得
+		auto Graphics_Directx::get_factory()
+		{
+			return p_factory;
+		}
+
+		auto Graphics_Directx::get_write_factory()
+		{
+			return p_write_factory;
+		}
+
+		auto Graphics_Directx::get_imaging_factory()
+		{
+			return p_imaging_factory;
+		}
+
+		auto Graphics_Directx::get_render_target()
+		{
+			return p_render_target;
+		}
+
+
 		// 初期化
-		bool Graphics_Directx::init_instance(HWND hwnd)
+		bool Graphics_Directx::init(HWND hwnd_)
 		{
 			HRESULT hresult;
 			D2D1_SIZE_U pixel_size;
 			RECT rect;
+
+			hwnd = hwnd_;
 
 			::GetClientRect(hwnd, &rect);
 
@@ -121,7 +158,7 @@ namespace mkaul {
 
 
 		// 終了
-		inline void Graphics_Directx::exit_instance()
+		inline void Graphics_Directx::exit()
 		{
 			release(&p_brush);
 			release(&p_render_target);
@@ -129,7 +166,7 @@ namespace mkaul {
 
 
 		// 描画開始
-		inline void Graphics_Directx::begin_draw(HWND hwnd)
+		inline void Graphics_Directx::begin_draw()
 		{
 			auto hdc = ::BeginPaint(hwnd, &ps);
 			p_render_target->BeginDraw();
@@ -137,7 +174,7 @@ namespace mkaul {
 
 
 		// 描画終了
-		inline bool Graphics_Directx::end_draw(HWND hwnd)
+		inline bool Graphics_Directx::end_draw()
 		{
 			HRESULT hresult = p_render_target->EndDraw();
 			::EndPaint(hwnd, &ps);
@@ -148,7 +185,7 @@ namespace mkaul {
 
 
 		// リサイズ
-		void Graphics_Directx::resize(HWND hwnd)
+		void Graphics_Directx::resize()
 		{
 			RECT rect;
 			::GetClientRect(hwnd, &rect);
@@ -190,10 +227,10 @@ namespace mkaul {
 
 		// 線を描画(複数)
 		void Graphics_Directx::draw_lines(
-			Point<float>* p_points,
+			const Point<float>* p_points,
 			size_t n_points,
-			const Color_F& color_f,
-			const Stroke& stroke
+			const Color_F& color_f = 0,
+			const Stroke& stroke = Stroke()
 		)
 		{
 			if (p_render_target) {
@@ -238,7 +275,7 @@ namespace mkaul {
 						round_radius_x,
 						round_radius_y
 					);
-					
+
 					p_render_target->DrawRoundedRectangle(
 						rounded_rect,
 						p_brush,
@@ -337,8 +374,8 @@ namespace mkaul {
 		// 楕円を描画(線)(矩形指定)
 		void Graphics_Directx::draw_ellipse(
 			const Rectangle<float>& rect,
-			const Color_F& color_f,
-			const Stroke& stroke
+			const Color_F& color_f = 0,
+			const Stroke& stroke = Stroke()
 		)
 		{
 			if (p_render_target) {
@@ -369,9 +406,9 @@ namespace mkaul {
 		// 楕円を描画(塗り)(中心点指定)
 		void Graphics_Directx::fill_ellipse(
 			const Point<float>& pt,
-			const Color_F& color_f,
 			float radius_x,
-			float radius_y
+			float radius_y,
+			const Color_F& color_f = 0
 		)
 		{
 			if (p_render_target) {
@@ -410,6 +447,341 @@ namespace mkaul {
 					p_brush
 				);
 			}
+		}
+
+
+		// 空のビットマップを作成
+		void Graphics_Directx::create_bitmap(
+			Bitmap* p_bitmap,
+			const Size<unsigned>& size,
+			Color_F color_f = 0
+		)
+		{
+			p_render_target->CreateBitmap(
+				D2D1::SizeU(size.width, size.height),
+				D2D1::BitmapProperties(),
+				reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data))
+			);
+		}
+
+
+		// ファイルからビットマップを作成
+		bool Graphics_Directx::load_bitmap_from_filename(
+			Bitmap* p_bitmap,
+			const std::filesystem::path& path
+		)
+		{
+			IWICBitmapDecoder* p_decoder = nullptr;
+			IWICBitmapFrameDecode* p_source = nullptr;
+			IWICFormatConverter* p_converter = nullptr;
+			bool result = true;
+			HRESULT hr = S_OK;
+
+			// デコーダを生成
+			hr = p_imaging_factory->CreateDecoderFromFilename(
+				path.c_str(),
+				NULL,
+				GENERIC_READ,
+				WICDecodeMetadataCacheOnLoad,
+				&p_decoder
+			);
+
+			if (FAILED(hr)) {
+				result = false;
+				goto end;
+			}
+
+			// ビットマップのフレームを取得
+			hr = p_decoder->GetFrame(0, &p_source);
+
+			if (FAILED(hr)) {
+				result = false;
+				goto end;
+			}
+
+			// フォーマットコンバータを生成
+			hr = p_imaging_factory->CreateFormatConverter(&p_converter);
+
+			if (FAILED(hr)) {
+				result = false;
+				goto end;
+			}
+
+			// フォーマットコンバータ初期化
+			hr = p_converter->Initialize(
+				p_source,
+				GUID_WICPixelFormat32bppPBGRA,
+				WICBitmapDitherTypeNone,
+				NULL,
+				0.f,
+				WICBitmapPaletteTypeMedianCut
+			);
+
+			hr = p_render_target->CreateBitmapFromWicBitmap(
+				p_converter,
+				NULL,
+				reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data))
+			);
+
+			if (FAILED(hr)) {
+				result = false;
+				release(reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data)));
+			}
+
+		end:
+			release(&p_converter);
+			release(&p_source);
+			release(&p_decoder);
+
+			return result;
+		}
+
+
+		// リソースからビットマップを作成
+		bool Graphics_Directx::load_bitmap_from_resource(
+			Bitmap* p_bitmap,
+			const std::wstring& resource_name,
+			const std::wstring& resource_type
+		)
+		{
+			IWICBitmapDecoder* p_decoder = nullptr;
+			IWICBitmapFrameDecode* p_source = nullptr;
+			IWICStream* p_stream = nullptr;
+			IWICFormatConverter* p_converter = nullptr;
+			IWICBitmapScaler* p_scaler = nullptr;
+
+			HRSRC img_res_handle = NULL;
+			HGLOBAL img_res_data_handle = NULL;
+			void* p_img_file = nullptr;
+			DWORD img_file_size = 0;
+			HRESULT hr = S_OK;
+			const HMODULE module_handle = ::GetModuleHandle(NULL);
+			bool result = true;
+
+			img_res_handle = ::FindResource(
+				module_handle,
+				resource_name.c_str(),
+				resource_type.c_str()
+			);
+
+			if (!img_res_handle) return false;
+
+			img_res_data_handle = ::LoadResource(
+				module_handle,
+				img_res_handle
+			);
+
+			if (!img_res_data_handle) return false;
+
+			p_img_file = ::LockResource(img_res_data_handle);
+
+			if (!p_img_file) return false;
+
+			img_file_size = ::SizeofResource(module_handle, img_res_handle);
+
+			if (!img_file_size) return false;
+
+			hr = p_imaging_factory->CreateStream(&p_stream);
+
+			if (FAILED(hr)) {
+				result = false;
+				goto end;
+			}
+
+			hr = p_stream->InitializeFromMemory(
+				reinterpret_cast<BYTE*>(p_img_file),
+				img_file_size
+			);
+
+			if (FAILED(hr)) {
+				result = false;
+				goto end;
+			}
+
+			hr = p_imaging_factory->CreateDecoderFromStream(
+				p_stream,
+				NULL,
+				WICDecodeMetadataCacheOnLoad,
+				&p_decoder
+			);
+
+			if (FAILED(hr)) {
+				result = false;
+				goto end;
+			}
+
+			hr = p_decoder->GetFrame(0, &p_source);
+
+			if (FAILED(hr)) {
+				result = false;
+				goto end;
+			}
+
+			hr = p_imaging_factory->CreateFormatConverter(&p_converter);
+
+			if (FAILED(hr)) {
+				result = false;
+				goto end;
+			}
+
+			hr = p_converter->Initialize(
+				p_source,
+				GUID_WICPixelFormat32bppPBGRA,
+				WICBitmapDitherTypeNone,
+				NULL,
+				0.f,
+				WICBitmapPaletteTypeMedianCut
+			);
+
+			if (FAILED(hr)) {
+				result = false;
+				goto end;
+			}
+
+			hr = p_render_target->CreateBitmapFromWicBitmap(
+				p_converter,
+				NULL,
+				reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data))
+			);
+
+			if (FAILED(hr)) {
+				result = false;
+				release(reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data)));
+			}
+
+		end:
+			release(&p_converter);
+			release(&p_source);
+			release(&p_decoder);
+			release(&p_stream);
+
+			return result;
+		}
+
+
+
+		// ビットマップを描画(アンカーポイント指定)
+		void Graphics_Directx::draw_bitmap(
+			const Bitmap& bitmap,
+			const Point<float>& point,
+			Anchor_Position anchor_pos,
+			float opacity = 1.f
+		)
+		{
+			auto p_d2d1_bitmap = reinterpret_cast<ID2D1Bitmap*>(bitmap.data);
+			D2D1_RECT_F rect_f;
+			auto size_u = p_d2d1_bitmap->GetPixelSize();
+
+			// アンカーポイントの位置
+			switch (anchor_pos) {
+			case Anchor_Position::Left:
+				rect_f = D2D1::RectF(
+					point.x,
+					point.y - size_u.height * 0.5f,
+					point.x + size_u.width,
+					point.y + size_u.height * 0.5f
+				);
+				break;
+
+			case Anchor_Position::Top:
+				rect_f = D2D1::RectF(
+					point.x - size_u.width * 0.5f,
+					point.y,
+					point.x + size_u.width * 0.5f,
+					point.y + size_u.height
+				);
+				break;
+
+			case Anchor_Position::Right:
+				rect_f = D2D1::RectF(
+					point.x - size_u.width,
+					point.y - size_u.height * 0.5f,
+					point.x,
+					point.y + size_u.height * 0.5f
+				);
+				break;
+
+			case Anchor_Position::Bottom:
+				rect_f = D2D1::RectF(
+					point.x - size_u.width * 0.5f,
+					point.y - size_u.height,
+					point.x + size_u.width * 0.5f,
+					point.y
+				);
+				break;
+
+			case Anchor_Position::Left_Top:
+				rect_f = D2D1::RectF(
+					point.x,
+					point.y,
+					point.x + size_u.width,
+					point.y + size_u.height
+				);
+				break;
+
+			case Anchor_Position::Right_Top:
+				rect_f = D2D1::RectF(
+					point.x - size_u.width,
+					point.y,
+					point.x,
+					point.y + size_u.height
+				);
+				break;
+
+			case Anchor_Position::Left_Bottom:
+				rect_f = D2D1::RectF(
+					point.x,
+					point.y - size_u.height,
+					point.x + size_u.width,
+					point.y
+				);
+				break;
+
+			case Anchor_Position::Right_Bottom:
+				rect_f = D2D1::RectF(
+					point.x - size_u.width,
+					point.y - size_u.height,
+					point.x,
+					point.y
+				);
+				break;
+
+			case Anchor_Position::Center:
+			default:
+				rect_f = D2D1::RectF(
+					point.x - size_u.width * 0.5f,
+					point.y - size_u.height * 0.5f,
+					point.x + size_u.width * 0.5f,
+					point.y + size_u.height * 0.5f
+				);
+				break;
+			}
+
+			p_render_target->DrawBitmap(
+				p_d2d1_bitmap,
+				rect_f,
+				opacity
+			);
+		}
+
+
+		// ビットマップを描画(矩形指定)
+		void Graphics_Directx::draw_bitmap(
+			const Bitmap& bitmap,
+			const Rectangle<float>& rect,
+			float opacity
+		)
+		{
+			p_render_target->DrawBitmap(
+				reinterpret_cast<ID2D1Bitmap*>(bitmap.data),
+				D2D1::RectF(
+					rect.left,
+					rect.top,
+					rect.right,
+					rect.bottom
+				),
+				opacity
+			);
 		}
 	}
 }

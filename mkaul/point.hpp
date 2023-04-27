@@ -11,8 +11,8 @@
 
 
 namespace mkaul {
-	template <typename T>
 	// ポイント
+	template <typename T>
 	struct Point {
 		T x, y;
 
@@ -65,6 +65,60 @@ namespace mkaul {
 		inline POINT to_win32_point()
 		{
 			return { (LONG)x, (LONG)y };
+		}
+	};
+
+
+	// サイズ
+	template <typename T>
+	struct Size {
+		T width, height;
+
+		inline bool operator == (const Size<T>& size) const
+		{
+			return (this->width == size.width && this->height == size.height);
+		}
+
+		template <typename SizeType>
+		inline Size<T> operator + (const SizeType& size) const
+		{
+			return {
+				this->width + (T)size.width,
+				this->height + (T)size.height
+			};
+		}
+
+		template <typename SizeType>
+		inline Size<T> operator - (const SizeType& size) const
+		{
+			return {
+				this->width - (T)size.width,
+				this->height - (T)size.height
+			};
+		}
+
+		template <typename SizeType>
+		inline void operator = (const SizeType& size)
+		{
+			this->width = (T)size.width;
+			this->height = (T)size.height;
+		}
+
+		inline Size(T width_ = 0, T height_ = 0) :
+			width(width_),
+			height(height_)
+		{}
+
+		template<typename U>
+		inline Size<U> to()
+		{
+			return Size<U>(width, height);
+		}
+
+		inline void scale(double scale)
+		{
+			width *= std::abs(scale);
+			height *= std::abs(scale);
 		}
 	};
 }
