@@ -12,17 +12,17 @@ namespace mkaul {
 	namespace graphics {
 		void Bitmap_Directx::release()
 		{
-			p_bitmap->Release();
+			reinterpret_cast<ID2D1Bitmap*>(data)->Release();
 		}
 
 		size_t Bitmap_Directx::get_width()
 		{
-			return (p_bitmap->GetPixelSize()).width;
+			return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).width;
 		}
 
 		size_t Bitmap_Directx::get_height()
 		{
-			return (p_bitmap->GetPixelSize()).height;
+			return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).height;
 		}
 
 
@@ -451,7 +451,7 @@ namespace mkaul {
 
 
 		// 空のビットマップを作成
-		void Graphics_Directx::create_bitmap(
+		void Graphics_Directx::initialize_bitmap(
 			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
 			Color_F color_f = 0
@@ -540,8 +540,7 @@ namespace mkaul {
 		// リソースからビットマップを作成
 		bool Graphics_Directx::load_bitmap_from_resource(
 			Bitmap* p_bitmap,
-			const std::wstring& resource_name,
-			const std::wstring& resource_type
+			const std::wstring& resource_name
 		)
 		{
 			IWICBitmapDecoder* p_decoder = nullptr;
@@ -558,10 +557,10 @@ namespace mkaul {
 			const HMODULE module_handle = ::GetModuleHandle(NULL);
 			bool result = true;
 
-			img_res_handle = ::FindResource(
+			img_res_handle = ::FindResourceW(
 				module_handle,
 				resource_name.c_str(),
-				resource_type.c_str()
+				MAKEINTRESOURCEW(2)
 			);
 
 			if (!img_res_handle) return false;
@@ -674,6 +673,16 @@ namespace mkaul {
 
 			// アンカーポイントの位置
 			switch (anchor_pos) {
+			case Anchor_Position::Center:
+			default:
+				rect_f = D2D1::RectF(
+					point.x - size_u.width * 0.5f,
+					point.y - size_u.height * 0.5f,
+					point.x + size_u.width * 0.5f,
+					point.y + size_u.height * 0.5f
+				);
+				break;
+
 			case Anchor_Position::Left:
 				rect_f = D2D1::RectF(
 					point.x,
@@ -743,16 +752,6 @@ namespace mkaul {
 					point.y - size_u.height,
 					point.x,
 					point.y
-				);
-				break;
-
-			case Anchor_Position::Center:
-			default:
-				rect_f = D2D1::RectF(
-					point.x - size_u.width * 0.5f,
-					point.y - size_u.height * 0.5f,
-					point.x + size_u.width * 0.5f,
-					point.y + size_u.height * 0.5f
 				);
 				break;
 			}

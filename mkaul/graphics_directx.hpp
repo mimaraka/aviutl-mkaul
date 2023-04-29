@@ -22,9 +22,6 @@ namespace mkaul {
 	namespace graphics {
 		// ビットマップ
 		class Bitmap_Directx : public Bitmap {
-		private:
-			ID2D1Bitmap* p_bitmap;
-
 		public:
 			void release() override;
 
@@ -162,7 +159,7 @@ namespace mkaul {
 			) override;
 
 			// 空のビットマップを作成
-			void create_bitmap(
+			void initialize_bitmap(
 				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
 				Color_F color_f
@@ -177,8 +174,7 @@ namespace mkaul {
 			// リソースからビットマップを作成
 			bool load_bitmap_from_resource(
 				Bitmap* p_bitmap,
-				const std::wstring& resource_name,
-				const std::wstring& resource_type
+				const std::wstring& resource_name
 			) override;
 
 			// ビットマップを描画(アンカーポイント指定)
