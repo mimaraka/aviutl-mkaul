@@ -17,18 +17,8 @@ namespace mkaul {
 	namespace graphics {
 		// ビットマップ
 		class Bitmap_Gdiplus : public Bitmap {
-		private:
-			Gdiplus::Bitmap* p_bitmap;
-
 		public:
-			// 空の画像を作成
-			bool create(size_t width_, size_t height_) override;
 			void release() override;
-
-			// リソースから読み込み
-			bool load_from_resource() override;
-			// ファイル名から読み込み
-			bool load_from_filename() override;
 
 			size_t get_width() override;
 			size_t get_height() override;
@@ -66,6 +56,8 @@ namespace mkaul {
 			void begin_draw() override;
 			// 描画終了
 			bool end_draw() override;
+
+			void resize() override {};
 
 			// 線を描画
 			void draw_line(
@@ -146,6 +138,40 @@ namespace mkaul {
 			void fill_ellipse(
 				const Rectangle<float>& rectangle,
 				const Color_F& color_f
+			) override;
+
+			// 空のビットマップを作成
+			void initialize_bitmap(
+				Bitmap* p_bitmap,
+				const Size<unsigned>& size,
+				Color_F color_f
+			) override;
+
+			// ファイルからビットマップを作成
+			bool load_bitmap_from_filename(
+				Bitmap* p_bitmap,
+				const std::filesystem::path& path
+			) override;
+
+			// リソースからビットマップを作成
+			bool load_bitmap_from_resource(
+				Bitmap* p_bitmap,
+				const std::wstring& resource_name
+			) override;
+
+			// ビットマップを描画(アンカーポイント指定)
+			void draw_bitmap(
+				const Bitmap& bitmap,
+				const Point<float>& point,
+				Anchor_Position anchor_pos,
+				float opacity
+			) override;
+
+			// ビットマップを描画(矩形指定)
+			void draw_bitmap(
+				const Bitmap& bitmap,
+				const Rectangle<float>& rect,
+				float opacity
 			) override;
 		};
 	}

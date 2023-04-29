@@ -10,24 +10,19 @@
 
 namespace mkaul {
 	namespace graphics {
-		void Bitmap_Gdiplus::create(size_t width_, size_t height_)
-		{
-			p_bitmap = new Gdiplus::Bitmap((int)width_, (int)height_);
-		}
-
 		void Bitmap_Gdiplus::release()
 		{
-			delete p_bitmap;
+			delete reinterpret_cast<Gdiplus::Bitmap*>(data);
 		}
 
 		size_t Bitmap_Gdiplus::get_width()
 		{
-			return p_bitmap->GetWidth();
+			return reinterpret_cast<Gdiplus::Bitmap*>(data)->GetWidth();
 		}
 
 		size_t Bitmap_Gdiplus::get_height()
 		{
-			return p_bitmap->GetHeight();
+			return reinterpret_cast<Gdiplus::Bitmap*>(data)->GetHeight();
 		}
 
 
@@ -50,11 +45,13 @@ namespace mkaul {
 				return false;
 		}
 
+
 		// 描画環境の破棄
 		inline void Graphics_Gdiplus::shutdown()
 		{
 			Gdiplus::GdiplusShutdown(gdiplus_token);
 		}
+
 
 		// Strokeの情報をPenに反映
 		inline void Graphics_Gdiplus::apply_pen_style(Gdiplus::Pen* p_pen, const Color_F& col_f, const Stroke& stroke)
@@ -84,6 +81,7 @@ namespace mkaul {
 			p_pen->SetLineJoin((Gdiplus::LineJoin)stroke.line_join);
 		}
 
+
 		// 初期化(インスタンス毎)
 		inline bool Graphics_Gdiplus::init(HWND hwnd)
 		{
@@ -91,6 +89,7 @@ namespace mkaul {
 			::GetClientRect(hwnd, &rect_wnd);
 			p_bitmap_buffer = new Gdiplus::Bitmap(rect_wnd.right, rect_wnd.bottom);
 		}
+
 
 		// 終了(インスタンス毎)
 		inline void Graphics_Gdiplus::exit()
@@ -100,6 +99,7 @@ namespace mkaul {
 				p_bitmap_buffer = nullptr;
 			}
 		}
+
 
 		// 描画開始
 		inline void Graphics_Gdiplus::begin_draw()
@@ -113,6 +113,7 @@ namespace mkaul {
 			p_graphics_buffer = new Gdiplus::Graphics(p_bitmap_buffer);
 			p_graphics_buffer->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 		}
+
 
 		// 描画終了(&バッファ送信)
 		inline bool Graphics_Gdiplus::end_draw()
@@ -420,6 +421,160 @@ namespace mkaul {
 
 				p_graphics_buffer->FillEllipse(&brush, rect_f);
 			}
+		}
+
+
+		// 空のビットマップを作成
+		void Graphics_Gdiplus::initialize_bitmap(
+			Bitmap* p_bitmap,
+			const Size<unsigned>& size,
+			Color_F color_f
+		)
+		{
+			p_bitmap->data = new Gdiplus::Bitmap(size.width, size.height);
+		}
+
+
+		// ファイルからビットマップを作成
+		bool Graphics_Gdiplus::load_bitmap_from_filename(
+			Bitmap* p_bitmap,
+			const std::filesystem::path& path
+		)
+		{
+			p_bitmap->data = new Gdiplus::Bitmap(path.c_str());
+		}
+
+
+		// リソースからビットマップを作成
+		bool Graphics_Gdiplus::load_bitmap_from_resource(
+			Bitmap* p_bitmap,
+			const std::wstring& resource_name
+		)
+		{
+			p_bitmap->data = Gdiplus::Bitmap::FromResource(::GetModuleHandle(NULL), resource_name.c_str());
+		}
+
+
+		// ビットマップを描画(アンカーポイント指定)
+		void Graphics_Gdiplus::draw_bitmap(
+			const Bitmap& bitmap,
+			const Point<float>& point,
+			Anchor_Position anchor_pos,
+			float opacity
+		)
+		{
+			auto p_gdip_bitmap = reinterpret_cast<Gdiplus::Bitmap*>(bitmap.data);
+			Gdiplus::RectF rect_f;
+			int width = p_gdip_bitmap->GetWidth();
+			int height = p_gdip_bitmap->GetHeight();
+
+			// アンカーポイントの位置
+			switch (anchor_pos) {
+			case Anchor_Position::Center:
+			default:
+				rect_f = Gdiplus::RectF(
+					point.x - width * 0.5f,
+					point.y - height * 0.5f,
+					point.x + width * 0.5f,
+					point.y + height * 0.5f
+				);
+				break;
+
+			case Anchor_Position::Left:
+				rect_f = Gdiplus::RectF(
+					point.x,
+					point.y - height * 0.5f,
+					point.x + width,
+					point.y + height * 0.5f
+				);
+				break;
+
+			case Anchor_Position::Top:
+				rect_f = Gdiplus::RectF(
+					point.x - width * 0.5f,
+					point.y,
+					point.x + width * 0.5f,
+					point.y + height
+				);
+				break;
+
+			case Anchor_Position::Right:
+				rect_f = Gdiplus::RectF(
+					point.x - width,
+					point.y - height * 0.5f,
+					point.x,
+					point.y + height * 0.5f
+				);
+				break;
+
+			case Anchor_Position::Bottom:
+				rect_f = Gdiplus::RectF(
+					point.x - width * 0.5f,
+					point.y - height,
+					point.x + width * 0.5f,
+					point.y
+				);
+				break;
+
+			case Anchor_Position::Left_Top:
+				rect_f = Gdiplus::RectF(
+					point.x,
+					point.y,
+					point.x + width,
+					point.y + height
+				);
+				break;
+
+			case Anchor_Position::Right_Top:
+				rect_f = Gdiplus::RectF(
+					point.x - width,
+					point.y,
+					point.x,
+					point.y + height
+				);
+				break;
+
+			case Anchor_Position::Left_Bottom:
+				rect_f = Gdiplus::RectF(
+					point.x,
+					point.y - height,
+					point.x + width,
+					point.y
+				);
+				break;
+
+			case Anchor_Position::Right_Bottom:
+				rect_f = Gdiplus::RectF(
+					point.x - width,
+					point.y - height,
+					point.x,
+					point.y
+				);
+				break;
+			}
+
+			p_graphics_buffer->DrawImage(
+				p_gdip_bitmap,
+				rect_f
+			);
+		}
+
+		// ビットマップを描画(矩形指定)
+		void Graphics_Gdiplus::draw_bitmap(
+			const Bitmap& bitmap,
+			const Rectangle<float>& rect,
+			float opacity
+		)
+		{
+			p_graphics_buffer->DrawImage(
+				reinterpret_cast<Gdiplus::Bitmap*>(bitmap.data),
+				Gdiplus::RectF(
+					rect.left,
+					rect.top,
+					rect.right,
+					rect.bottom
+				)
+			);
 		}
 	}
 }
