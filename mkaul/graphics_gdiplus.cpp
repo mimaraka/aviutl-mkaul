@@ -229,20 +229,20 @@ namespace mkaul {
 				Gdiplus::Pen pen(0);
 				apply_pen_style(&pen, color_f, stroke);
 
-				auto gdiplus_points = new Gdiplus::Point[n_points];
+				auto gdip_points = new Gdiplus::Point[n_points];
 
 				for (size_t i = 0; i < n_points; i++) {
-					gdiplus_points[i].X = points[i].x;
-					gdiplus_points[i].Y = points[i].y;
+					gdip_points[i].X = points[i].x;
+					gdip_points[i].Y = points[i].y;
 				}
 
 				p_graphics_buffer->DrawBeziers(
 					&pen,
-					gdiplus_points,
+					gdip_points,
 					(int)n_points
 				);
 
-				delete[] gdiplus_points;
+				delete[] gdip_points;
 			}
 		}
 

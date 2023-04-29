@@ -206,7 +206,7 @@ namespace mkaul {
 			const Stroke& stroke = Stroke()
 		)
 		{
-			ID2D1StrokeStyle* stroke_style;
+			ID2D1StrokeStyle* stroke_style = nullptr;
 			stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
 			if (p_render_target) {
@@ -227,23 +227,140 @@ namespace mkaul {
 
 		// 線を描画(複数)
 		void Graphics_Directx::draw_lines(
-			const Point<float>* p_points,
+			const Point<float>* points,
 			size_t n_points,
 			const Color_F& color_f = 0,
 			const Stroke& stroke = Stroke()
 		)
 		{
-			if (p_render_target) {
-				p_brush->SetColor(color_f.d2d1_colorf());
+			ID2D1GeometrySink* sink = nullptr;
+			ID2D1PathGeometry* path_lines = nullptr;
+			ID2D1StrokeStyle* stroke_style = nullptr;
+			stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-				p_render_target->DrawLine(
-					D2D1::Point2F(pt_from.x, pt_from.y),
-					D2D1::Point2F(pt_to.x, pt_to.y),
+			auto d2d1_points = new D2D1_POINT_2F[n_points - 1];
+
+			for (size_t i = 0; i < n_points - 1; i++) {
+				d2d1_points[i].x = points[i + 1].x;
+				d2d1_points[i].y = points[i + 1].y;
+			}
+
+			p_factory->CreatePathGeometry(&path_lines);
+			path_lines->Open(&sink);
+
+			sink->BeginFigure(
+				D2D1::Point2F(points[0].x, points[0].y),
+				D2D1_FIGURE_BEGIN_HOLLOW
+			);
+			sink->AddLines(d2d1_points, n_points - 1);
+			sink->EndFigure(D2D1_FIGURE_END_OPEN);
+			
+			sink->Close();
+
+			if (path_lines) {
+				p_render_target->DrawGeometry(
+					path_lines,
 					p_brush,
 					stroke.width,
 					stroke_style
 				);
 			}
+
+			delete[] d2d1_points;
+			release(&sink);
+			release(&path_lines);
+			release(&stroke_style);
+		}
+
+
+		// ベジェ曲線を描画
+		void Graphics_Directx::draw_bezier(
+			const Point<float>& point_0,
+			const Point<float>& point_1,
+			const Point<float>& point_2,
+			const Point<float>& point_3,
+			const Color_F& color_f,
+			const Stroke& stroke
+		)
+		{
+			ID2D1GeometrySink* sink = nullptr;
+			ID2D1PathGeometry* path_bezier = nullptr;
+			ID2D1StrokeStyle* stroke_style = nullptr;
+			stroke_to_d2d_strokestyle(stroke, &stroke_style);
+
+			p_factory->CreatePathGeometry(&path_bezier);
+			path_bezier->Open(&sink);
+
+			sink->BeginFigure(
+				D2D1::Point2F(point_0.x, point_0.y),
+				D2D1_FIGURE_BEGIN_HOLLOW
+			);
+			sink->AddBezier(D2D1::BezierSegment(
+				D2D1::Point2F(point_1.x, point_1.y),
+				D2D1::Point2F(point_2.x, point_2.y),
+				D2D1::Point2F(point_3.x, point_3.y)
+			));
+
+			sink->EndFigure(D2D1_FIGURE_END_OPEN);
+			sink->Close();
+
+			if (path_bezier)
+				p_brush->SetColor(color_f.d2d1_colorf());
+				p_render_target->DrawGeometry(
+					path_bezier,
+					p_brush,
+					stroke.width,
+					stroke_style
+				);
+
+			release(&sink);
+			release(&path_bezier);
+			release(&stroke_style);
+		}
+
+
+		// ベジェ曲線を描画(複数)
+		void Graphics_Directx::draw_beziers(
+			const Point<float>* points,
+			size_t n_points,
+			const Color_F& color_f,
+			const Stroke& stroke
+		)
+		{
+			ID2D1GeometrySink* sink = nullptr;
+			ID2D1PathGeometry* path_bezier = nullptr;
+			ID2D1StrokeStyle* stroke_style = nullptr;
+			stroke_to_d2d_strokestyle(stroke, &stroke_style);
+
+			p_factory->CreatePathGeometry(&path_bezier);
+			path_bezier->Open(&sink);
+
+			for (size_t i = 0; i < (n_points - 1) / 3; i++) {
+				sink->BeginFigure(
+					D2D1::Point2F(points[i * 3].x, points[i * 3].y),
+					D2D1_FIGURE_BEGIN_HOLLOW
+				);
+				sink->AddBezier(D2D1::BezierSegment(
+					D2D1::Point2F(points[i * 3 + 1].x, points[i * 3 + 1].y),
+					D2D1::Point2F(points[i * 3 + 2].x, points[i * 3 + 2].y),
+					D2D1::Point2F(points[i * 3 + 3].x, points[i * 3 + 3].y)
+				));
+				sink->EndFigure(D2D1_FIGURE_END_OPEN);
+			}
+
+			sink->Close();
+
+			if (path_bezier)
+				p_render_target->DrawGeometry(
+					path_bezier,
+					p_brush,
+					stroke.width,
+					stroke_style
+				);
+
+			release(&sink);
+			release(&path_bezier);
+			release(&stroke_style);
 		}
 
 
@@ -257,7 +374,7 @@ namespace mkaul {
 		)
 		{
 			if (p_render_target) {
-				ID2D1StrokeStyle* stroke_style;
+				ID2D1StrokeStyle* stroke_style = nullptr;
 				stroke_to_d2d_strokestyle(stroke, &stroke_style);
 				p_brush->SetColor(color_f.d2d1_colorf());
 
@@ -350,7 +467,7 @@ namespace mkaul {
 		)
 		{
 			if (p_render_target) {
-				ID2D1StrokeStyle* stroke_style;
+				ID2D1StrokeStyle* stroke_style = nullptr;
 				stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
 				p_brush->SetColor(color_f.d2d1_colorf());
@@ -379,7 +496,7 @@ namespace mkaul {
 		)
 		{
 			if (p_render_target) {
-				ID2D1StrokeStyle* stroke_style;
+				ID2D1StrokeStyle* stroke_style = nullptr;
 				stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
 				p_brush->SetColor(color_f.d2d1_colorf());
