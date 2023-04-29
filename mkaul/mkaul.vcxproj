@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="color.hpp" />
     <ClInclude Include="common.hpp" />
+    <ClInclude Include="control.hpp" />
     <ClInclude Include="graphics_common.hpp" />
     <ClInclude Include="graphics.hpp" />
     <ClInclude Include="graphics_directx.hpp" />
@@ -153,13 +154,16 @@
     <ClInclude Include="point.hpp" />
     <ClInclude Include="rectangle.hpp" />
     <ClInclude Include="utils.hpp" />
+    <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="color.cpp" />
+    <ClCompile Include="control.cpp" />
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="graphics_directx.cpp" />
     <ClCompile Include="graphics_gdiplus.cpp" />
     <ClCompile Include="rectangle.cpp" />
+    <ClCompile Include="window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
