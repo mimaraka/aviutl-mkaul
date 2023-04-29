@@ -10,9 +10,9 @@
 
 namespace mkaul {
 	namespace graphics {
+		// •`‰æŠÂ‹«‚Ì—pˆÓ
 		bool startup(Drawing_Method drawing_method)
 		{
-			g_drawing_method = drawing_method;
 			bool result = false;
 
 			switch (drawing_method) {
@@ -28,13 +28,67 @@ namespace mkaul {
 				return false;
 			}
 
+			g_drawing_method = drawing_method;
+
 			return result;
 		}
 
 
-		bool create_graphics()
+		// •`‰æŠÂ‹«‚Ì”jŠü
+		bool shutdown()
 		{
+			switch (g_drawing_method) {
+			case Drawing_Method::Gdiplus:
+				Graphics_Gdiplus::shutdown();
+				break;
 
+			case Drawing_Method::Directx:
+				Graphics_Directx::shutdown();
+				break;
+
+			default:
+				return false;
+			}
+
+			return true;
+		}
+
+
+		bool create_graphics(Graphics** pp_graphics)
+		{
+			switch (g_drawing_method) {
+			case Drawing_Method::Gdiplus:
+				*pp_graphics = new Graphics_Gdiplus;
+				break;
+
+			case Drawing_Method::Directx:
+				*pp_graphics = new Graphics_Directx;
+				break;
+
+			default:
+				return false;
+			}
+
+			return true;
+		}
+
+
+		bool create_bitmap(Bitmap** pp_bitmap)
+		{
+			switch (g_drawing_method) {
+			case Drawing_Method::Gdiplus:
+				*pp_bitmap = new Bitmap_Gdiplus;
+				break;
+
+			case Drawing_Method::Directx:
+				*pp_bitmap = new Bitmap_Directx;
+				break;
+
+			default:
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

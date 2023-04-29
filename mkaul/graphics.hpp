@@ -20,14 +20,17 @@ namespace mkaul {
 			Directx
 		};
 
-		inline Drawing_Method g_drawing_method;
+		inline Drawing_Method g_drawing_method = Drawing_Method::Null;
 
 		// 描画環境の用意
 		bool startup(Drawing_Method drawing_method);
 		// 描画環境の破棄
-		void shutdown();
+		bool shutdown();
 
 		// グラフィックス作成
-		bool create_graphics();
+		bool create_graphics(Graphics** pp_graphics);
+
+		// ビットマップ作成
+		bool create_bitmap(Bitmap** pp_bitmap);
 	}
 }

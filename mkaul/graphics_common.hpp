@@ -74,14 +74,6 @@ namespace mkaul {
 			// ビットマップを破棄
 			virtual void release() = 0;
 
-			// リサイズ
-			virtual void resize(size_t width, size_t height) = 0;
-
-			// リソースから読み込み
-			virtual bool load_from_resource() = 0;
-			// ファイル名から読み込み
-			virtual bool load_from_filename() = 0;
-
 			// 幅・高さを取得
 			virtual size_t get_width() = 0;
 			virtual size_t get_height() = 0;
@@ -89,6 +81,7 @@ namespace mkaul {
 
 
 		enum class Anchor_Position {
+			Center,
 			Left,
 			Top,
 			Right,
@@ -96,8 +89,7 @@ namespace mkaul {
 			Left_Top,
 			Right_Top,
 			Left_Bottom,
-			Right_Bottom,
-			Center
+			Right_Bottom
 		};
 
 
@@ -202,7 +194,7 @@ namespace mkaul {
 			) = 0;
 
 			// 空のビットマップを作成
-			virtual void create_bitmap(
+			virtual void initialize_bitmap(
 				Bitmap* pp_bitmap,
 				const Size<unsigned>& size,
 				Color_F color_f
@@ -217,8 +209,7 @@ namespace mkaul {
 			// リソースからビットマップを作成
 			virtual bool load_bitmap_from_resource(
 				Bitmap* pp_bitmap,
-				const std::wstring& resource_name,
-				const std::wstring& resource_type
+				const std::wstring& resource_name
 			) = 0;
 
 			// ビットマップを描画(アンカーポイント指定)
