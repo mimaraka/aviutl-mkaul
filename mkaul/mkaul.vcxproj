@@ -155,6 +155,7 @@
     <ClInclude Include="utils.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="color.cpp" />
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="graphics_directx.cpp" />
     <ClCompile Include="graphics_gdiplus.cpp" />

@@ -174,7 +174,7 @@ namespace mkaul {
 				Gdiplus::Pen pen(0);
 				apply_pen_style(&pen, col_f, stroke);
 
-				auto gdiplus_points = new Gdiplus::Point[n_points];
+				auto gdiplus_points = new Gdiplus::PointF[n_points];
 
 				for (size_t i = 0; i < n_points; i++) {
 					gdiplus_points[i].X = points[i].x;
@@ -229,7 +229,7 @@ namespace mkaul {
 				Gdiplus::Pen pen(0);
 				apply_pen_style(&pen, color_f, stroke);
 
-				auto gdip_points = new Gdiplus::Point[n_points];
+				auto gdip_points = new Gdiplus::PointF[n_points];
 
 				for (size_t i = 0; i < n_points; i++) {
 					gdip_points[i].X = points[i].x;
@@ -285,16 +285,17 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			float round_radius_x = 0,
 			float round_radius_y = 0,
-			const Color_F& color_f = 0
+			const Color_F& col_f = 0
 		)
 		{
 			if (p_graphics_buffer) {
+				Color_I8 col_i8(col_f);
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
-						color_f.a,
-						color_f.r,
-						color_f.g,
-						color_f.b
+						(BYTE)col_i8.a,
+						(BYTE)col_i8.r,
+						(BYTE)col_i8.g,
+						(BYTE)col_i8.b
 					)
 				);
 				
@@ -371,16 +372,17 @@ namespace mkaul {
 			const Point<float>& point,
 			float radius_x,
 			float radius_y,
-			const Color_F& color_f
+			const Color_F& col_f
 		)
 		{
 			if (p_graphics_buffer) {
+				Color_I8 col_i8(col_f);
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
-						color_f.a,
-						color_f.r,
-						color_f.g,
-						color_f.b
+						(BYTE)col_i8.a,
+						(BYTE)col_i8.r,
+						(BYTE)col_i8.g,
+						(BYTE)col_i8.b
 					)
 				);
 
@@ -399,16 +401,17 @@ namespace mkaul {
 		// ‘È‰~‚ð•`‰æ(“h‚è)(‹éŒ`Žw’è)
 		void Graphics_Gdiplus::fill_ellipse(
 			const Rectangle<float>& rectangle,
-			const Color_F& color_f
+			const Color_F& col_f
 		)
 		{
 			if (p_graphics_buffer) {
+				Color_I8 col_i8(col_f);
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
-						color_f.a,
-						color_f.r,
-						color_f.g,
-						color_f.b
+						(BYTE)col_i8.a,
+						(BYTE)col_i8.r,
+						(BYTE)col_i8.g,
+						(BYTE)col_i8.b
 					)
 				);
 
@@ -441,7 +444,13 @@ namespace mkaul {
 			const std::filesystem::path& path
 		)
 		{
-			p_bitmap->data = new Gdiplus::Bitmap(path.c_str());
+			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
+			p_gdip_bitmap = new Gdiplus::Bitmap(path.c_str());
+			if (p_gdip_bitmap && p_gdip_bitmap->GetWidth() != 0 && p_gdip_bitmap->GetHeight() != 0) {
+				p_bitmap->data = p_gdip_bitmap;
+				return true;
+			}
+			else return false;
 		}
 
 
@@ -451,7 +460,13 @@ namespace mkaul {
 			const std::wstring& resource_name
 		)
 		{
-			p_bitmap->data = Gdiplus::Bitmap::FromResource(::GetModuleHandle(NULL), resource_name.c_str());
+			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
+			p_gdip_bitmap = Gdiplus::Bitmap::FromResource(::GetModuleHandle(NULL), resource_name.c_str());
+			if (p_gdip_bitmap && p_gdip_bitmap->GetWidth() != 0 && p_gdip_bitmap->GetHeight() != 0) {
+				p_bitmap->data = p_gdip_bitmap;
+				return true;
+			}
+			else return false;
 		}
 
 
