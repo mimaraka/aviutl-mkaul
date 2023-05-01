@@ -11,27 +11,25 @@
 namespace mkaul {
 	namespace window {
 		// コントロールを作成
-		BOOL Control::create(
-			HWND		        hwnd_parent,
-			int                 id_,
-			LPCTSTR             class_name,
-			LONG		        window_style,
-			LONG		        class_style,
-			HCURSOR             cursor,
-			const RECT& rect,
-			const Color_F& color_bg_,
-			const Color_F& color_control_,
-			BYTE                round_edge_flag_,
-			float               round_radius_,
-			int                 status_
+		bool Control::create(
+			HWND					hwnd_parent,
+			int						id_,
+			const std::string&		class_name,
+			LONG					window_style,
+			LONG					class_style,
+			const Rectangle<LONG>&	rect,
+			const Color_F*			p_col_bg_,
+			const Color_F*			p_col_control_,
+			BYTE					round_edge_flag_ = ROUND_EDGE_ALL,
+			float					round_radius_ = 0.f,
+			HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW)
 		)
 		{
 			id = id_;
-			status = status_;
 			round_edge_flag = round_edge_flag_;
 			round_radius = round_radius_;
-			color_bg = color_bg_;
-			color_control = color_control_;
+			p_col_bg = const_cast<Color_F*>(p_col_bg_);
+			p_col_control = const_cast<Color_F*>(p_col_control_);
 
 			return Window::create(
 				hwnd_parent,
@@ -40,11 +38,12 @@ namespace mkaul {
 				wndproc_static,
 				WS_CHILD | window_style,
 				class_style,
-				cursor,
 				rect,
+				cursor,
 				this
 			);
 		}
+
 
 		// 静的ウィンドウプロシージャ
 		LRESULT CALLBACK Control::wndproc_static(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -73,11 +72,18 @@ namespace mkaul {
 				return app->wndproc(hwnd_, msg, wparam, lparam);
 		}
 
+
 		// ウィンドウプロシージャ
-		LRESULT Control::wndproc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam)
+		LRESULT CALLBACK Control::wndproc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
-			return ::DefWindowProc(hwnd_, msg, wparam, lparam);
+			switch (msg) {
+			case WM_CREATE:
+
+			default:
+				return ::DefWindowProc(hwnd_, msg, wparam, lparam);
+			}
 		}
+
 
 		// ステータスを設定
 		inline void Control::set_status(int status_)
@@ -86,21 +92,11 @@ namespace mkaul {
 			redraw();
 		}
 
+
 		// ラウンドエッジを描画
 		inline void Control::draw_round_edge()
 		{
 
-		}
-
-		// コントロールの色を変更
-		inline void Control::change_color(
-			const Color_F& color_bg_,
-			const Color_F& color_control_
-		)
-		{
-			color_bg = color_bg_;
-			color_control = color_control_;
-			redraw();
 		}
 	}
 }

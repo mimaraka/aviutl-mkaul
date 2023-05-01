@@ -19,15 +19,15 @@ namespace mkaul {
 		class Control : public Window {
 		protected:
 			// 色
-			Color_F					color_bg,
-									color_control;
+			Color_F*				p_col_bg;
+			Color_F*				p_col_control;
 			// ステータス
 			int						status;
 			TRACKMOUSEEVENT			tme;
 			graphics::Graphics*		p_graphics;
 
-			static LRESULT CALLBACK wndproc_static(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam);
-			virtual LRESULT		    wndproc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam);
+			static LRESULT CALLBACK	wndproc_static(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam);
+			virtual LRESULT			wndproc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam);
 
 		public:
 			static constexpr int    STATUS_DISABLED = 1 << 0;
@@ -49,11 +49,11 @@ namespace mkaul {
 			Control() :
 				id(0),
 				status(0),
-				color_bg(0),
-				color_control(0),
+				p_col_bg(0),
+				p_col_control(0),
 				round_radius(0.f),
 				round_edge_flag(NULL),
-				tme({ NULL }),
+				tme({ 0 }),
 				p_graphics(nullptr)
 			{}
 
@@ -62,29 +62,21 @@ namespace mkaul {
 			{}
 
 			// コントロールを作成
-			virtual BOOL create(
-				HWND		        hwnd_parent,
-				int                 id_,
-				LPCTSTR				class_name,
-				LONG				window_style,
-				LONG				class_style,
-				HCURSOR             cursor,
-				const RECT& rect,
-				const Color_F&		color_bg_,
-				const Color_F&		color_control_,
-				BYTE                round_edge_flag_,
-				float               round_radius_,
-				int                 status_
+			virtual bool create(
+				HWND					hwnd_parent,
+				int						id_,
+				const std::string&		class_name,
+				LONG					window_style,
+				LONG					class_style,
+				const Rectangle<LONG>&	rect,
+				const Color_F*			p_col_bg_,
+				const Color_F*			p_col_control_,
+				BYTE					round_edge_flag_,
+				float					round_radius_,
+				HCURSOR					cursor
 			);
 			// ステータスを設定
 			void set_status(int status_);
-			// フォントを設定
-			virtual void set_font(LPCSTR font_name);
-			// コントロールの色を変更
-			virtual void change_color(
-				const Color_F& color_bg_,
-				const Color_F& color_control
-			);
 			// ラウンドエッジを描画
 			void draw_round_edge();
 		};

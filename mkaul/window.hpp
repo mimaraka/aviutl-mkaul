@@ -8,6 +8,7 @@
 
 #include <commctrl.h>
 #include "common.hpp"
+#include "rectangle.hpp"
 
 #pragma comment(lib, "comctl32.lib")
 
@@ -24,23 +25,23 @@ namespace mkaul {
 				hwnd(NULL)
 			{}
 
-			virtual BOOL	    create(
-				HWND		hwnd_parent,
-				LPCTSTR     window_name,
-				LPCTSTR		class_name,
-				WNDPROC		wndproc_,
-				LONG		window_style,
-				LONG		class_style,
-				HCURSOR     cursor,
-				const RECT& rect,
-				LPVOID		lp_param
+			virtual bool create(
+				HWND					hwnd_parent,
+				const std::string&		window_name,
+				const std::string&		class_name,
+				WNDPROC					wndproc_,
+				LONG					window_style,
+				LONG					class_style,
+				const Rectangle<LONG>&	rect,
+				HCURSOR					cursor,
+				LPVOID					lp_param
 			);
 
-			bool        		move(const RECT& rect) const;
-			bool				redraw() const;
-			bool				close() const;
-			bool				show() const;
-			bool				hide() const;
+			bool move(const Rectangle<LONG>& rect) const;
+			bool redraw() const;
+			bool close() const;
+			bool show() const;
+			bool hide() const;
 		};
 	}
 }

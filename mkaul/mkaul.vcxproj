@@ -143,10 +143,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="button.hpp" />
     <ClInclude Include="color.hpp" />
     <ClInclude Include="common.hpp" />
     <ClInclude Include="control.hpp" />
-    <ClInclude Include="graphics_common.hpp" />
+    <ClInclude Include="graphics_base.hpp" />
     <ClInclude Include="graphics.hpp" />
     <ClInclude Include="graphics_directx.hpp" />
     <ClInclude Include="graphics_gdiplus.hpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="button.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="control.cpp" />
     <ClCompile Include="graphics.cpp" />
