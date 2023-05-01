@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "graphics_common.hpp"
+#include "graphics_base.hpp"
 #include <d2d1.h>
 #include <dwrite.h>
 #include <wincodec.h>
@@ -174,7 +174,7 @@ namespace mkaul {
 			// リソースからビットマップを作成
 			bool load_bitmap_from_resource(
 				Bitmap* p_bitmap,
-				const std::wstring& resource_name
+				const char* resource
 			) override;
 
 			// ビットマップを描画(アンカーポイント指定)

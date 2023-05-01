@@ -93,6 +93,19 @@ namespace mkaul {
 		};
 
 
+		// ジオメトリ
+		class Geometry {
+		public:
+			virtual void begin_figure() = 0;
+			virtual void end_figure() = 0;
+
+			// 弧を追加
+			virtual void add_arc() = 0;
+			// 線を追加
+			virtual void add_line() = 0;
+		};
+
+
 		// グラフィックス抽象クラス
 		class Graphics {
 		protected:
@@ -209,7 +222,7 @@ namespace mkaul {
 			// リソースからビットマップを作成
 			virtual bool load_bitmap_from_resource(
 				Bitmap* pp_bitmap,
-				const std::wstring& resource_name
+				const char* resource
 			) = 0;
 
 			// ビットマップを描画(アンカーポイント指定)

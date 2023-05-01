@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "graphics_common.hpp"
+#include "graphics_base.hpp"
 #include <gdiplus.h>
 
 #pragma comment(lib, "gdiplus.lib")
@@ -156,7 +156,7 @@ namespace mkaul {
 			// リソースからビットマップを作成
 			bool load_bitmap_from_resource(
 				Bitmap* p_bitmap,
-				const std::wstring& resource_name
+				const char* resource
 			) override;
 
 			// ビットマップを描画(アンカーポイント指定)

@@ -457,11 +457,27 @@ namespace mkaul {
 		// リソースからビットマップを作成
 		bool Graphics_Gdiplus::load_bitmap_from_resource(
 			Bitmap* p_bitmap,
-			const std::wstring& resource_name
+			const char* resource
 		)
 		{
+			wchar_t* wc;
+			size_t size_resource = strlen(resource) + 1;
+			// char -> wchar_t
+			if (HIWORD(resource)) {
+				wc = new wchar_t[size_resource];
+				size_t size;
+				::mbstowcs_s(&size, wc, size_resource, resource, size_resource);
+			}
+			// 上位ワードが0(識別子が16ビット数値の場合)
+			else {
+				wc = (wchar_t*)resource;
+			}
+
 			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
-			p_gdip_bitmap = Gdiplus::Bitmap::FromResource(::GetModuleHandle(NULL), resource_name.c_str());
+			p_gdip_bitmap = Gdiplus::Bitmap::FromResource(::GetModuleHandle(NULL), wc);
+
+			if (HIWORD(resource)) delete[] wc;
+
 			if (p_gdip_bitmap && p_gdip_bitmap->GetWidth() != 0 && p_gdip_bitmap->GetHeight() != 0) {
 				p_bitmap->data = p_gdip_bitmap;
 				return true;

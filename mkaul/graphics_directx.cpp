@@ -657,7 +657,7 @@ namespace mkaul {
 		// リソースからビットマップを作成
 		bool Graphics_Directx::load_bitmap_from_resource(
 			Bitmap* p_bitmap,
-			const std::wstring& resource_name
+			const char* resource
 		)
 		{
 			IWICBitmapDecoder* p_decoder = nullptr;
@@ -674,10 +674,10 @@ namespace mkaul {
 			const HMODULE module_handle = ::GetModuleHandle(NULL);
 			bool result = true;
 
-			img_res_handle = ::FindResourceW(
+			img_res_handle = ::FindResourceA(
 				module_handle,
-				resource_name.c_str(),
-				MAKEINTRESOURCEW(2)
+				resource,
+				MAKEINTRESOURCEA(2)
 			);
 
 			if (!img_res_handle) return false;
