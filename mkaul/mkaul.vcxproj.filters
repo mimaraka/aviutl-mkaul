@@ -80,9 +80,6 @@
     <ClCompile Include="graphics.cpp">
       <Filter>ソース ファイル\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="color.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="window.cpp">
       <Filter>ソース ファイル\window</Filter>
     </ClCompile>

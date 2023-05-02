@@ -4,6 +4,7 @@
 //		developed by mimaraka
 //----------------------------------------------------------------------------------
 
+#include "common.hpp"
 #include "graphics_gdiplus.hpp"
 
 
@@ -26,8 +27,6 @@ namespace mkaul {
 		}
 
 
-		ULONG_PTR Graphics_Gdiplus::gdiplus_token = NULL;
-
 		// 描画環境の用意
 		bool Graphics_Gdiplus::startup()
 		{
@@ -47,14 +46,14 @@ namespace mkaul {
 
 
 		// 描画環境の破棄
-		inline void Graphics_Gdiplus::shutdown()
+		void Graphics_Gdiplus::shutdown()
 		{
 			Gdiplus::GdiplusShutdown(gdiplus_token);
 		}
 
 
 		// Strokeの情報をPenに反映
-		inline void Graphics_Gdiplus::apply_pen_style(Gdiplus::Pen* p_pen, const Color_F& col_f, const Stroke& stroke)
+		void Graphics_Gdiplus::apply_pen_style(Gdiplus::Pen* p_pen, const Color_F& col_f, const Stroke& stroke)
 		{
 			Color_I8 col_i8(col_f);
 			p_pen->SetColor(
@@ -83,16 +82,15 @@ namespace mkaul {
 
 
 		// 初期化(インスタンス毎)
-		inline bool Graphics_Gdiplus::init(HWND hwnd)
+		bool Graphics_Gdiplus::init(HWND hwnd_)
 		{
-			RECT rect_wnd;
-			::GetClientRect(hwnd, &rect_wnd);
-			p_bitmap_buffer = new Gdiplus::Bitmap(rect_wnd.right, rect_wnd.bottom);
+			hwnd = hwnd_;
+			return true;
 		}
 
 
 		// 終了(インスタンス毎)
-		inline void Graphics_Gdiplus::exit()
+		void Graphics_Gdiplus::exit()
 		{
 			if (p_bitmap_buffer) {
 				delete p_bitmap_buffer;
@@ -102,7 +100,7 @@ namespace mkaul {
 
 
 		// 描画開始
-		inline void Graphics_Gdiplus::begin_draw()
+		void Graphics_Gdiplus::begin_draw()
 		{
 			delete p_graphics_buffer;
 			delete p_bitmap_buffer;
@@ -116,7 +114,7 @@ namespace mkaul {
 
 
 		// 描画終了(&バッファ送信)
-		inline bool Graphics_Gdiplus::end_draw()
+		bool Graphics_Gdiplus::end_draw()
 		{
 			if (p_graphics_buffer) {
 				delete p_graphics_buffer;
@@ -150,7 +148,7 @@ namespace mkaul {
 		)
 		{
 			if (p_graphics_buffer) {
-				Gdiplus::Pen pen(0);
+				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, col_f, stroke);
 
 				p_graphics_buffer->DrawLine(
@@ -171,7 +169,7 @@ namespace mkaul {
 		)
 		{
 			if (p_graphics_buffer) {
-				Gdiplus::Pen pen(0);
+				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, col_f, stroke);
 
 				auto gdiplus_points = new Gdiplus::PointF[n_points];
@@ -203,7 +201,7 @@ namespace mkaul {
 		)
 		{
 			if (p_graphics_buffer) {
-				Gdiplus::Pen pen(0);
+				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, color_f, stroke);
 
 				p_graphics_buffer->DrawBezier(
@@ -226,7 +224,7 @@ namespace mkaul {
 		)
 		{
 			if (p_graphics_buffer) {
-				Gdiplus::Pen pen(0);
+				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, color_f, stroke);
 
 				auto gdip_points = new Gdiplus::PointF[n_points];
@@ -257,12 +255,71 @@ namespace mkaul {
 		)
 		{
 			if (p_graphics_buffer) {
-				Gdiplus::Pen pen(0);
+				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, color_f, stroke);
 				
 				// 角丸矩形を描画
 				if (round_radius_x > 0 || round_radius_y > 0) {
+					float angle = 180.f;
+					Gdiplus::GraphicsPath path;
 
+					// 半径のリミット
+					round_radius_x = std::min(round_radius_x, std::abs(rect.right - rect.left) * 0.5f);
+					round_radius_y = std::min(round_radius_y, std::abs(rect.bottom - rect.top) * 0.5f);
+
+					// 左上
+					path.AddArc(
+						Gdiplus::RectF(
+							std::min(rect.left, rect.right),
+							std::min(rect.top, rect.bottom),
+							round_radius_x * 2.f,
+							round_radius_y * 2.f
+						),
+						angle,
+						90.f
+					);
+
+					// 右上
+					angle += 90.f;
+					path.AddArc(
+						Gdiplus::RectF(
+							std::max(rect.left, rect.right) - (round_radius_x * 2.f),
+							std::min(rect.top, rect.bottom),
+							round_radius_x * 2.f,
+							round_radius_y * 2.f
+						),
+						angle,
+						90.f
+					);
+
+					// 右下
+					angle += 90.f;
+					path.AddArc(
+						Gdiplus::RectF(
+							std::max(rect.left, rect.right) - (round_radius_x * 2.f),
+							std::max(rect.top, rect.bottom) - (round_radius_y * 2.f),
+							round_radius_x * 2.f,
+							round_radius_y * 2.f
+						),
+						angle,
+						90.f
+					);
+
+					// 左下
+					angle += 90.f;
+					path.AddArc(
+						Gdiplus::RectF(
+							std::min(rect.left, rect.right),
+							std::max(rect.top, rect.bottom) - (round_radius_y * 2.f),
+							round_radius_x * 2.f,
+							round_radius_y * 2.f
+						),
+						angle,
+						90.f
+					);
+
+					path.CloseAllFigures();
+					p_graphics_buffer->DrawPath(&pen, &path);
 				}
 				// 矩形を描画
 				else {
@@ -301,7 +358,66 @@ namespace mkaul {
 				
 				// 角丸矩形を描画
 				if (round_radius_x > 0 || round_radius_y > 0) {
+					float angle = 180.f;
+					Gdiplus::GraphicsPath path;
 
+					// 半径のリミット
+					round_radius_x = std::min(round_radius_x, std::abs(rect.right - rect.left) * 0.5f);
+					round_radius_y = std::min(round_radius_y, std::abs(rect.bottom - rect.top) * 0.5f);
+
+					// 左上
+					path.AddArc(
+						Gdiplus::RectF(
+							std::min(rect.left, rect.right),
+							std::min(rect.top, rect.bottom),
+							round_radius_x * 2.f,
+							round_radius_y * 2.f
+						),
+						angle,
+						90.f
+					);
+
+					// 右上
+					angle += 90.f;
+					path.AddArc(
+						Gdiplus::RectF(
+							std::max(rect.left, rect.right) - (round_radius_x * 2.f),
+							std::min(rect.top, rect.bottom),
+							round_radius_x * 2.f,
+							round_radius_y * 2.f
+						),
+						angle,
+						90.f
+					);
+
+					// 右下
+					angle += 90.f;
+					path.AddArc(
+						Gdiplus::RectF(
+							std::max(rect.left, rect.right) - (round_radius_x * 2.f),
+							std::max(rect.top, rect.bottom) - (round_radius_y * 2.f),
+							round_radius_x * 2.f,
+							round_radius_y * 2.f
+						),
+						angle,
+						90.f
+					);
+
+					// 左下
+					angle += 90.f;
+					path.AddArc(
+						Gdiplus::RectF(
+							std::min(rect.left, rect.right),
+							std::max(rect.top, rect.bottom) - (round_radius_y * 2.f),
+							round_radius_x * 2.f,
+							round_radius_y * 2.f
+						),
+						angle,
+						90.f
+					);
+
+					path.CloseAllFigures();
+					p_graphics_buffer->FillPath(&brush, &path);
 				}
 				// 矩形を描画
 				else {
@@ -329,7 +445,7 @@ namespace mkaul {
 		)
 		{
 			if (p_graphics_buffer) {
-				Gdiplus::Pen pen(0);
+				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, color_f, stroke);
 
 				Gdiplus::RectF rect_f(
@@ -352,7 +468,7 @@ namespace mkaul {
 		)
 		{
 			if (p_graphics_buffer) {
-				Gdiplus::Pen pen(0);
+				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, color_f, stroke);
 
 				Gdiplus::RectF rect_f(

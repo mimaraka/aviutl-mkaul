@@ -27,7 +27,7 @@ namespace mkaul {
 		// グラフィックス
 		class Graphics_Gdiplus : public Graphics {
 		private:
-			static ULONG_PTR gdiplus_token;
+			inline static ULONG_PTR gdiplus_token = NULL;
 			Gdiplus::Graphics* p_graphics_buffer;
 			Gdiplus::Bitmap* p_bitmap_buffer;
 

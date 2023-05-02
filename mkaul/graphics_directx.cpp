@@ -158,7 +158,7 @@ namespace mkaul {
 
 
 		// I—¹
-		inline void Graphics_Directx::exit()
+		void Graphics_Directx::exit()
 		{
 			release(&p_brush);
 			release(&p_render_target);
@@ -166,7 +166,7 @@ namespace mkaul {
 
 
 		// •`‰æŠJŽn
-		inline void Graphics_Directx::begin_draw()
+		void Graphics_Directx::begin_draw()
 		{
 			auto hdc = ::BeginPaint(hwnd, &ps);
 			p_render_target->BeginDraw();
@@ -174,7 +174,7 @@ namespace mkaul {
 
 
 		// •`‰æI—¹
-		inline bool Graphics_Directx::end_draw()
+		bool Graphics_Directx::end_draw()
 		{
 			HRESULT hresult = p_render_target->EndDraw();
 			::EndPaint(hwnd, &ps);

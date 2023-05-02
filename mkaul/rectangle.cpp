@@ -10,13 +10,13 @@
 
 namespace mkaul {
 	// Initialize (1)
-	inline void Window_Rectangle::set(const RECT& rc)
+	void Window_Rectangle::set(const RECT& rc)
 	{
 		rect = rc;
 	}
 
 	// Initialize (2)
-	inline void Window_Rectangle::set(int left, int top, int right, int bottom)
+	void Window_Rectangle::set(int left, int top, int right, int bottom)
 	{
 		rect = { left, top, right, bottom };
 	}

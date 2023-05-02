@@ -74,7 +74,7 @@ namespace mkaul {
 
 
 		// ステータスを設定
-		inline void Control::set_status(int status_)
+		void Control::set_status(int status_)
 		{
 			status = status_;
 			redraw();
@@ -82,7 +82,7 @@ namespace mkaul {
 
 
 		// ラウンドエッジを描画
-		inline void Control::draw_round_edge()
+		void Control::draw_round_edge()
 		{
 
 		}
