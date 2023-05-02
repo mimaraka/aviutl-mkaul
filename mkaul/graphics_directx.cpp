@@ -202,8 +202,8 @@ namespace mkaul {
 		void Graphics_Directx::draw_line(
 			const Point<float>& pt_from,
 			const Point<float>& pt_to,
-			const Color_F& color_f = 0,
-			const Stroke& stroke = Stroke()
+			const Color_F& color_f,
+			const Stroke& stroke
 		)
 		{
 			ID2D1StrokeStyle* stroke_style = nullptr;
@@ -229,8 +229,8 @@ namespace mkaul {
 		void Graphics_Directx::draw_lines(
 			const Point<float>* points,
 			size_t n_points,
-			const Color_F& color_f = 0,
-			const Stroke& stroke = Stroke()
+			const Color_F& color_f,
+			const Stroke& stroke 
 		)
 		{
 			ID2D1GeometrySink* sink = nullptr;
@@ -367,10 +367,10 @@ namespace mkaul {
 		// ãÈå`Çï`âÊ(ê¸)
 		void Graphics_Directx::draw_rectangle(
 			const Rectangle<float>& rect,
-			float round_radius_x = 0.f,
-			float round_radius_y = 0.f,
-			const Color_F& color_f = 0,
-			const Stroke& stroke = Stroke()
+			float round_radius_x,
+			float round_radius_y,
+			const Color_F& color_f,
+			const Stroke& stroke
 		)
 		{
 			if (p_render_target) {
@@ -418,9 +418,9 @@ namespace mkaul {
 		// ãÈå`Çï`âÊ(ìhÇË)
 		void Graphics_Directx::fill_rectangle(
 			const Rectangle<float>& rect,
-			float round_radius_x = 0.f,
-			float round_radius_y = 0.f,
-			const Color_F& color_f = 0
+			float round_radius_x,
+			float round_radius_y,
+			const Color_F& color_f
 		)
 		{
 			if (p_render_target) {
@@ -462,8 +462,8 @@ namespace mkaul {
 			const Point<float>& pt,
 			float radius_x,
 			float radius_y,
-			const Color_F& color_f = 0,
-			const Stroke& stroke = Stroke()
+			const Color_F& color_f,
+			const Stroke& stroke
 		)
 		{
 			if (p_render_target) {
@@ -491,8 +491,8 @@ namespace mkaul {
 		// ë»â~Çï`âÊ(ê¸)(ãÈå`éwíË)
 		void Graphics_Directx::draw_ellipse(
 			const Rectangle<float>& rect,
-			const Color_F& color_f = 0,
-			const Stroke& stroke = Stroke()
+			const Color_F& color_f,
+			const Stroke& stroke
 		)
 		{
 			if (p_render_target) {
@@ -525,7 +525,7 @@ namespace mkaul {
 			const Point<float>& pt,
 			float radius_x,
 			float radius_y,
-			const Color_F& color_f = 0
+			const Color_F& color_f
 		)
 		{
 			if (p_render_target) {
@@ -571,7 +571,7 @@ namespace mkaul {
 		void Graphics_Directx::initialize_bitmap(
 			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
-			Color_F color_f = 0
+			Color_F color_f
 		)
 		{
 			p_render_target->CreateBitmap(
@@ -781,7 +781,7 @@ namespace mkaul {
 			const Bitmap& bitmap,
 			const Point<float>& point,
 			Anchor_Position anchor_pos,
-			float opacity = 1.f
+			float opacity
 		)
 		{
 			auto p_d2d1_bitmap = reinterpret_cast<ID2D1Bitmap*>(bitmap.data);

@@ -12,9 +12,7 @@
 
 namespace mkaul {
 	namespace window {
-		//---------------------------------------------------------------------
-		//		ボタン
-		//---------------------------------------------------------------------
+		// ボタン
 		class Button : public Control {
 		public:
 			Button() :
@@ -31,18 +29,24 @@ namespace mkaul {
 				const Color_F* p_col_bg_,
 				const Color_F* p_col_control_,
 				const Rectangle<LONG>& rect,
-				const std::string& tooltip_label_,
-				int round_edge_flag_,
-				float round_radius_
+				const std::string& tooltip_label_ = NULL,
+				int round_edge_flag_ = ROUND_EDGE_ALL,
+				float round_radius_ = 0.f
 			);
 
 		protected:
+			static constexpr int HOVER_HIGHLIGHT = 10;
+
 			HWND                    hwnd_tooltip;
 			TOOLINFO	    		tool_info;
 			std::string				tooltip_label;
 			bool			    	hovered, clicked;
+
+			virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) override;
 		};
 
+
+		// ボタン(ラベル)
 		class Button_Label : public Button {
 		public:
 
@@ -58,16 +62,20 @@ namespace mkaul {
 				const Color_F* p_col_control_,
 				const Color_F* p_col_label,
 				const Rectangle<LONG>& rect,
-				const std::string& tooltip_label_,
-				int round_edge_flag_,
-				float round_radius_
+				const std::string& tooltip_label_ = NULL,
+				int round_edge_flag_ = ROUND_EDGE_ALL,
+				float round_radius_ = 0.f
 			);
 
 		protected:
 			std::string				label;
 			Color_F*				p_col_label;
+
+			virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) override;
 		};
 
+
+		// ボタン(アイコン)
 		class Button_Icon : public Button {
 		public:
 			enum class Source_Type {
@@ -90,9 +98,9 @@ namespace mkaul {
 				const Color_F* p_col_bg_,
 				const Color_F* p_col_control_,
 				const Rectangle<LONG>& rect,
-				const std::string& tooltip_label_,
-				BYTE round_edge_flag_,
-				float round_radius_
+				const std::string& tooltip_label_ = NULL,
+				BYTE round_edge_flag_ = ROUND_EDGE_ALL,
+				float round_radius_ = 0.f
 			);
 
 		protected:
@@ -100,28 +108,8 @@ namespace mkaul {
 			Source_Type source_type;
 			std::string icon_source;
 			uint16_t icon_resource_num;
-		};
 
-		class Buttonaaa : public Control {
-		public:
-
-			void			    	set_status(int flags);
-			void                    change_content(
-				BYTE content_type_,
-				LPCTSTR label_,
-				const std::string& icon_source,
-				int source_type
-			);
-
-		protected:
-
-			// コンテンツを描画
-			void			    	draw_content(
-				COLORREF bg,
-				RECT* rect_content,
-				LPCTSTR content,
-				bool change_color
-			);
+			virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) override;
 		};
 	}
 }

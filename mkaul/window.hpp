@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <windows.h>
 #include <commctrl.h>
 #include "common.hpp"
 #include "rectangle.hpp"
@@ -33,8 +34,8 @@ namespace mkaul {
 				LONG					window_style,
 				LONG					class_style,
 				const Rectangle<LONG>&	rect,
-				HCURSOR					cursor,
-				LPVOID					lp_param
+				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW),
+				LPVOID					lp_param = nullptr
 			);
 
 			bool move(const Rectangle<LONG>& rect) const;

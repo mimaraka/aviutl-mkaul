@@ -250,10 +250,10 @@ namespace mkaul {
 		// 矩形を描画(線)
 		void Graphics_Gdiplus::draw_rectangle(
 			const Rectangle<float>& rect,
-			float round_radius_x = 0,
-			float round_radius_y = 0,
-			const Color_F& color_f = 0,
-			const Stroke& stroke = Stroke()
+			float round_radius_x,
+			float round_radius_y,
+			const Color_F& color_f,
+			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
@@ -283,9 +283,9 @@ namespace mkaul {
 		// 矩形を描画(塗り)
 		void Graphics_Gdiplus::fill_rectangle(
 			const Rectangle<float>& rect,
-			float round_radius_x = 0,
-			float round_radius_y = 0,
-			const Color_F& col_f = 0
+			float round_radius_x,
+			float round_radius_y,
+			const Color_F& col_f
 		)
 		{
 			if (p_graphics_buffer) {
@@ -324,8 +324,8 @@ namespace mkaul {
 			const Point<float>& point,
 			float radius_x,
 			float radius_y,
-			const Color_F& color_f = 0,
-			const Stroke& stroke = Stroke()
+			const Color_F& color_f,
+			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
@@ -347,8 +347,8 @@ namespace mkaul {
 		// 楕円を描画(線)(矩形指定)
 		void Graphics_Gdiplus::draw_ellipse(
 			const Rectangle<float>& rectangle,
-			const Color_F& color_f = 0,
-			const Stroke& stroke = Stroke()
+			const Color_F& color_f,
+			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
@@ -589,6 +589,7 @@ namespace mkaul {
 				rect_f
 			);
 		}
+
 
 		// ビットマップを描画(矩形指定)
 		void Graphics_Gdiplus::draw_bitmap(

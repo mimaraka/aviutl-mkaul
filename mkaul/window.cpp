@@ -19,8 +19,8 @@ namespace mkaul {
 			LONG					window_style,
 			LONG					class_style,
 			const Rectangle<LONG>&	rect,
-			HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW),
-			LPVOID					lp_param = nullptr
+			HCURSOR					cursor,
+			LPVOID					lp_param
 		)
 		{
 			HINSTANCE hinstance = (HINSTANCE)::GetModuleHandle(NULL);

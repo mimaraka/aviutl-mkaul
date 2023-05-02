@@ -63,16 +63,16 @@ namespace mkaul {
 			void draw_line(
 				const Point<float>& point_from,
 				const Point<float>& point_to,
-				const Color_F& color_f,
-				const Stroke& stroke
+				const Color_F& color_f = 0,
+				const Stroke& stroke = Stroke()
 			) override;
 
 			// 線を描画(複数)
 			void draw_lines(
 				const Point<float>* points,
 				size_t n_points,
-				const Color_F& color_f,
-				const Stroke& stroke
+				const Color_F& color_f = 0,
+				const Stroke& stroke = Stroke()
 			) override;
 
 			// ベジェ曲線を描画
@@ -81,33 +81,33 @@ namespace mkaul {
 				const Point<float>& point_1,
 				const Point<float>& point_2,
 				const Point<float>& point_3,
-				const Color_F& color_f,
-				const Stroke& stroke
+				const Color_F& color_f = 0,
+				const Stroke& stroke = Stroke()
 			) override;
 
 			// ベジェ曲線を描画(複数)
 			void draw_beziers(
 				const Point<float>* points,
 				size_t n_points,
-				const Color_F& color_f,
-				const Stroke& stroke
+				const Color_F& color_f = 0,
+				const Stroke& stroke = Stroke()
 			) override;
 
 			// 矩形を描画(線)
 			void draw_rectangle(
 				const Rectangle<float>& rectangle,
-				float round_radius_x,
-				float round_radius_y,
-				const Color_F& color_f,
-				const Stroke& stroke
+				float round_radius_x = 0.f,
+				float round_radius_y = 0.f,
+				const Color_F& color_f = 0,
+				const Stroke& stroke = Stroke()
 			) override;
 
 			// 矩形を描画(塗り)
 			void fill_rectangle(
 				const Rectangle<float>& rectangle,
-				float round_radius_x,
-				float round_radius_y,
-				const Color_F& color_f
+				float round_radius_x = 0.f,
+				float round_radius_y = 0.f,
+				const Color_F& color_f = 0
 			) override;
 
 			// 楕円を描画(線)(中心点指定)
@@ -115,15 +115,15 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const Color_F& color_f,
-				const Stroke& stroke
+				const Color_F& color_f = 0,
+				const Stroke& stroke = Stroke()
 			) override;
 
 			// 楕円を描画(線)(矩形指定)
 			void draw_ellipse(
 				const Rectangle<float>& rectangle,
-				const Color_F& color_i8,
-				const Stroke& stroke
+				const Color_F& color_f = 0,
+				const Stroke& stroke = Stroke()
 			) override;
 
 			// 楕円を描画(塗り)(中心点指定)
@@ -131,20 +131,20 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const Color_F& color_f
+				const Color_F& color_f = 0
 			) override;
 
 			// 楕円を描画(塗り)(矩形指定)
 			void fill_ellipse(
 				const Rectangle<float>& rectangle,
-				const Color_F& color_f
+				const Color_F& color_f = 0
 			) override;
 
 			// 空のビットマップを作成
 			void initialize_bitmap(
 				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
-				Color_F color_f
+				Color_F color_f = 0
 			) override;
 
 			// ファイルからビットマップを作成
@@ -164,14 +164,14 @@ namespace mkaul {
 				const Bitmap& bitmap,
 				const Point<float>& point,
 				Anchor_Position anchor_pos,
-				float opacity
+				float opacity = 1.f
 			) override;
 
 			// ビットマップを描画(矩形指定)
 			void draw_bitmap(
 				const Bitmap& bitmap,
 				const Rectangle<float>& rect,
-				float opacity
+				float opacity = 1.f
 			) override;
 		};
 	}

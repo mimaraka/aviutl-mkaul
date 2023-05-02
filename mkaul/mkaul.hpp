@@ -11,3 +11,5 @@
 #include "point.hpp"
 #include "utils.hpp"
 #include "graphics.hpp"
+#include "window.hpp"
+#include "button.hpp"

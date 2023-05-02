@@ -14,7 +14,7 @@
 namespace mkaul {
 	namespace window {
 		//---------------------------------------------------------------------
-		//		コントロール
+		//		コントロール(抽象クラス)
 		//---------------------------------------------------------------------
 		class Control : public Window {
 		protected:
@@ -27,7 +27,7 @@ namespace mkaul {
 			graphics::Graphics*		p_graphics;
 
 			static LRESULT CALLBACK	wndproc_static(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam);
-			virtual LRESULT			wndproc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam);
+			virtual LRESULT			wndproc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam) = 0;
 
 		public:
 			static constexpr int    STATUS_DISABLED = 1 << 0;
@@ -71,9 +71,9 @@ namespace mkaul {
 				const Rectangle<LONG>&	rect,
 				const Color_F*			p_col_bg_,
 				const Color_F*			p_col_control_,
-				BYTE					round_edge_flag_,
-				float					round_radius_,
-				HCURSOR					cursor
+				BYTE					round_edge_flag_ = ROUND_EDGE_ALL,
+				float					round_radius_ = 0.f,
+				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW)
 			);
 			// ステータスを設定
 			void set_status(int status_);

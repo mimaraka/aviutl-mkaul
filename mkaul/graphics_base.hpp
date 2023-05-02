@@ -80,6 +80,7 @@ namespace mkaul {
 		};
 
 
+		// アンカーポイントの位置
 		enum class Anchor_Position {
 			Center,
 			Left,
@@ -93,8 +94,8 @@ namespace mkaul {
 		};
 
 
-		// ジオメトリ
-		class Geometry {
+		// パス
+		class Path {
 		public:
 			virtual void begin_figure() = 0;
 			virtual void end_figure() = 0;
@@ -103,6 +104,8 @@ namespace mkaul {
 			virtual void add_arc() = 0;
 			// 線を追加
 			virtual void add_line() = 0;
+			// ベジェを追加
+			virtual void add_bezier() = 0;
 		};
 
 

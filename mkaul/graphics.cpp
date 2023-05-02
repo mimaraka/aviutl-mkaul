@@ -11,7 +11,7 @@
 namespace mkaul {
 	namespace graphics {
 		// •`‰æŠÂ‹«‚Ì—pˆÓ
-		bool startup(Drawing_Method drawing_method)
+		bool Manager::startup(Drawing_Method drawing_method)
 		{
 			bool result = false;
 
@@ -35,7 +35,7 @@ namespace mkaul {
 
 
 		// •`‰æŠÂ‹«‚Ì”jŠü
-		bool shutdown()
+		bool Manager::shutdown()
 		{
 			switch (g_drawing_method) {
 			case Drawing_Method::Gdiplus:
@@ -54,7 +54,7 @@ namespace mkaul {
 		}
 
 
-		bool create_graphics(Graphics** pp_graphics)
+		bool Manager::create_graphics(Graphics** pp_graphics)
 		{
 			switch (g_drawing_method) {
 			case Drawing_Method::Gdiplus:
@@ -73,7 +73,7 @@ namespace mkaul {
 		}
 
 
-		bool create_bitmap(Bitmap** pp_bitmap)
+		bool Manager::create_bitmap(Bitmap** pp_bitmap)
 		{
 			switch (g_drawing_method) {
 			case Drawing_Method::Gdiplus:

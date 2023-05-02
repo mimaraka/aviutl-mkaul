@@ -19,9 +19,9 @@ namespace mkaul {
 			const Color_F* p_col_bg_,
 			const Color_F* p_col_control_,
 			const Rectangle<LONG>& rect,
-			const std::string& tooltip_label_ = NULL,
-			int round_edge_flag_ = ROUND_EDGE_ALL,
-			float round_radius_ = 0.f
+			const std::string& tooltip_label_,
+			int round_edge_flag_,
+			float round_radius_
 		)
 		{
 			tooltip_label = tooltip_label_;
@@ -51,9 +51,9 @@ namespace mkaul {
 			const Color_F* p_col_control_,
 			const Color_F* p_col_label_,
 			const Rectangle<LONG>& rect,
-			const std::string& tooltip_label_ = NULL,
-			int round_edge_flag_ = ROUND_EDGE_ALL,
-			float round_radius_ = 0.f
+			const std::string& tooltip_label_,
+			int round_edge_flag_,
+			float round_radius_
 		)
 		{
 			label = label_;
@@ -80,9 +80,9 @@ namespace mkaul {
 			const Color_F* p_col_bg_,
 			const Color_F* p_col_control_,
 			const Rectangle<LONG>& rect,
-			const std::string& tooltip_label_ = NULL,
-			BYTE round_edge_flag_ = ROUND_EDGE_ALL,
-			float round_radius_ = 0.f
+			const std::string& tooltip_label_,
+			BYTE round_edge_flag_,
+			float round_radius_
 		)
 		{
 			source_type = source_type_;
@@ -93,7 +93,7 @@ namespace mkaul {
 
 			case Source_Type::Resource:
 				if (!HIWORD(icon_source_)) {
-					icon_resource_num = (uint16_t)icon_source_;
+					icon_resource_num = reinterpret_cast<uint16_t>(icon_source_);
 				}
 				else {
 					icon_source = icon_source_;
@@ -114,6 +114,13 @@ namespace mkaul {
 				round_edge_flag_,
 				round_radius_
 			);
+		}
+
+
+		// ウィンドウプロシージャ
+		LRESULT Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+		{
+			return 0;
 		}
 	}
 }

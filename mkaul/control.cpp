@@ -20,9 +20,9 @@ namespace mkaul {
 			const Rectangle<LONG>&	rect,
 			const Color_F*			p_col_bg_,
 			const Color_F*			p_col_control_,
-			BYTE					round_edge_flag_ = ROUND_EDGE_ALL,
-			float					round_radius_ = 0.f,
-			HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW)
+			BYTE					round_edge_flag_,
+			float					round_radius_,
+			HCURSOR					cursor
 		)
 		{
 			id = id_;
@@ -70,18 +70,6 @@ namespace mkaul {
 			else
 				// メンバ関数のウィンドウプロシージャを参照
 				return app->wndproc(hwnd_, msg, wparam, lparam);
-		}
-
-
-		// ウィンドウプロシージャ
-		LRESULT CALLBACK Control::wndproc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam)
-		{
-			switch (msg) {
-			case WM_CREATE:
-
-			default:
-				return ::DefWindowProc(hwnd_, msg, wparam, lparam);
-			}
 		}
 
 
