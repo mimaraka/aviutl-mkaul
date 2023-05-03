@@ -12,7 +12,7 @@ AviUtlプラグイン作成用の自作ライブラリです。(開発途中)
 ## Graphicsの使用方法
 1. `Manager::startup()`関数で描画方式を指定して描画環境を用意します。
 ```cpp
-mkaul::graphics::Manager::startup(mkaul::graphics::Manager::Drawing_Method::Directx);
+mkaul::graphics::Manager::startup(mkaul::graphics::Manager::Api::Directx);
 ```
 
 2. `Manager::create_graphics()`関数でGraphicsオブジェクトを作成し、`Graphics::init()`メソッドで初期化します。
