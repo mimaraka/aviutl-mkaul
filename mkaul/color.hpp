@@ -102,7 +102,7 @@ namespace mkaul {
 			this->a = 1.f;
 		}
 
-		Color_F(COLORREF cr);
+		Color_F(COLORREF cr = (COLORREF)0l);
 		Color_F(const Color_I8& col_i8);
 
 		void clamp();
@@ -123,7 +123,7 @@ namespace mkaul {
 			this->a = MAX;
 		}
 
-		Color_I8(COLORREF cr);
+		Color_I8(COLORREF cr = (COLORREF)0l);
 		Color_I8(const Color_F& col_f);
 
 		void clamp();
@@ -135,7 +135,7 @@ namespace mkaul {
 
 
 	// コンストラクタ(1)
-	inline Color_F::Color_F(COLORREF cr = (COLORREF)0l)
+	inline Color_F::Color_F(COLORREF cr)
 	{
 		r = GetRValue(cr) / (float)MAX;
 		g = GetGValue(cr) / (float)MAX;
@@ -202,7 +202,7 @@ namespace mkaul {
 
 
 	// コンストラクタ(1)
-	inline Color_I8::Color_I8(COLORREF cr = (COLORREF)0l)
+	inline Color_I8::Color_I8(COLORREF cr)
 	{
 		r = GetRValue(cr);
 		g = GetGValue(cr);

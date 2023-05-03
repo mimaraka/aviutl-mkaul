@@ -604,13 +604,13 @@ namespace mkaul {
 
 		// ビットマップを描画(アンカーポイント指定)
 		void Graphics_Gdiplus::draw_bitmap(
-			const Bitmap& bitmap,
+			const Bitmap* bitmap,
 			const Point<float>& point,
 			Anchor_Position anchor_pos,
 			float opacity
 		)
 		{
-			auto p_gdip_bitmap = reinterpret_cast<Gdiplus::Bitmap*>(bitmap.data);
+			auto p_gdip_bitmap = reinterpret_cast<Gdiplus::Bitmap*>(bitmap->data);
 			Gdiplus::RectF rect_f;
 			int width = p_gdip_bitmap->GetWidth();
 			int height = p_gdip_bitmap->GetHeight();
@@ -622,8 +622,8 @@ namespace mkaul {
 				rect_f = Gdiplus::RectF(
 					point.x - width * 0.5f,
 					point.y - height * 0.5f,
-					point.x + width * 0.5f,
-					point.y + height * 0.5f
+					(Gdiplus::REAL)width,
+					(Gdiplus::REAL)height
 				);
 				break;
 
@@ -631,8 +631,8 @@ namespace mkaul {
 				rect_f = Gdiplus::RectF(
 					point.x,
 					point.y - height * 0.5f,
-					point.x + width,
-					point.y + height * 0.5f
+					(Gdiplus::REAL)width,
+					(Gdiplus::REAL)height
 				);
 				break;
 
@@ -640,8 +640,8 @@ namespace mkaul {
 				rect_f = Gdiplus::RectF(
 					point.x - width * 0.5f,
 					point.y,
-					point.x + width * 0.5f,
-					point.y + height
+					(Gdiplus::REAL)width,
+					(Gdiplus::REAL)height
 				);
 				break;
 
@@ -649,8 +649,8 @@ namespace mkaul {
 				rect_f = Gdiplus::RectF(
 					point.x - width,
 					point.y - height * 0.5f,
-					point.x,
-					point.y + height * 0.5f
+					(Gdiplus::REAL)width,
+					(Gdiplus::REAL)height
 				);
 				break;
 
@@ -658,8 +658,8 @@ namespace mkaul {
 				rect_f = Gdiplus::RectF(
 					point.x - width * 0.5f,
 					point.y - height,
-					point.x + width * 0.5f,
-					point.y
+					(Gdiplus::REAL)width,
+					(Gdiplus::REAL)height
 				);
 				break;
 
@@ -667,8 +667,8 @@ namespace mkaul {
 				rect_f = Gdiplus::RectF(
 					point.x,
 					point.y,
-					point.x + width,
-					point.y + height
+					(Gdiplus::REAL)width,
+					(Gdiplus::REAL)height
 				);
 				break;
 
@@ -676,8 +676,8 @@ namespace mkaul {
 				rect_f = Gdiplus::RectF(
 					point.x - width,
 					point.y,
-					point.x,
-					point.y + height
+					(Gdiplus::REAL)width,
+					(Gdiplus::REAL)height
 				);
 				break;
 
@@ -685,8 +685,8 @@ namespace mkaul {
 				rect_f = Gdiplus::RectF(
 					point.x,
 					point.y - height,
-					point.x + width,
-					point.y
+					(Gdiplus::REAL)width,
+					(Gdiplus::REAL)height
 				);
 				break;
 
@@ -694,8 +694,8 @@ namespace mkaul {
 				rect_f = Gdiplus::RectF(
 					point.x - width,
 					point.y - height,
-					point.x,
-					point.y
+					(Gdiplus::REAL)width,
+					(Gdiplus::REAL)height
 				);
 				break;
 			}
@@ -709,13 +709,13 @@ namespace mkaul {
 
 		// ビットマップを描画(矩形指定)
 		void Graphics_Gdiplus::draw_bitmap(
-			const Bitmap& bitmap,
+			const Bitmap* bitmap,
 			const Rectangle<float>& rect,
 			float opacity
 		)
 		{
 			p_graphics_buffer->DrawImage(
-				reinterpret_cast<Gdiplus::Bitmap*>(bitmap.data),
+				reinterpret_cast<Gdiplus::Bitmap*>(bitmap->data),
 				Gdiplus::RectF(
 					rect.left,
 					rect.top,

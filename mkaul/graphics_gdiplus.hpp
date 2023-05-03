@@ -16,12 +16,45 @@
 namespace mkaul {
 	namespace graphics {
 		// ビットマップ
-		class Bitmap_Gdiplus : public Bitmap {
+		struct Bitmap_Gdiplus : public Bitmap {
 		public:
+			using Bitmap::Bitmap;
+
 			void release() override;
 
 			size_t get_width() override;
 			size_t get_height() override;
+		};
+
+		struct Geometry_Gdiplus : public Geometry {
+		public:
+			using Geometry::Geometry;
+
+			bool open() override;
+			void close() override;
+			void release() override;
+
+			void begin_figure() override;
+			void end_figure() override;
+
+			// 弧を追加
+			void add_arc(
+				const Rectangle<float>& rect,
+				float angle_from,
+				float angle_to
+			) override;
+			// 線を追加
+			void add_line(
+				const Point<float>& point_0,
+				const Point<float>& point_1
+			) override;
+			// ベジェを追加
+			void add_bezier(
+				const Point<float>& point_0,
+				const Point<float>& point_1,
+				const Point<float>& point_2,
+				const Point<float>& point_3
+			) override;
 		};
 
 		// グラフィックス
@@ -161,7 +194,7 @@ namespace mkaul {
 
 			// ビットマップを描画(アンカーポイント指定)
 			void draw_bitmap(
-				const Bitmap& bitmap,
+				const Bitmap* bitmap,
 				const Point<float>& point,
 				Anchor_Position anchor_pos,
 				float opacity = 1.f
@@ -169,7 +202,7 @@ namespace mkaul {
 
 			// ビットマップを描画(矩形指定)
 			void draw_bitmap(
-				const Bitmap& bitmap,
+				const Bitmap* bitmap,
 				const Rectangle<float>& rect,
 				float opacity = 1.f
 			) override;

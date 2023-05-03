@@ -21,12 +21,47 @@
 namespace mkaul {
 	namespace graphics {
 		// ビットマップ
-		class Bitmap_Directx : public Bitmap {
+		struct Bitmap_Directx : public Bitmap {
 		public:
+			using Bitmap::Bitmap;
+
 			void release() override;
 
 			size_t get_width() override;
 			size_t get_height() override;
+		};
+
+
+		// ジオメトリ
+		struct Geometry_Directx : public Geometry {
+		public:
+			using Geometry::Geometry;
+
+			bool open() override;
+			void close() override;
+			void release() override;
+
+			void begin_figure() override;
+			void end_figure() override;
+
+			// 弧を追加
+			void add_arc(
+				const Rectangle<float>& rect,
+				float angle_from,
+				float angle_to
+			) override;
+			// 線を追加
+			void add_line(
+				const Point<float>& point_0,
+				const Point<float>& point_1
+			) override;
+			// ベジェを追加
+			void add_bezier(
+				const Point<float>& point_0,
+				const Point<float>& point_1,
+				const Point<float>& point_2,
+				const Point<float>& point_3
+			) override;
 		};
 
 
@@ -68,10 +103,10 @@ namespace mkaul {
 			);
 
 			// ファクトリー・ターゲット取得
-			static auto get_factory();
-			static auto get_write_factory();
-			static auto get_imaging_factory();
-			auto get_render_target();
+			static auto get_factory() { return p_factory; }
+			static auto get_write_factory() { return p_write_factory; }
+			static auto get_imaging_factory() { return p_imaging_factory; }
+			auto get_render_target() { return p_render_target; }
 
 			bool init(HWND hwnd_) override;
 			void exit() override;
@@ -179,7 +214,7 @@ namespace mkaul {
 
 			// ビットマップを描画(アンカーポイント指定)
 			void draw_bitmap(
-				const Bitmap& bitmap,
+				const Bitmap* bitmap,
 				const Point<float>& point,
 				Anchor_Position anchor_pos,
 				float opacity = 1.f
@@ -187,7 +222,7 @@ namespace mkaul {
 
 			// ビットマップを描画(矩形指定)
 			void draw_bitmap(
-				const Bitmap& bitmap,
+				const Bitmap* bitmap,
 				const Rectangle<float>& rect,
 				float opacity = 1.f
 			) override;

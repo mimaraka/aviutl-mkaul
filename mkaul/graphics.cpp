@@ -11,16 +11,16 @@
 namespace mkaul {
 	namespace graphics {
 		// •`‰æŠÂ‹«‚Ì—pˆÓ
-		bool Manager::startup(Drawing_Method drawing_method)
+		bool Manager::startup(Api api_)
 		{
 			bool result = false;
 
-			switch (drawing_method) {
-			case Drawing_Method::Gdiplus:
+			switch (api_) {
+			case Api::Gdiplus:
 				result = Graphics_Gdiplus::startup();
 				break;
 
-			case Drawing_Method::Directx:
+			case Api::Directx:
 				result = Graphics_Directx::startup();
 				break;
 
@@ -28,7 +28,7 @@ namespace mkaul {
 				return false;
 			}
 
-			g_drawing_method = drawing_method;
+			api = api_;
 
 			return result;
 		}
@@ -37,12 +37,12 @@ namespace mkaul {
 		// •`‰æŠÂ‹«‚Ì”jŠü
 		bool Manager::shutdown()
 		{
-			switch (g_drawing_method) {
-			case Drawing_Method::Gdiplus:
+			switch (api) {
+			case Api::Gdiplus:
 				Graphics_Gdiplus::shutdown();
 				break;
 
-			case Drawing_Method::Directx:
+			case Api::Directx:
 				Graphics_Directx::shutdown();
 				break;
 
@@ -56,12 +56,12 @@ namespace mkaul {
 
 		bool Manager::create_graphics(Graphics** pp_graphics)
 		{
-			switch (g_drawing_method) {
-			case Drawing_Method::Gdiplus:
+			switch (api) {
+			case Api::Gdiplus:
 				*pp_graphics = new Graphics_Gdiplus;
 				break;
 
-			case Drawing_Method::Directx:
+			case Api::Directx:
 				*pp_graphics = new Graphics_Directx;
 				break;
 
@@ -75,13 +75,32 @@ namespace mkaul {
 
 		bool Manager::create_bitmap(Bitmap** pp_bitmap)
 		{
-			switch (g_drawing_method) {
-			case Drawing_Method::Gdiplus:
+			switch (api) {
+			case Api::Gdiplus:
 				*pp_bitmap = new Bitmap_Gdiplus;
 				break;
 
-			case Drawing_Method::Directx:
+			case Api::Directx:
 				*pp_bitmap = new Bitmap_Directx;
+				break;
+
+			default:
+				return false;
+			}
+
+			return true;
+		}
+
+
+		bool Manager::create_geometry(Geometry** pp_geometry)
+		{
+			switch (api) {
+			case Api::Gdiplus:
+				*pp_geometry = new Geometry_Gdiplus;
+				break;
+
+			case Api::Directx:
+				*pp_geometry = new Geometry_Directx;
 				break;
 
 			default:

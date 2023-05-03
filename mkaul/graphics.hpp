@@ -16,16 +16,18 @@ namespace mkaul {
 		class Manager {
 		public:
 			// 描画方式
-			enum class Drawing_Method {
+			enum class Api {
 				Null,
 				Gdiplus,
 				Directx
 			};
 
 			// 描画環境の用意
-			static bool startup(Drawing_Method drawing_method = Drawing_Method::Gdiplus);
+			static bool startup(Api api_ = Api::Gdiplus);
 			// 描画環境の破棄
 			static bool shutdown();
+
+			static Api get_api() { return api; }
 
 			// グラフィックス作成
 			static bool create_graphics(Graphics** pp_graphics);
@@ -33,8 +35,11 @@ namespace mkaul {
 			// ビットマップ作成
 			static bool create_bitmap(Bitmap** pp_bitmap);
 
+			// ジオメトリ作成
+			static bool create_geometry(Geometry** pp_geometry);
+
 		private:
-			inline static Drawing_Method g_drawing_method = Drawing_Method::Null;
+			inline static Api api = Api::Null;
 		};
 	}
 }

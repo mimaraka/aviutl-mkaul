@@ -67,9 +67,13 @@ namespace mkaul {
 
 
 		// ビットマップ(抽象クラス)
-		class Bitmap {
+		struct Bitmap {
 		public:
 			void* data;
+
+			Bitmap() :
+				data(nullptr)
+			{}
 
 			// ビットマップを破棄
 			virtual void release() = 0;
@@ -94,18 +98,41 @@ namespace mkaul {
 		};
 
 
-		// パス
-		class Path {
+		// ジオメトリ
+		struct Geometry {
+		private:
+			void* data[2];
+
 		public:
+			Geometry() :
+				data()
+			{}
+
+			virtual bool open() = 0;
+			virtual void close() = 0;
+			virtual void release() = 0;
+
 			virtual void begin_figure() = 0;
 			virtual void end_figure() = 0;
 
 			// 弧を追加
-			virtual void add_arc() = 0;
+			virtual void add_arc(
+				const Rectangle<float>& rect,
+				float angle_from,
+				float angle_to
+			) = 0;
 			// 線を追加
-			virtual void add_line() = 0;
+			virtual void add_line(
+				const Point<float>& point_0,
+				const Point<float>& point_1
+			) = 0;
 			// ベジェを追加
-			virtual void add_bezier() = 0;
+			virtual void add_bezier(
+				const Point<float>& point_0,
+				const Point<float>& point_1,
+				const Point<float>& point_2,
+				const Point<float>& point_3
+			) = 0;
 		};
 
 
@@ -230,7 +257,7 @@ namespace mkaul {
 
 			// ビットマップを描画(アンカーポイント指定)
 			virtual void draw_bitmap(
-				const Bitmap& bitmap,
+				const Bitmap* bitmap,
 				const Point<float>& point,
 				Anchor_Position anchor_pos,
 				float opacity = 1.f
@@ -238,7 +265,7 @@ namespace mkaul {
 
 			// ビットマップを描画(矩形指定)
 			virtual void draw_bitmap(
-				const Bitmap& bitmap,
+				const Bitmap* bitmap,
 				const Rectangle<float>& rect,
 				float opacity = 1.f
 			) = 0;

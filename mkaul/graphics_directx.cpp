@@ -26,6 +26,26 @@ namespace mkaul {
 		}
 
 
+		bool Geometry::open()
+		{
+			auto path = reinterpret_cast<ID2D1PathGeometry*>(data[0]);
+			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+			Graphics_Directx::get_factory()->CreatePathGeometry(&path);
+			path->Open(&sink);
+			return true;
+		}
+
+		void Geometry::release()
+		{
+			auto path = reinterpret_cast<ID2D1PathGeometry*>(data[0]);
+			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+			if (path)
+				path->Release();
+			if (sink)
+				sink->Release();
+		}
+
+
 
 		// 描画環境の用意
 		bool Graphics_Directx::startup()
@@ -95,28 +115,6 @@ namespace mkaul {
 					pp_stroke_style
 				);
 			}
-		}
-
-
-		// ファクトリー取得
-		auto Graphics_Directx::get_factory()
-		{
-			return p_factory;
-		}
-
-		auto Graphics_Directx::get_write_factory()
-		{
-			return p_write_factory;
-		}
-
-		auto Graphics_Directx::get_imaging_factory()
-		{
-			return p_imaging_factory;
-		}
-
-		auto Graphics_Directx::get_render_target()
-		{
-			return p_render_target;
 		}
 
 
@@ -778,13 +776,13 @@ namespace mkaul {
 
 		// ビットマップを描画(アンカーポイント指定)
 		void Graphics_Directx::draw_bitmap(
-			const Bitmap& bitmap,
+			const Bitmap* bitmap,
 			const Point<float>& point,
 			Anchor_Position anchor_pos,
 			float opacity
 		)
 		{
-			auto p_d2d1_bitmap = reinterpret_cast<ID2D1Bitmap*>(bitmap.data);
+			auto p_d2d1_bitmap = reinterpret_cast<ID2D1Bitmap*>(bitmap->data);
 			D2D1_RECT_F rect_f;
 			auto size_u = p_d2d1_bitmap->GetPixelSize();
 
@@ -883,13 +881,13 @@ namespace mkaul {
 
 		// ビットマップを描画(矩形指定)
 		void Graphics_Directx::draw_bitmap(
-			const Bitmap& bitmap,
+			const Bitmap* bitmap,
 			const Rectangle<float>& rect,
 			float opacity
 		)
 		{
 			p_render_target->DrawBitmap(
-				reinterpret_cast<ID2D1Bitmap*>(bitmap.data),
+				reinterpret_cast<ID2D1Bitmap*>(bitmap->data),
 				D2D1::RectF(
 					rect.left,
 					rect.top,
