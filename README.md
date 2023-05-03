@@ -1,11 +1,11 @@
 # MKAul
 
-AviUtlプラグイン作成用の自作ライブラリです。
+AviUtlプラグイン作成用の自作ライブラリです。(開発途中)
 
 ## 使い方
-`mkaul.h`をインクルードし、`mkaul.lib`をリンクします。  
+`mkaul.hpp`をインクルードし、`mkaul.lib`をリンクします。  
 ```cpp
-#include <mkaul.h>
+#include <mkaul.hpp>
 #pragma comment(lib, "mkaul.lib")
 ```
 
