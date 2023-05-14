@@ -46,25 +46,24 @@ namespace mkaul {
 			this->y = (T)pt.y;
 		}
 
-		inline Point(T x_ = 0, T y_ = 0) :
+		Point(T x_ = 0, T y_ = 0) :
 			x(x_),
 			y(y_)
 		{}
 
-		inline Point(const POINT& pt) :
+		Point(const POINT& pt) :
 			x((T)pt.x),
 			y((T)pt.y)
 		{}
 
-		template<typename U>
-		inline Point<U> to()
+		template <typename PtType>
+		auto to() const
 		{
-			return { (U)x, (U)y };
-		}
+			PtType pt = { 0 };
+			pt.x = static_cast<decltype(pt.x)>(x);
+			pt.y = static_cast<decltype(pt.y)>(y);
 
-		inline POINT to_win32_point()
-		{
-			return { (LONG)x, (LONG)y };
+			return pt;
 		}
 	};
 

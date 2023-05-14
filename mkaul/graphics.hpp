@@ -36,7 +36,7 @@ namespace mkaul {
 			static bool create_bitmap(Bitmap** pp_bitmap);
 
 			// ƒWƒIƒƒgƒŠì¬
-			static bool create_geometry(Geometry** pp_geometry);
+			static bool create_path(Path** pp_path);
 
 		private:
 			inline static Api api = Api::Null;

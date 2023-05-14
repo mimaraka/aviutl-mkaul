@@ -26,36 +26,43 @@ namespace mkaul {
 			size_t get_height() override;
 		};
 
-		struct Geometry_Gdiplus : public Geometry {
-		public:
-			using Geometry::Geometry;
 
-			bool open() override;
-			void close() override;
+		// パス
+		struct Path_Gdiplus : public Path {
+		private:
+			Point<float> pt_last;
+
+		public:
+			Path_Gdiplus() :
+				pt_last()
+			{}
+
 			void release() override;
 
-			void begin_figure() override;
-			void end_figure() override;
+			bool begin(const Point<float>& pt) override;
+			void end(Figure_End fe = Figure_End::Closed) override;
 
 			// 弧を追加
 			void add_arc(
-				const Rectangle<float>& rect,
+				float radius_x,
+				float radius_y,
 				float angle_from,
 				float angle_to
 			) override;
+
 			// 線を追加
 			void add_line(
-				const Point<float>& point_0,
-				const Point<float>& point_1
+				const Point<float>& pt
 			) override;
+
 			// ベジェを追加
 			void add_bezier(
-				const Point<float>& point_0,
-				const Point<float>& point_1,
-				const Point<float>& point_2,
-				const Point<float>& point_3
+				const Point<float>& pt_0,
+				const Point<float>& pt_1,
+				const Point<float>& pt_2
 			) override;
 		};
+
 
 		// グラフィックス
 		class Graphics_Gdiplus : public Graphics {

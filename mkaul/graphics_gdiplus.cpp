@@ -27,6 +27,38 @@ namespace mkaul {
 		}
 
 
+		void Path_Gdiplus::release()
+		{
+			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
+			if (p_path)
+				delete p_path;
+			data[0] = nullptr;
+		}
+
+
+		bool Path_Gdiplus::begin(const Point<float>& pt)
+		{
+			if (!data[0]) {
+				auto p_path = new Gdiplus::GraphicsPath();
+				data[0] = p_path;
+
+				pt_last = pt;
+
+				return true;
+			}
+			else return false;
+		}
+
+
+		void Path_Gdiplus::end(Figure_End fe)
+		{
+			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
+
+			if (fe == Figure_End::Closed)
+				p_path->CloseAllFigures();
+		}
+
+
 		// •`‰æŠÂ‹«‚Ì—pˆÓ
 		bool Graphics_Gdiplus::startup()
 		{

@@ -12,7 +12,8 @@ namespace mkaul {
 	namespace graphics {
 		void Bitmap_Directx::release()
 		{
-			reinterpret_cast<ID2D1Bitmap*>(data)->Release();
+			auto p_bitmap = reinterpret_cast<ID2D1Bitmap*>(data);
+			dx_release(&p_bitmap);
 		}
 
 		size_t Bitmap_Directx::get_width()
@@ -26,25 +27,103 @@ namespace mkaul {
 		}
 
 
-		bool Geometry::open()
+		void Path_Directx::release()
 		{
 			auto path = reinterpret_cast<ID2D1PathGeometry*>(data[0]);
 			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
-			Graphics_Directx::get_factory()->CreatePathGeometry(&path);
-			path->Open(&sink);
-			return true;
+
+			dx_release(&sink);
+			dx_release(&path);
 		}
 
-		void Geometry::release()
+
+		bool Path_Directx::begin(const Point<float>& pt)
 		{
 			auto path = reinterpret_cast<ID2D1PathGeometry*>(data[0]);
 			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
-			if (path)
-				path->Release();
-			if (sink)
-				sink->Release();
+			HRESULT hr;
+
+			hr = Graphics_Directx::get_factory()->CreatePathGeometry(&path);
+
+			if (SUCCEEDED(hr))
+				hr = path->Open(&sink);
+
+			if (SUCCEEDED(hr)) {
+				sink->BeginFigure(
+					pt.to<D2D1_POINT_2F>(),
+					D2D1_FIGURE_BEGIN_FILLED
+				);
+
+				return true;
+			}
+
+			// 失敗した場合
+			dx_release(&sink);
+			dx_release(&path);
+
+			return false;
 		}
 
+
+		void Path_Directx::end(Figure_End fe)
+		{
+			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+
+			sink->EndFigure((D2D1_FIGURE_END)fe);
+			sink->Close();
+		}
+
+
+		// 弧を追加
+		void Path_Directx::add_arc(
+			float radius_x,
+			float radius_y,
+			float angle_from,
+			float angle_to
+		)
+		{
+			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+
+
+
+			/*sink->AddArc(
+				D2D1::ArcSegment(
+
+				)
+			);*/
+		}
+
+
+		// 線を追加
+		void Path_Directx::add_line(
+			const Point<float>& pt
+		)
+		{
+			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+
+			sink->AddLine(
+				pt.to<D2D1_POINT_2F>()
+			);
+		}
+
+
+		// ベジェ曲線を追加
+		void Path_Directx::add_bezier(
+			const Point<float>& pt_0,
+			const Point<float>& pt_1,
+			const Point<float>& pt_2
+		)
+		{
+			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+
+			sink->AddBezier(
+				D2D1::BezierSegment(
+					pt_0.to<D2D1_POINT_2F>(),
+					pt_1.to<D2D1_POINT_2F>(),
+					pt_2.to<D2D1_POINT_2F>()
+				)
+			);
+		}
 
 
 		// 描画環境の用意
@@ -57,39 +136,42 @@ namespace mkaul {
 				D2D1_FACTORY_TYPE_MULTI_THREADED,
 				&p_factory
 			);
-			if (FAILED(hr))
-				return false;
 
-			// IWICImagingFactoryの作成
-			hr = ::CoCreateInstance(
-				CLSID_WICImagingFactory,
-				NULL,
-				CLSCTX_INPROC_SERVER,
-				IID_IWICImagingFactory,
-				reinterpret_cast<void**>(&p_imaging_factory)
-			);
-			if (FAILED(hr))
-				return false;
+			if (SUCCEEDED(hr)) {
+				// IWICImagingFactoryの作成
+				hr = ::CoCreateInstance(
+					CLSID_WICImagingFactory,
+					NULL,
+					CLSCTX_INPROC_SERVER,
+					IID_IWICImagingFactory,
+					reinterpret_cast<void**>(&p_imaging_factory)
+				);
+			}
+			if (SUCCEEDED(hr)) {
+				// IDWriteFactoryの作成
+				hr = ::DWriteCreateFactory(
+					DWRITE_FACTORY_TYPE_SHARED,
+					__uuidof(IDWriteFactory),
+					reinterpret_cast<IUnknown**>(&p_write_factory)
+				);
 
-			// IDWriteFactoryの作成
-			hr = ::DWriteCreateFactory(
-				DWRITE_FACTORY_TYPE_SHARED,
-				__uuidof(IDWriteFactory),
-				reinterpret_cast<IUnknown**>(&p_write_factory)
-			);
-			if (FAILED(hr))
-				return false;
+				return true;
+			}
 
-			return true;
+			dx_release(&p_factory);
+			dx_release(&p_imaging_factory);
+			dx_release(&p_write_factory);
+
+			return false;
 		}
 
 
 		// 描画環境の破棄
 		void Graphics_Directx::shutdown()
 		{
-			release(&p_imaging_factory);
-			release(&p_write_factory);
-			release(&p_factory);
+			dx_release(&p_imaging_factory);
+			dx_release(&p_write_factory);
+			dx_release(&p_factory);
 		}
 
 
@@ -158,8 +240,8 @@ namespace mkaul {
 		// 終了
 		void Graphics_Directx::exit()
 		{
-			release(&p_brush);
-			release(&p_render_target);
+			dx_release(&p_brush);
+			dx_release(&p_render_target);
 		}
 
 
@@ -211,22 +293,22 @@ namespace mkaul {
 				p_brush->SetColor(color_f.d2d1_colorf());
 
 				p_render_target->DrawLine(
-					D2D1::Point2F(pt_from.x, pt_from.y),
-					D2D1::Point2F(pt_to.x, pt_to.y),
+					pt_from.to<D2D1_POINT_2F>(),
+					pt_to.to<D2D1_POINT_2F>(),
 					p_brush,
 					stroke.width,
 					stroke_style
 				);
 
-				release(&stroke_style);
+				dx_release(&stroke_style);
 			}
 		}
 
 
 		// 線を描画(複数)
 		void Graphics_Directx::draw_lines(
-			const Point<float>* points,
-			size_t n_points,
+			const Point<float>* pts,
+			size_t n_pts,
 			const Color_F& color_f,
 			const Stroke& stroke 
 		)
@@ -236,21 +318,20 @@ namespace mkaul {
 			ID2D1StrokeStyle* stroke_style = nullptr;
 			stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-			auto d2d1_points = new D2D1_POINT_2F[n_points - 1];
+			size_t n_lines = n_pts - 1;
+			auto d2d1_pts = new D2D1_POINT_2F[n_lines];
 
-			for (size_t i = 0; i < n_points - 1; i++) {
-				d2d1_points[i].x = points[i + 1].x;
-				d2d1_points[i].y = points[i + 1].y;
-			}
+			for (size_t i = 0; i < n_lines; i++)
+				d2d1_pts[i] = pts[i + 1].to<D2D1_POINT_2F>();
 
 			p_factory->CreatePathGeometry(&path_lines);
 			path_lines->Open(&sink);
 
 			sink->BeginFigure(
-				D2D1::Point2F(points[0].x, points[0].y),
+				pts[0].to<D2D1_POINT_2F>(),
 				D2D1_FIGURE_BEGIN_HOLLOW
 			);
-			sink->AddLines(d2d1_points, n_points - 1);
+			sink->AddLines(d2d1_pts, n_lines);
 			sink->EndFigure(D2D1_FIGURE_END_OPEN);
 			
 			sink->Close();
@@ -264,19 +345,19 @@ namespace mkaul {
 				);
 			}
 
-			delete[] d2d1_points;
-			release(&sink);
-			release(&path_lines);
-			release(&stroke_style);
+			delete[] d2d1_pts;
+			dx_release(&sink);
+			dx_release(&path_lines);
+			dx_release(&stroke_style);
 		}
 
 
 		// ベジェ曲線を描画
 		void Graphics_Directx::draw_bezier(
-			const Point<float>& point_0,
-			const Point<float>& point_1,
-			const Point<float>& point_2,
-			const Point<float>& point_3,
+			const Point<float>& pt_0,
+			const Point<float>& pt_1,
+			const Point<float>& pt_2,
+			const Point<float>& pt_3,
 			const Color_F& color_f,
 			const Stroke& stroke
 		)
@@ -290,13 +371,13 @@ namespace mkaul {
 			path_bezier->Open(&sink);
 
 			sink->BeginFigure(
-				D2D1::Point2F(point_0.x, point_0.y),
+				pt_0.to<D2D1_POINT_2F>(),
 				D2D1_FIGURE_BEGIN_HOLLOW
 			);
 			sink->AddBezier(D2D1::BezierSegment(
-				D2D1::Point2F(point_1.x, point_1.y),
-				D2D1::Point2F(point_2.x, point_2.y),
-				D2D1::Point2F(point_3.x, point_3.y)
+				pt_1.to<D2D1_POINT_2F>(),
+				pt_2.to<D2D1_POINT_2F>(),
+				pt_3.to<D2D1_POINT_2F>()
 			));
 
 			sink->EndFigure(D2D1_FIGURE_END_OPEN);
@@ -311,16 +392,16 @@ namespace mkaul {
 					stroke_style
 				);
 
-			release(&sink);
-			release(&path_bezier);
-			release(&stroke_style);
+			dx_release(&sink);
+			dx_release(&path_bezier);
+			dx_release(&stroke_style);
 		}
 
 
 		// ベジェ曲線を描画(複数)
 		void Graphics_Directx::draw_beziers(
-			const Point<float>* points,
-			size_t n_points,
+			const Point<float>* pts,
+			size_t n_pts,
 			const Color_F& color_f,
 			const Stroke& stroke
 		)
@@ -330,22 +411,30 @@ namespace mkaul {
 			ID2D1StrokeStyle* stroke_style = nullptr;
 			stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-			p_factory->CreatePathGeometry(&path_bezier);
-			path_bezier->Open(&sink);
+			size_t bezier_count = (n_pts - 1) / 3;
+			auto bezier_segments = new D2D1_BEZIER_SEGMENT[bezier_count];
 
-			for (size_t i = 0; i < (n_points - 1) / 3; i++) {
-				sink->BeginFigure(
-					D2D1::Point2F(points[i * 3].x, points[i * 3].y),
-					D2D1_FIGURE_BEGIN_HOLLOW
+			for (size_t i = 0; i < bezier_count; i++) {
+				bezier_segments[i] = D2D1::BezierSegment(
+					pts[i * 3 + 1].to<D2D1_POINT_2F>(),
+					pts[i * 3 + 2].to<D2D1_POINT_2F>(),
+					pts[i * 3 + 3].to<D2D1_POINT_2F>()
 				);
-				sink->AddBezier(D2D1::BezierSegment(
-					D2D1::Point2F(points[i * 3 + 1].x, points[i * 3 + 1].y),
-					D2D1::Point2F(points[i * 3 + 2].x, points[i * 3 + 2].y),
-					D2D1::Point2F(points[i * 3 + 3].x, points[i * 3 + 3].y)
-				));
-				sink->EndFigure(D2D1_FIGURE_END_OPEN);
 			}
 
+			p_factory->CreatePathGeometry(&path_bezier);
+			path_bezier->Open(&sink);
+			sink->BeginFigure(
+				pts[0].to<D2D1_POINT_2F>(),
+				D2D1_FIGURE_BEGIN_HOLLOW
+			);
+
+			sink->AddBeziers(
+				bezier_segments,
+				bezier_count
+			);
+
+			sink->EndFigure(D2D1_FIGURE_END_OPEN);
 			sink->Close();
 
 			if (path_bezier)
@@ -356,9 +445,10 @@ namespace mkaul {
 					stroke_style
 				);
 
-			release(&sink);
-			release(&path_bezier);
-			release(&stroke_style);
+			delete[] bezier_segments;
+			dx_release(&sink);
+			dx_release(&path_bezier);
+			dx_release(&stroke_style);
 		}
 
 
@@ -408,7 +498,7 @@ namespace mkaul {
 					);
 				}
 
-				release(&stroke_style);
+				dx_release(&stroke_style);
 			}
 		}
 
@@ -472,7 +562,7 @@ namespace mkaul {
 
 				p_render_target->DrawEllipse(
 					D2D1::Ellipse(
-						D2D1::Point2F(pt.x, pt.y),
+						pt.to<D2D1_POINT_2F>(),
 						radius_x,
 						radius_y
 					),
@@ -481,7 +571,7 @@ namespace mkaul {
 					stroke_style
 				);
 
-				release(&stroke_style);
+				dx_release(&stroke_style);
 			}
 		}
 
@@ -513,7 +603,7 @@ namespace mkaul {
 					stroke_style
 				);
 
-				release(&stroke_style);
+				dx_release(&stroke_style);
 			}
 		}
 
@@ -531,7 +621,7 @@ namespace mkaul {
 
 				p_render_target->FillEllipse(
 					D2D1::Ellipse(
-						D2D1::Point2F(pt.x, pt.y),
+						pt.to<D2D1_POINT_2F>(),
 						radius_x,
 						radius_y
 					),
@@ -589,8 +679,8 @@ namespace mkaul {
 			IWICBitmapDecoder* p_decoder = nullptr;
 			IWICBitmapFrameDecode* p_source = nullptr;
 			IWICFormatConverter* p_converter = nullptr;
-			bool result = true;
 			HRESULT hr = S_OK;
+			auto pp_dxbitmap = reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data));
 
 			// デコーダを生成
 			hr = p_imaging_factory->CreateDecoderFromFilename(
@@ -601,54 +691,42 @@ namespace mkaul {
 				&p_decoder
 			);
 
-			if (FAILED(hr)) {
-				result = false;
-				goto end;
+			if (SUCCEEDED(hr)) {
+				// ビットマップのフレームを取得
+				hr = p_decoder->GetFrame(0, &p_source);
+			}
+			if (SUCCEEDED(hr)) {
+				// フォーマットコンバータを生成
+				hr = p_imaging_factory->CreateFormatConverter(&p_converter);
+			}
+			if (SUCCEEDED(hr)) {
+				// フォーマットコンバータ初期化
+				hr = p_converter->Initialize(
+					p_source,
+					GUID_WICPixelFormat32bppPBGRA,
+					WICBitmapDitherTypeNone,
+					NULL,
+					0.f,
+					WICBitmapPaletteTypeMedianCut
+				);
+			}
+			if (SUCCEEDED(hr)) {
+				// ビットマップ作成
+				hr = p_render_target->CreateBitmapFromWicBitmap(
+					p_converter,
+					NULL,
+					pp_dxbitmap
+				);
 			}
 
-			// ビットマップのフレームを取得
-			hr = p_decoder->GetFrame(0, &p_source);
+			if (FAILED(hr))
+				dx_release(pp_dxbitmap);
 
-			if (FAILED(hr)) {
-				result = false;
-				goto end;
-			}
+			dx_release(&p_converter);
+			dx_release(&p_source);
+			dx_release(&p_decoder);
 
-			// フォーマットコンバータを生成
-			hr = p_imaging_factory->CreateFormatConverter(&p_converter);
-
-			if (FAILED(hr)) {
-				result = false;
-				goto end;
-			}
-
-			// フォーマットコンバータ初期化
-			hr = p_converter->Initialize(
-				p_source,
-				GUID_WICPixelFormat32bppPBGRA,
-				WICBitmapDitherTypeNone,
-				NULL,
-				0.f,
-				WICBitmapPaletteTypeMedianCut
-			);
-
-			hr = p_render_target->CreateBitmapFromWicBitmap(
-				p_converter,
-				NULL,
-				reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data))
-			);
-
-			if (FAILED(hr)) {
-				result = false;
-				release(reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data)));
-			}
-
-		end:
-			release(&p_converter);
-			release(&p_source);
-			release(&p_decoder);
-
-			return result;
+			return SUCCEEDED(hr);
 		}
 
 
@@ -670,7 +748,7 @@ namespace mkaul {
 			DWORD img_file_size = 0;
 			HRESULT hr = S_OK;
 			const HMODULE module_handle = ::GetModuleHandle(NULL);
-			bool result = true;
+			auto pp_dxbitmap = reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data));
 
 			img_res_handle = ::FindResourceA(
 				module_handle,
@@ -697,79 +775,53 @@ namespace mkaul {
 
 			hr = p_imaging_factory->CreateStream(&p_stream);
 
-			if (FAILED(hr)) {
-				result = false;
-				goto end;
+			if (SUCCEEDED(hr)) {
+				hr = p_stream->InitializeFromMemory(
+					reinterpret_cast<BYTE*>(p_img_file),
+					img_file_size
+				);
+			}
+			if (SUCCEEDED(hr)) {
+				hr = p_imaging_factory->CreateDecoderFromStream(
+					p_stream,
+					NULL,
+					WICDecodeMetadataCacheOnLoad,
+					&p_decoder
+				);
+			}
+			if (SUCCEEDED(hr)) {
+				hr = p_decoder->GetFrame(0, &p_source);
+			}
+			if (SUCCEEDED(hr)) {
+				hr = p_imaging_factory->CreateFormatConverter(&p_converter);
+			}
+			if (SUCCEEDED(hr)) {
+				hr = p_converter->Initialize(
+					p_source,
+					GUID_WICPixelFormat32bppPBGRA,
+					WICBitmapDitherTypeNone,
+					NULL,
+					0.f,
+					WICBitmapPaletteTypeMedianCut
+				);
+			}
+			if (SUCCEEDED(hr)) {
+				hr = p_render_target->CreateBitmapFromWicBitmap(
+					p_converter,
+					NULL,
+					pp_dxbitmap
+				);
 			}
 
-			hr = p_stream->InitializeFromMemory(
-				reinterpret_cast<BYTE*>(p_img_file),
-				img_file_size
-			);
+			if (FAILED(hr))
+				dx_release(pp_dxbitmap);
 
-			if (FAILED(hr)) {
-				result = false;
-				goto end;
-			}
+			dx_release(&p_converter);
+			dx_release(&p_source);
+			dx_release(&p_decoder);
+			dx_release(&p_stream);
 
-			hr = p_imaging_factory->CreateDecoderFromStream(
-				p_stream,
-				NULL,
-				WICDecodeMetadataCacheOnLoad,
-				&p_decoder
-			);
-
-			if (FAILED(hr)) {
-				result = false;
-				goto end;
-			}
-
-			hr = p_decoder->GetFrame(0, &p_source);
-
-			if (FAILED(hr)) {
-				result = false;
-				goto end;
-			}
-
-			hr = p_imaging_factory->CreateFormatConverter(&p_converter);
-
-			if (FAILED(hr)) {
-				result = false;
-				goto end;
-			}
-
-			hr = p_converter->Initialize(
-				p_source,
-				GUID_WICPixelFormat32bppPBGRA,
-				WICBitmapDitherTypeNone,
-				NULL,
-				0.f,
-				WICBitmapPaletteTypeMedianCut
-			);
-
-			if (FAILED(hr)) {
-				result = false;
-				goto end;
-			}
-
-			hr = p_render_target->CreateBitmapFromWicBitmap(
-				p_converter,
-				NULL,
-				reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data))
-			);
-
-			if (FAILED(hr)) {
-				result = false;
-				release(reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data)));
-			}
-
-		end:
-			release(&p_converter);
-			release(&p_source);
-			release(&p_decoder);
-			release(&p_stream);
-
-			return result;
+			return SUCCEEDED(hr);
 		}
 
 

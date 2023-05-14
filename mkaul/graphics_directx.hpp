@@ -20,8 +20,23 @@
 
 namespace mkaul {
 	namespace graphics {
+		// DirectX共通の基底クラス
+		class Directx_Base {
+		protected:
+			// DirectXオブジェクトの開放
+			template <class Interface>
+			static void dx_release(Interface** pp_obj)
+			{
+				if (*pp_obj != nullptr) {
+					(*pp_obj)->Release();
+					(*pp_obj) = nullptr;
+				}
+			}
+		};
+
+
 		// ビットマップ
-		struct Bitmap_Directx : public Bitmap {
+		struct Bitmap_Directx : public Bitmap, protected Directx_Base {
 		public:
 			using Bitmap::Bitmap;
 
@@ -33,40 +48,39 @@ namespace mkaul {
 
 
 		// ジオメトリ
-		struct Geometry_Directx : public Geometry {
+		struct Path_Directx : public Path, protected Directx_Base {
 		public:
-			using Geometry::Geometry;
+			using Path::Path;
 
-			bool open() override;
-			void close() override;
 			void release() override;
 
-			void begin_figure() override;
-			void end_figure() override;
+			bool begin(const Point<float>& pt) override;
+			void end(Figure_End fe = Figure_End::Closed) override;
 
 			// 弧を追加
 			void add_arc(
-				const Rectangle<float>& rect,
+				float radius_x,
+				float radius_y,
 				float angle_from,
 				float angle_to
 			) override;
+
 			// 線を追加
 			void add_line(
-				const Point<float>& point_0,
-				const Point<float>& point_1
+				const Point<float>& pt
 			) override;
+
 			// ベジェを追加
 			void add_bezier(
-				const Point<float>& point_0,
-				const Point<float>& point_1,
-				const Point<float>& point_2,
-				const Point<float>& point_3
+				const Point<float>& pt_0,
+				const Point<float>& pt_1,
+				const Point<float>& pt_2
 			) override;
 		};
 
 
 		// グラフィック
-		class Graphics_Directx : public Graphics {
+		class Graphics_Directx : public Graphics, protected Directx_Base {
 		private:
 			inline static ID2D1Factory* p_factory;
 			inline static IDWriteFactory* p_write_factory;
@@ -74,16 +88,6 @@ namespace mkaul {
 			ID2D1HwndRenderTarget* p_render_target;
 			ID2D1SolidColorBrush* p_brush;
 			PAINTSTRUCT ps;
-
-			// DirectXオブジェクトの開放
-			template <class Interface>
-			inline static void release(Interface** pp_object)
-			{
-				if (*pp_object != nullptr) {
-					(*pp_object)->Release();
-					(*pp_object) = nullptr;
-				}
-			}
 
 		public:
 			Graphics_Directx() :

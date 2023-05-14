@@ -99,39 +99,43 @@ namespace mkaul {
 
 
 		// ジオメトリ
-		struct Geometry {
-		private:
+		struct Path {
+		protected:
 			void* data[2];
 
 		public:
-			Geometry() :
+			Path() :
 				data()
 			{}
 
-			virtual bool open() = 0;
-			virtual void close() = 0;
+			enum class Figure_End {
+				Open,
+				Closed
+			};
+
 			virtual void release() = 0;
 
-			virtual void begin_figure() = 0;
-			virtual void end_figure() = 0;
+			virtual bool begin(const Point<float>& pt) = 0;
+			virtual void end(Figure_End fe = Figure_End::Closed) = 0;
 
 			// 弧を追加
 			virtual void add_arc(
-				const Rectangle<float>& rect,
+				float radius_x,
+				float radius_y,
 				float angle_from,
 				float angle_to
 			) = 0;
+
 			// 線を追加
 			virtual void add_line(
-				const Point<float>& point_0,
-				const Point<float>& point_1
+				const Point<float>& pt
 			) = 0;
+
 			// ベジェを追加
 			virtual void add_bezier(
-				const Point<float>& point_0,
-				const Point<float>& point_1,
-				const Point<float>& point_2,
-				const Point<float>& point_3
+				const Point<float>& pt_0,
+				const Point<float>& pt_1,
+				const Point<float>& pt_2
 			) = 0;
 		};
 
