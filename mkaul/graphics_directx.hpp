@@ -47,7 +47,7 @@ namespace mkaul {
 		};
 
 
-		// ジオメトリ
+		// パス
 		struct Path_Directx : public Path, protected Directx_Base {
 		public:
 			using Path::Path;

@@ -92,12 +92,10 @@ namespace mkaul {
 				break;
 
 			case Source_Type::Resource:
-				if (!HIWORD(icon_source_)) {
-					icon_resource_num = reinterpret_cast<uint16_t>(icon_source_);
-				}
-				else {
+				if (!HIWORD(icon_source_))
+					icon_resource_num = LOWORD(icon_source_);
+				else
 					icon_source = icon_source_;
-				}
 				break;
 
 			default:

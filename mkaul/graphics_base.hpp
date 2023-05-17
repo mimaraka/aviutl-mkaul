@@ -159,7 +159,7 @@ namespace mkaul {
 
 
 		// X²³•”•ª‚©‚çŠp“xangle‚É‚ ‚é‘È‰~ã‚Ì“_
-		void Path::ellipse_pos(
+		inline void Path::ellipse_pos(
 			const Size<float>& size,
 			float angle,
 			Point<float>* p_pt

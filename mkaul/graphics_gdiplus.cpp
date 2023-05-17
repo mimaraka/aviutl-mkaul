@@ -68,7 +68,6 @@ namespace mkaul {
 		{
 			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
 			constexpr float pi = std::numbers::pi_v<float>;
-			float deg_start, deg_sweep;
 			Point<float> pt_ofs_start, pt_o;
 
 			// Šp“x‚ğ-2ƒÎ ~ 2ƒÎ‚Ì”ÍˆÍ‚Éû‚ß‚é
@@ -77,7 +76,7 @@ namespace mkaul {
 			ellipse_pos(size, angle_start, &pt_ofs_start);
 			pt_o = pt_last - pt_ofs_start;
 
-			p_path->AddArc(
+			if (p_path) p_path->AddArc(
 				Gdiplus::RectF(
 					pt_o.x - size.width,
 					pt_o.y - size.height,
@@ -86,6 +85,20 @@ namespace mkaul {
 				),
 				-rad2deg(angle_start),
 				-rad2deg(angle_sweep)
+			);
+		}
+
+
+		// ü‚ğ’Ç‰Á
+		void Path_Gdiplus::add_line(
+			const Point<float>& pt
+		)
+		{
+			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
+
+			if (p_path) p_path->AddLine(
+				Gdiplus::PointF(pt_last.x, pt_last.y),
+				Gdiplus::PointF(pt.x, pt.y)
 			);
 		}
 

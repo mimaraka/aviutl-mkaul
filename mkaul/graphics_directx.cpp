@@ -29,27 +29,28 @@ namespace mkaul {
 
 		void Path_Directx::release()
 		{
-			auto path = reinterpret_cast<ID2D1PathGeometry*>(data[0]);
-			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+			auto p_path = reinterpret_cast<ID2D1PathGeometry*>(data[0]);
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 
-			dx_release(&sink);
-			dx_release(&path);
+			dx_release(&p_sink);
+			dx_release(&p_path);
 		}
 
 
 		bool Path_Directx::begin(const Point<float>& pt)
 		{
-			auto path = reinterpret_cast<ID2D1PathGeometry*>(data[0]);
-			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
-			HRESULT hr;
+			auto pp_path = reinterpret_cast<ID2D1PathGeometry**>(&data[0]);
+			auto pp_sink = reinterpret_cast<ID2D1GeometrySink**>(&data[1]);
+			data[0] = nullptr;
+			data[1] = nullptr;
 
-			hr = Graphics_Directx::get_factory()->CreatePathGeometry(&path);
+			auto hr = Graphics_Directx::get_factory()->CreatePathGeometry(pp_path);
 
 			if (SUCCEEDED(hr))
-				hr = path->Open(&sink);
+				hr = (*pp_path)->Open(pp_sink);
 
 			if (SUCCEEDED(hr)) {
-				sink->BeginFigure(
+				(*pp_sink)->BeginFigure(
 					pt.to<D2D1_POINT_2F>(),
 					D2D1_FIGURE_BEGIN_FILLED
 				);
@@ -59,8 +60,8 @@ namespace mkaul {
 			}
 
 			// 失敗した場合
-			dx_release(&sink);
-			dx_release(&path);
+			dx_release(pp_sink);
+			dx_release(pp_path);
 
 			return false;
 		}
@@ -68,10 +69,10 @@ namespace mkaul {
 
 		void Path_Directx::end(Figure_End fe)
 		{
-			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 
-			sink->EndFigure((D2D1_FIGURE_END)fe);
-			sink->Close();
+			p_sink->EndFigure((D2D1_FIGURE_END)fe);
+			p_sink->Close();
 		}
 
 
@@ -82,7 +83,7 @@ namespace mkaul {
 			float angle_sweep
 		)
 		{
-			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 			constexpr auto pi = std::numbers::pi_v<float>;
 			D2D1_SWEEP_DIRECTION sd;
 			D2D1_ARC_SIZE as;
@@ -125,7 +126,7 @@ namespace mkaul {
 			}
 
 
-			sink->AddArc(
+			p_sink->AddArc(
 				D2D1::ArcSegment(
 					pt_end.to<D2D1_POINT_2F>(),
 					size.to<D2D1_SIZE_F>(),
@@ -142,9 +143,9 @@ namespace mkaul {
 			const Point<float>& pt
 		)
 		{
-			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 
-			sink->AddLine(
+			p_sink->AddLine(
 				pt.to<D2D1_POINT_2F>()
 			);
 		}
@@ -157,9 +158,9 @@ namespace mkaul {
 			const Point<float>& pt_2
 		)
 		{
-			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 
-			sink->AddBezier(
+			p_sink->AddBezier(
 				D2D1::BezierSegment(
 					pt_0.to<D2D1_POINT_2F>(),
 					pt_1.to<D2D1_POINT_2F>(),
@@ -224,22 +225,20 @@ namespace mkaul {
 			ID2D1StrokeStyle** pp_stroke_style
 		)
 		{
-			if (p_factory) {
-				p_factory->CreateStrokeStyle(
-					D2D1::StrokeStyleProperties(
-						(D2D1_CAP_STYLE)stroke.start_cap,
-						(D2D1_CAP_STYLE)stroke.end_cap,
-						(D2D1_CAP_STYLE)stroke.dash_cap,
-						(D2D1_LINE_JOIN)stroke.line_join,
-						10.f,
-						(D2D1_DASH_STYLE)stroke.dash_style,
-						stroke.dash_offset
-					),
-					stroke.custom_dashes,
-					stroke.dashes_count,
-					pp_stroke_style
-				);
-			}
+			if (p_factory) p_factory->CreateStrokeStyle(
+				D2D1::StrokeStyleProperties(
+					(D2D1_CAP_STYLE)stroke.start_cap,
+					(D2D1_CAP_STYLE)stroke.end_cap,
+					(D2D1_CAP_STYLE)stroke.dash_cap,
+					(D2D1_LINE_JOIN)stroke.line_join,
+					10.f,
+					(D2D1_DASH_STYLE)stroke.dash_style,
+					stroke.dash_offset
+				),
+				stroke.custom_dashes,
+				stroke.dashes_count,
+				pp_stroke_style
+			);
 		}
 
 
@@ -390,14 +389,12 @@ namespace mkaul {
 			if (SUCCEEDED(hr) && p_brush) {
 				p_brush->SetColor(color_f.d2d1_colorf());
 
-				if (p_render_target) {
-					p_render_target->DrawGeometry(
-						path_lines,
-						p_brush,
-						stroke.width,
-						stroke_style
-					);
-				}
+				if (p_render_target) p_render_target->DrawGeometry(
+					path_lines,
+					p_brush,
+					stroke.width,
+					stroke_style
+				);
 			}
 
 			delete[] d2d1_pts;
@@ -446,14 +443,12 @@ namespace mkaul {
 			if (SUCCEEDED(hr)) {
 				p_brush->SetColor(color_f.d2d1_colorf());
 
-				if (p_render_target) {
-					p_render_target->DrawGeometry(
-						path_bezier,
-						p_brush,
-						stroke.width,
-						stroke_style
-					);
-				}
+				if (p_render_target) p_render_target->DrawGeometry(
+					path_bezier,
+					p_brush,
+					stroke.width,
+					stroke_style
+				);
 			}
 
 			dx_release(&sink);
@@ -473,6 +468,7 @@ namespace mkaul {
 			ID2D1GeometrySink* sink = nullptr;
 			ID2D1PathGeometry* path_bezier = nullptr;
 			ID2D1StrokeStyle* stroke_style = nullptr;
+			HRESULT hr = (HRESULT)-1L;
 			stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
 			size_t bezier_count = (n_pts - 1) / 3;
@@ -486,28 +482,32 @@ namespace mkaul {
 				);
 			}
 
-			p_factory->CreatePathGeometry(&path_bezier);
-			path_bezier->Open(&sink);
-			sink->BeginFigure(
-				pts[0].to<D2D1_POINT_2F>(),
-				D2D1_FIGURE_BEGIN_HOLLOW
-			);
+			hr = p_factory->CreatePathGeometry(&path_bezier);
+			
+			if (SUCCEEDED(hr))
+				path_bezier->Open(&sink);
 
-			sink->AddBeziers(
-				bezier_segments,
-				bezier_count
-			);
-
-			sink->EndFigure(D2D1_FIGURE_END_OPEN);
-			sink->Close();
-
-			if (path_bezier)
-				p_render_target->DrawGeometry(
-					path_bezier,
-					p_brush,
-					stroke.width,
-					stroke_style
+			if (SUCCEEDED(hr)) {
+				sink->BeginFigure(
+					pts[0].to<D2D1_POINT_2F>(),
+					D2D1_FIGURE_BEGIN_HOLLOW
 				);
+
+				sink->AddBeziers(
+					bezier_segments,
+					bezier_count
+				);
+
+				sink->EndFigure(D2D1_FIGURE_END_OPEN);
+				hr = sink->Close();
+			}
+
+			if (SUCCEEDED(hr)) p_render_target->DrawGeometry(
+				path_bezier,
+				p_brush,
+				stroke.width,
+				stroke_style
+			);
 
 			delete[] bezier_segments;
 			dx_release(&sink);
@@ -743,8 +743,9 @@ namespace mkaul {
 			IWICBitmapDecoder* p_decoder = nullptr;
 			IWICBitmapFrameDecode* p_source = nullptr;
 			IWICFormatConverter* p_converter = nullptr;
-			HRESULT hr = S_OK;
+			HRESULT hr = (HRESULT)-1L;
 			auto pp_dxbitmap = reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data));
+			p_bitmap->data = nullptr;
 
 			// デコーダを生成
 			hr = p_imaging_factory->CreateDecoderFromFilename(
@@ -783,8 +784,7 @@ namespace mkaul {
 				);
 			}
 
-			if (FAILED(hr))
-				dx_release(pp_dxbitmap);
+			if (FAILED(hr)) dx_release(pp_dxbitmap);
 
 			dx_release(&p_converter);
 			dx_release(&p_source);

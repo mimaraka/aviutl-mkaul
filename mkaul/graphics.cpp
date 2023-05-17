@@ -92,15 +92,15 @@ namespace mkaul {
 		}
 
 
-		bool Manager::create_geometry(Geometry** pp_geometry)
+		bool Manager::create_path(Path** pp_path)
 		{
 			switch (api) {
 			case Api::Gdiplus:
-				*pp_geometry = new Geometry_Gdiplus;
+				*pp_path = new Path_Gdiplus;
 				break;
 
 			case Api::Directx:
-				*pp_geometry = new Geometry_Directx;
+				*pp_path = new Path_Directx;
 				break;
 
 			default:
