@@ -108,10 +108,14 @@ namespace mkaul {
 			height(height_)
 		{}
 
-		template<typename U>
-		inline Size<U> to()
+		template <typename SizeType>
+		auto to() const
 		{
-			return Size<U>(width, height);
+			SizeType size = { 0 };
+			size.width = static_cast<decltype(size.width)>(width);
+			size.height = static_cast<decltype(size.height)>(height);
+
+			return size;
 		}
 
 		inline void scale(double scale)

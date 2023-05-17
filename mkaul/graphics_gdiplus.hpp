@@ -29,13 +29,8 @@ namespace mkaul {
 
 		// ƒpƒX
 		struct Path_Gdiplus : public Path {
-		private:
-			Point<float> pt_last;
-
 		public:
-			Path_Gdiplus() :
-				pt_last()
-			{}
+			using Path::Path;
 
 			void release() override;
 
@@ -44,10 +39,9 @@ namespace mkaul {
 
 			// ŒÊ‚ğ’Ç‰Á
 			void add_arc(
-				float radius_x,
-				float radius_y,
-				float angle_from,
-				float angle_to
+				const Size<float>& size,
+				float angle_start,
+				float angle_sweep
 			) override;
 
 			// ü‚ğ’Ç‰Á
@@ -97,7 +91,7 @@ namespace mkaul {
 			// •`‰æI—¹
 			bool end_draw() override;
 
-			void resize() override {};
+			bool resize() override { return true; };
 
 			// ü‚ğ•`‰æ
 			void draw_line(

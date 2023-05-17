@@ -53,6 +53,7 @@ namespace mkaul {
 					pt.to<D2D1_POINT_2F>(),
 					D2D1_FIGURE_BEGIN_FILLED
 				);
+				pt_last = pt;
 
 				return true;
 			}
@@ -76,21 +77,63 @@ namespace mkaul {
 
 		// 弧を追加
 		void Path_Directx::add_arc(
-			float radius_x,
-			float radius_y,
-			float angle_from,
-			float angle_to
+			const Size<float>& size,
+			float angle_start,
+			float angle_sweep
 		)
 		{
 			auto sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+			constexpr auto pi = std::numbers::pi_v<float>;
+			D2D1_SWEEP_DIRECTION sd;
+			D2D1_ARC_SIZE as;
+
+			// 弧の開始・終了地点(楕円の中心からの相対座標)
+			// 弧の終了地点
+			// 楕円の中心
+			Point<float> pt_ofs_start, pt_ofs_end, pt_end, pt_o;
+
+			// 角度を-2π ~ 2πの範囲に収める			
+			angle_sweep = std::fmodf(angle_sweep, pi * 2.f);
+
+			ellipse_pos(size, angle_start, &pt_ofs_start);
+			ellipse_pos(size, angle_start + angle_sweep, &pt_ofs_end);
+
+			pt_o = pt_last - pt_ofs_start;
+			pt_end = pt_o + pt_ofs_end;
+
+			// 時計回り
+			if (angle_sweep < 0) {
+				sd = D2D1_SWEEP_DIRECTION_CLOCKWISE;
+
+				// 弧の角度の大きさがπより大きい場合
+				if (angle_sweep < -pi)
+					as = D2D1_ARC_SIZE_LARGE;
+				// 弧の角度の大きさがπより小さい場合
+				else
+					as = D2D1_ARC_SIZE_SMALL;
+			}
+			// 反時計回り
+			else {
+				sd = D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE;
+
+				// 弧の角度の大きさがπより大きい場合
+				if (angle_sweep > pi)
+					as = D2D1_ARC_SIZE_LARGE;
+				// 弧の角度の大きさがπより小さい場合
+				else
+					as = D2D1_ARC_SIZE_SMALL;
+			}
 
 
-
-			/*sink->AddArc(
+			sink->AddArc(
 				D2D1::ArcSegment(
-
+					pt_end.to<D2D1_POINT_2F>(),
+					size.to<D2D1_SIZE_F>(),
+					0.f,
+					sd,
+					as
 				)
-			);*/
+			);
 		}
 
 
@@ -203,37 +246,35 @@ namespace mkaul {
 		// 初期化
 		bool Graphics_Directx::init(HWND hwnd_)
 		{
-			HRESULT hresult;
+			HRESULT hr;
 			D2D1_SIZE_U pixel_size;
 			RECT rect;
 
 			hwnd = hwnd_;
 
-			::GetClientRect(hwnd, &rect);
-
-			pixel_size = {
+			if (::GetClientRect(hwnd, &rect)) {
+				pixel_size = {
 				(unsigned)(rect.right - rect.left),
 				(unsigned)(rect.bottom - rect.top)
-			};
+				};
 
-			if (!p_factory || !p_write_factory || !p_imaging_factory)
-				return false;
+				if (p_factory && p_write_factory && p_imaging_factory) {
+					// HwndRenderTargetを作成
+					hr = p_factory->CreateHwndRenderTarget(
+						D2D1::RenderTargetProperties(),
+						D2D1::HwndRenderTargetProperties(hwnd, pixel_size),
+						&p_render_target
+					);
 
-			// HwndRenderTargetを作成
-			hresult = p_factory->CreateHwndRenderTarget(
-				D2D1::RenderTargetProperties(),
-				D2D1::HwndRenderTargetProperties(hwnd, pixel_size),
-				&p_render_target
-			);
+					if (SUCCEEDED(hr) && p_render_target) {
+						// ブラシを作成
+						if (!p_brush) p_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &p_brush);
 
-			if (FAILED(hresult) || !p_render_target)
-				return false;
-
-			// ブラシを作成
-			if (!p_brush)
-				p_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &p_brush);
-
-			return true;
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 
@@ -256,25 +297,29 @@ namespace mkaul {
 		// 描画終了
 		bool Graphics_Directx::end_draw()
 		{
-			HRESULT hresult = p_render_target->EndDraw();
-			::EndPaint(hwnd, &ps);
-			if (FAILED(hresult))
-				return false;
-			else return true;
+			auto hr = p_render_target->EndDraw();
+			bool result = ::EndPaint(hwnd, &ps);
+			
+			return SUCCEEDED(hr) && result;
 		}
 
 
 		// リサイズ
-		void Graphics_Directx::resize()
+		bool Graphics_Directx::resize()
 		{
 			RECT rect;
-			::GetClientRect(hwnd, &rect);
-			D2D1_SIZE_U pixel_size = {
+			if (::GetClientRect(hwnd, &rect)) {
+				D2D1_SIZE_U pixel_size = {
 				(unsigned)(rect.right - rect.left),
 				(unsigned)(rect.bottom - rect.top)
-			};
-			if (p_render_target)
-				p_render_target->Resize(pixel_size);
+				};
+
+				if (p_render_target) {
+					auto hr = p_render_target->Resize(pixel_size);
+					return SUCCEEDED(hr);
+				}
+			}
+			return false;
 		}
 
 
@@ -289,19 +334,20 @@ namespace mkaul {
 			ID2D1StrokeStyle* stroke_style = nullptr;
 			stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-			if (p_render_target) {
+			if (p_brush) {
 				p_brush->SetColor(color_f.d2d1_colorf());
 
-				p_render_target->DrawLine(
-					pt_from.to<D2D1_POINT_2F>(),
-					pt_to.to<D2D1_POINT_2F>(),
-					p_brush,
-					stroke.width,
-					stroke_style
-				);
-
-				dx_release(&stroke_style);
+				if (p_render_target) {
+					p_render_target->DrawLine(
+						pt_from.to<D2D1_POINT_2F>(),
+						pt_to.to<D2D1_POINT_2F>(),
+						p_brush,
+						stroke.width,
+						stroke_style
+					);
+				}
 			}
+			dx_release(&stroke_style);
 		}
 
 
@@ -316,6 +362,7 @@ namespace mkaul {
 			ID2D1GeometrySink* sink = nullptr;
 			ID2D1PathGeometry* path_lines = nullptr;
 			ID2D1StrokeStyle* stroke_style = nullptr;
+			HRESULT hr = (HRESULT)-1L;
 			stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
 			size_t n_lines = n_pts - 1;
@@ -324,25 +371,33 @@ namespace mkaul {
 			for (size_t i = 0; i < n_lines; i++)
 				d2d1_pts[i] = pts[i + 1].to<D2D1_POINT_2F>();
 
-			p_factory->CreatePathGeometry(&path_lines);
-			path_lines->Open(&sink);
+			hr = p_factory->CreatePathGeometry(&path_lines);
 
-			sink->BeginFigure(
-				pts[0].to<D2D1_POINT_2F>(),
-				D2D1_FIGURE_BEGIN_HOLLOW
-			);
-			sink->AddLines(d2d1_pts, n_lines);
-			sink->EndFigure(D2D1_FIGURE_END_OPEN);
-			
-			sink->Close();
+			if (SUCCEEDED(hr))
+				hr = path_lines->Open(&sink);
 
-			if (path_lines) {
-				p_render_target->DrawGeometry(
-					path_lines,
-					p_brush,
-					stroke.width,
-					stroke_style
+			if (SUCCEEDED(hr)) {
+				sink->BeginFigure(
+					pts[0].to<D2D1_POINT_2F>(),
+					D2D1_FIGURE_BEGIN_HOLLOW
 				);
+				sink->AddLines(d2d1_pts, n_lines);
+				sink->EndFigure(D2D1_FIGURE_END_OPEN);
+
+				hr = sink->Close();
+			}
+
+			if (SUCCEEDED(hr) && p_brush) {
+				p_brush->SetColor(color_f.d2d1_colorf());
+
+				if (p_render_target) {
+					p_render_target->DrawGeometry(
+						path_lines,
+						p_brush,
+						stroke.width,
+						stroke_style
+					);
+				}
 			}
 
 			delete[] d2d1_pts;
@@ -365,32 +420,41 @@ namespace mkaul {
 			ID2D1GeometrySink* sink = nullptr;
 			ID2D1PathGeometry* path_bezier = nullptr;
 			ID2D1StrokeStyle* stroke_style = nullptr;
+			HRESULT hr = (HRESULT)-1L;
 			stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-			p_factory->CreatePathGeometry(&path_bezier);
-			path_bezier->Open(&sink);
+			hr = p_factory->CreatePathGeometry(&path_bezier);
 
-			sink->BeginFigure(
-				pt_0.to<D2D1_POINT_2F>(),
-				D2D1_FIGURE_BEGIN_HOLLOW
-			);
-			sink->AddBezier(D2D1::BezierSegment(
-				pt_1.to<D2D1_POINT_2F>(),
-				pt_2.to<D2D1_POINT_2F>(),
-				pt_3.to<D2D1_POINT_2F>()
-			));
+			if (SUCCEEDED(hr))
+				hr = path_bezier->Open(&sink);
 
-			sink->EndFigure(D2D1_FIGURE_END_OPEN);
-			sink->Close();
-
-			if (path_bezier)
-				p_brush->SetColor(color_f.d2d1_colorf());
-				p_render_target->DrawGeometry(
-					path_bezier,
-					p_brush,
-					stroke.width,
-					stroke_style
+			if (SUCCEEDED(hr)) {
+				sink->BeginFigure(
+					pt_0.to<D2D1_POINT_2F>(),
+					D2D1_FIGURE_BEGIN_HOLLOW
 				);
+
+				sink->AddBezier(D2D1::BezierSegment(
+					pt_1.to<D2D1_POINT_2F>(),
+					pt_2.to<D2D1_POINT_2F>(),
+					pt_3.to<D2D1_POINT_2F>()
+				));
+
+				sink->EndFigure(D2D1_FIGURE_END_OPEN);
+				hr = sink->Close();
+			}
+			if (SUCCEEDED(hr)) {
+				p_brush->SetColor(color_f.d2d1_colorf());
+
+				if (p_render_target) {
+					p_render_target->DrawGeometry(
+						path_bezier,
+						p_brush,
+						stroke.width,
+						stroke_style
+					);
+				}
+			}
 
 			dx_release(&sink);
 			dx_release(&path_bezier);

@@ -59,6 +59,37 @@ namespace mkaul {
 		}
 
 
+		// ŒÊ‚ð’Ç‰Á
+		void Path_Gdiplus::add_arc(
+			const Size<float>& size,
+			float angle_start,
+			float angle_sweep
+		)
+		{
+			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
+			constexpr float pi = std::numbers::pi_v<float>;
+			float deg_start, deg_sweep;
+			Point<float> pt_ofs_start, pt_o;
+
+			// Šp“x‚ð-2ƒÎ ~ 2ƒÎ‚Ì”ÍˆÍ‚ÉŽû‚ß‚é
+			angle_sweep = std::fmodf(angle_sweep, pi * 2.f);
+
+			ellipse_pos(size, angle_start, &pt_ofs_start);
+			pt_o = pt_last - pt_ofs_start;
+
+			p_path->AddArc(
+				Gdiplus::RectF(
+					pt_o.x - size.width,
+					pt_o.y - size.height,
+					size.width * 2.f,
+					size.height * 2.f
+				),
+				-rad2deg(angle_start),
+				-rad2deg(angle_sweep)
+			);
+		}
+
+
 		// •`‰æŠÂ‹«‚Ì—pˆÓ
 		bool Graphics_Gdiplus::startup()
 		{

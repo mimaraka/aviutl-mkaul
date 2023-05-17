@@ -59,10 +59,9 @@ namespace mkaul {
 
 			// ŒÊ‚ğ’Ç‰Á
 			void add_arc(
-				float radius_x,
-				float radius_y,
-				float angle_from,
-				float angle_to
+				const Size<float>& size,
+				float angle_start,
+				float angle_sweep
 			) override;
 
 			// ü‚ğ’Ç‰Á
@@ -116,7 +115,7 @@ namespace mkaul {
 			void exit() override;
 			void begin_draw() override;
 			bool end_draw() override;
-			void resize() override;
+			bool resize() override;
 
 			// ü‚ğ•`‰æ
 			void draw_line(

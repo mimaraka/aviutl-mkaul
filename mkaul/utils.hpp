@@ -53,4 +53,31 @@ namespace mkaul {
 
 		return elems;
 	}
+
+
+	// ラジアン -> 度
+	template <typename T>
+	inline T rad2deg(T rad)
+	{
+		return (T)180 * rad / std::numbers::pi_v<T>;
+	}
+
+
+	// 度 -> ラジアン
+	template <typename T>
+	inline T deg2rad(T deg)
+	{
+		return std::numbers::pi_v<T> *deg / (T)180;
+	}
+
+
+	template <typename T>
+	inline int sign(T value)
+	{
+		if (0 > value)
+			return -1;
+		else if (value == 0)
+			return 0;
+		else return 1;
+	}
 }

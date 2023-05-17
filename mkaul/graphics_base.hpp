@@ -10,6 +10,7 @@
 #include "point.hpp"
 #include "rectangle.hpp"
 #include "color.hpp"
+#include "utils.hpp"
 
 
 
@@ -98,19 +99,37 @@ namespace mkaul {
 		};
 
 
-		// ジオメトリ
+		// パス
 		struct Path {
 		protected:
 			void* data[2];
+			Point<float> pt_last;
+
+			void ellipse_pos(
+				const Size<float>& size,
+				float angle,
+				Point<float>* p_pt
+			);
 
 		public:
 			Path() :
-				data()
+				data(),
+				pt_last()
 			{}
 
 			enum class Figure_End {
 				Open,
 				Closed
+			};
+
+			enum class Sweep_Direction {
+				Counter_Clockwise,
+				Clockwise				
+			};
+
+			enum class Arc_Size {
+				Small,
+				Large
 			};
 
 			virtual void release() = 0;
@@ -120,10 +139,9 @@ namespace mkaul {
 
 			// 弧を追加
 			virtual void add_arc(
-				float radius_x,
-				float radius_y,
-				float angle_from,
-				float angle_to
+				const Size<float>& size,
+				float angle_start,
+				float angle_sweep
 			) = 0;
 
 			// 線を追加
@@ -138,6 +156,23 @@ namespace mkaul {
 				const Point<float>& pt_2
 			) = 0;
 		};
+
+
+		// X軸正部分から角度angleにある楕円上の点
+		void Path::ellipse_pos(
+			const Size<float>& size,
+			float angle,
+			Point<float>* p_pt
+		)
+		{
+			constexpr float pi = std::numbers::pi_v<float>;
+
+			float x = size.width * size.height / (float)std::sqrt(size.height * size.height + size.width * size.width * std::pow(std::tan(angle), 2)) * (float)sign(std::cos(angle));
+			float y = x * std::tan(angle);
+
+			p_pt->x = x;
+			p_pt->y = y;
+		}
 
 
 		// グラフィックス抽象クラス
@@ -157,7 +192,7 @@ namespace mkaul {
 			virtual bool end_draw() = 0;
 
 			// リサイズ
-			virtual void resize() = 0;
+			virtual bool resize() = 0;
 
 			// 線を描画
 			virtual void draw_line(
