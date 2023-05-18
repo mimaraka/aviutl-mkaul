@@ -14,6 +14,7 @@ namespace mkaul {
 	namespace window {
 		// ボタンを作成
 		bool Button::create(
+			HINSTANCE hinst,
 			HWND hwnd_parent_,
 			int id_,
 			const Color_F* p_col_bg_,
@@ -27,6 +28,7 @@ namespace mkaul {
 			tooltip_label = tooltip_label_;
 
 			return Control::create(
+				hinst,
 				hwnd_parent_,
 				id_,
 				TEXT("MKAUL_BUTTON"),
@@ -44,6 +46,7 @@ namespace mkaul {
 
 		// ボタンを作成(ラベル)
 		bool Button_Label::create(
+			HINSTANCE hinst,
 			HWND hwnd_parent_,
 			int id_,
 			const std::string& label_,
@@ -59,6 +62,7 @@ namespace mkaul {
 			label = label_;
 
 			return Button::create(
+				hinst,
 				hwnd_parent_,
 				id_,
 				p_col_bg_,
@@ -73,6 +77,7 @@ namespace mkaul {
 
 		// ボタンを作成(アイコン)
 		bool Button_Icon::create(
+			HINSTANCE hinst,
 			HWND hwnd_parent_,
 			int id_,
 			const char* icon_source_,
@@ -103,6 +108,7 @@ namespace mkaul {
 			}
 
 			return Button::create(
+				hinst,
 				hwnd_parent_,
 				id_,
 				p_col_bg_,

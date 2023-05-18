@@ -12,6 +12,7 @@ namespace mkaul {
 	namespace window {
 		// ƒRƒ“ƒgƒ[ƒ‹‚ğì¬
 		bool Control::create(
+			HINSTANCE				hinst,
 			HWND					hwnd_parent,
 			int						id_,
 			const std::string&		class_name,
@@ -32,6 +33,7 @@ namespace mkaul {
 			p_col_control = const_cast<Color_F*>(p_col_control_);
 
 			return Window::create(
+				hinst,
 				hwnd_parent,
 				NULL,
 				class_name,

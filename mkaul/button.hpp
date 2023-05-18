@@ -24,6 +24,7 @@ namespace mkaul {
 			{}
 
 			virtual bool create(
+				HINSTANCE hinst,
 				HWND hwnd_parent_,
 				int id_,
 				const Color_F* p_col_bg_,
@@ -55,6 +56,7 @@ namespace mkaul {
 
 			// ボタンを作成
 			virtual bool create(
+				HINSTANCE hinst,
 				HWND hwnd_parent_,
 				int id_,
 				const std::string& label_,
@@ -91,6 +93,7 @@ namespace mkaul {
 
 			// ボタンを作成(アイコン)
 			virtual bool create(
+				HINSTANCE hinst,
 				HWND hwnd_parent_,
 				int id_,
 				const char* icon_source_,

@@ -12,6 +12,7 @@ namespace mkaul {
 	namespace window {
 		// ウィンドウを作成
 		bool Window::create(
+			HINSTANCE				hinst,
 			HWND					hwnd_parent,
 			const std::string&		window_name,
 			const std::string&		class_name,
@@ -23,15 +24,13 @@ namespace mkaul {
 			LPVOID					lp_param
 		)
 		{
-			HINSTANCE hinstance = (HINSTANCE)::GetModuleHandle(NULL);
-
 			WNDCLASSEX ws;
 			ws.cbSize = sizeof(ws);
 			ws.style = CS_HREDRAW | CS_VREDRAW | class_style;
 			ws.lpfnWndProc = wndproc_;
 			ws.cbClsExtra = 0;
 			ws.cbWndExtra = 0;
-			ws.hInstance = hinstance;
+			ws.hInstance = hinst;
 			ws.hIcon = NULL;
 			ws.hCursor = cursor;
 			ws.hbrBackground = NULL;
@@ -51,7 +50,7 @@ namespace mkaul {
 					rect.bottom - rect.top,
 					hwnd_parent,
 					NULL,
-					hinstance,
+					hinst,
 					lp_param
 				);
 				if (hwnd) return true;

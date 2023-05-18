@@ -27,6 +27,7 @@ namespace mkaul {
 			{}
 
 			virtual bool create(
+				HINSTANCE				hinst,
 				HWND					hwnd_parent,
 				const std::string&		window_name,
 				const std::string&		class_name,
