@@ -190,7 +190,9 @@ namespace mkaul {
 			// リソースからビットマップを作成
 			bool load_bitmap_from_resource(
 				Bitmap* p_bitmap,
-				const char* resource
+				HINSTANCE hinst,
+				const char* res_name,
+				const char* res_type = RT_BITMAP
 			) override;
 
 			// ビットマップを描画(アンカーポイント指定)

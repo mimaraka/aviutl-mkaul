@@ -16,10 +16,12 @@ namespace mkaul {
 			delete reinterpret_cast<Gdiplus::Bitmap*>(data);
 		}
 
+
 		size_t Bitmap_Gdiplus::get_width()
 		{
 			return reinterpret_cast<Gdiplus::Bitmap*>(data)->GetWidth();
 		}
+
 
 		size_t Bitmap_Gdiplus::get_height()
 		{
@@ -27,6 +29,7 @@ namespace mkaul {
 		}
 
 
+		// 開放
 		void Path_Gdiplus::release()
 		{
 			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
@@ -36,6 +39,7 @@ namespace mkaul {
 		}
 
 
+		// パスの開始
 		bool Path_Gdiplus::begin(const Point<float>& pt)
 		{
 			if (!data[0]) {
@@ -50,6 +54,7 @@ namespace mkaul {
 		}
 
 
+		// パスの終了
 		void Path_Gdiplus::end(Figure_End fe)
 		{
 			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
@@ -103,6 +108,24 @@ namespace mkaul {
 		}
 
 
+		// ベジェ曲線を追加
+		void Path_Gdiplus::add_bezier(
+			const Point<float>& pt_0,
+			const Point<float>& pt_1,
+			const Point<float>& pt_2
+		)
+		{
+			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
+
+			if (p_path) p_path->AddBezier(
+				Gdiplus::PointF(pt_last.x, pt_last.y),
+				Gdiplus::PointF(pt_0.x, pt_0.y),
+				Gdiplus::PointF(pt_1.x, pt_1.y),
+				Gdiplus::PointF(pt_2.x, pt_2.y)
+			);
+		}
+
+
 		// 描画環境の用意
 		bool Graphics_Gdiplus::startup()
 		{
@@ -116,8 +139,7 @@ namespace mkaul {
 
 			if (status == Gdiplus::Ok)
 				return true;
-			else
-				return false;
+			else return false;
 		}
 
 
@@ -598,6 +620,7 @@ namespace mkaul {
 		{
 			if (p_graphics_buffer) {
 				Color_I8 col_i8(col_f);
+
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
 						(BYTE)col_i8.a,
@@ -649,28 +672,107 @@ namespace mkaul {
 		// リソースからビットマップを作成
 		bool Graphics_Gdiplus::load_bitmap_from_resource(
 			Bitmap* p_bitmap,
-			const char* resource
+			HINSTANCE hinst,
+			const char* res_name,
+			const char* res_type
 		)
 		{
-			wchar_t* wc;
-			size_t size_resource = strlen(resource) + 1;
-			// char -> wchar_t
-			if (HIWORD(resource)) {
-				wc = new wchar_t[size_resource];
-				size_t size;
-				::mbstowcs_s(&size, wc, size_resource, resource, size_resource);
-			}
-			// 上位ワードが0(識別子が16ビット数値の場合)
-			else {
-				wc = (wchar_t*)resource;
-			}
-
+			wchar_t* wc = nullptr;
+			// ビットマップ(GDI+)のポインタ
 			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
-			p_gdip_bitmap = Gdiplus::Bitmap::FromResource(::GetModuleHandle(NULL), wc);
 
-			if (HIWORD(resource)) delete[] wc;
+			// リソースタイプがBITMAPのとき
+			if (res_type == RT_BITMAP) {
+				// リソース識別子が文字列の場合
+				if (HIWORD(res_name)) {
+					// const char* から wchar_t* に変換
+					size_t size_resource = strlen(res_name) + 1;
+					wc = new wchar_t[size_resource];
 
-			if (p_gdip_bitmap && p_gdip_bitmap->GetWidth() != 0 && p_gdip_bitmap->GetHeight() != 0) {
+					size_t size;
+					::mbstowcs_s(&size, wc, size_resource, res_name, size_resource);
+				}
+				// リソース識別子が数値の場合
+				else
+					wc = reinterpret_cast<wchar_t*>(const_cast<char*>(res_name));
+
+				p_gdip_bitmap = Gdiplus::Bitmap::FromResource(hinst, wc);
+
+				if (HIWORD(res_name)) delete[] wc;
+			}
+			// それ意外のとき
+			else {
+				// リソースのハンドル
+				HRSRC res_handle = nullptr;
+				// リソースのサイズ
+				DWORD res_size = 0;
+				// リソースデータのハンドル
+				HGLOBAL res_data_handle = nullptr;
+				// リソースデータ
+				void* res_data = nullptr;
+				// メモリ確保用リソースハンドル
+				HGLOBAL res_buf_handle = nullptr;
+				// 確保するメモリのポインタ(ここにリソースデータを配置する)
+				void* res_buf_data = nullptr;
+				// ストリームのポインタ
+				IStream* p_stream = nullptr;
+
+				// リソースを探す
+				res_handle = ::FindResource(hinst, res_name, res_type);
+
+				// リソースが見つかった場合
+				if (res_handle)
+					// リソースのサイズを取得
+					res_size = ::SizeofResource(hinst, res_handle);
+
+				// ここウイルス誤検知ポイント
+				// リソースのサイズが存在する場合
+				if (res_size)
+					// リソースのハンドルを取得
+					res_data_handle = ::LoadResource(hinst, res_handle);
+
+				// リソースのハンドルが存在する場合
+				if (res_data_handle)
+					// リソースをロック(リソースのポインタを取得)
+					// 実際にはメモリをロックしないらしい
+					res_data = ::LockResource(res_data_handle);
+
+				// リソースのポインタが存在する場合
+				if (res_data)
+					// メモリの確保
+					res_buf_handle = ::GlobalAlloc(GMEM_MOVEABLE, res_size);
+
+				// メモリが確保できた場合
+				if (res_buf_handle)
+					// メモリのロック
+					res_buf_data = ::GlobalLock(res_buf_handle);
+
+				// メモリがロックできた場合
+				if (res_buf_data) {
+					// ロックしたメモリ領域にリソースのデータをコピー
+					::CopyMemory(res_buf_data, res_data, res_size);
+					// メモリからストリームを作成
+					auto hr = ::CreateStreamOnHGlobal(res_buf_handle, FALSE, &p_stream);
+
+					// ストリームの作成に成功した場合
+					if (SUCCEEDED(hr)) {
+						// ストリームからビットマップを作成
+						p_gdip_bitmap = Gdiplus::Bitmap::FromStream(p_stream);
+
+						// ストリームを開放
+						if (p_stream) p_stream->Release();
+					}
+				}
+
+				// メモリの解除・開放
+				if (res_buf_handle) {
+					::GlobalUnlock(res_buf_handle);
+					::GlobalFree(res_buf_handle);
+				}
+			}
+
+			// ビットマップの作成に成功した場合
+			if (p_gdip_bitmap && p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
 				p_bitmap->data = p_gdip_bitmap;
 				return true;
 			}

@@ -797,55 +797,78 @@ namespace mkaul {
 		// リソースからビットマップを作成
 		bool Graphics_Directx::load_bitmap_from_resource(
 			Bitmap* p_bitmap,
-			const char* resource
+			HINSTANCE hinst,
+			const char* res_name,
+			const char* res_type
 		)
 		{
+			// ビットマップデコーダ
 			IWICBitmapDecoder* p_decoder = nullptr;
+			// ビットマップのフレーム
 			IWICBitmapFrameDecode* p_source = nullptr;
+			// ストリーム
 			IWICStream* p_stream = nullptr;
+			// コンバータ
 			IWICFormatConverter* p_converter = nullptr;
-			IWICBitmapScaler* p_scaler = nullptr;
 
-			HRSRC img_res_handle = NULL;
-			HGLOBAL img_res_data_handle = NULL;
-			void* p_img_file = nullptr;
-			DWORD img_file_size = 0;
+			//IWICBitmapScaler* p_scaler = nullptr;
+
+			// リソースのハンドル
+			HRSRC img_res_handle = nullptr;
+			// リソースデータのハンドル
+			HGLOBAL img_res_data_handle = nullptr;
+			// リソースデータ
+			void* p_res_data = nullptr;
+			// リソースデータのサイズ
+			DWORD res_data_size = 0;
 			HRESULT hr = S_OK;
-			const HMODULE module_handle = ::GetModuleHandle(NULL);
+
+			// ビットマップ(Direct2D)のポインタ
 			auto pp_dxbitmap = reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data));
+			p_bitmap->data = nullptr;
 
+			// リソースを探す
 			img_res_handle = ::FindResourceA(
-				module_handle,
-				resource,
-				MAKEINTRESOURCEA(2)
+				hinst,
+				res_name,
+				res_type
 			);
 
-			if (!img_res_handle) return false;
-
-			img_res_data_handle = ::LoadResource(
-				module_handle,
-				img_res_handle
-			);
-
-			if (!img_res_data_handle) return false;
-
-			p_img_file = ::LockResource(img_res_data_handle);
-
-			if (!p_img_file) return false;
-
-			img_file_size = ::SizeofResource(module_handle, img_res_handle);
-
-			if (!img_file_size) return false;
-
-			hr = p_imaging_factory->CreateStream(&p_stream);
-
-			if (SUCCEEDED(hr)) {
-				hr = p_stream->InitializeFromMemory(
-					reinterpret_cast<BYTE*>(p_img_file),
-					img_file_size
+			// リソースが存在する場合
+			if (img_res_handle) {
+				// リソースのハンドルを取得
+				img_res_data_handle = ::LoadResource(
+					hinst,
+					img_res_handle
 				);
 			}
+			// リソースのハンドルが存在する場合
+			if (img_res_data_handle)
+				// リソースをロック(リソースのポインタを取得)
+					// 実際にはメモリをロックしないらしい
+				p_res_data = ::LockResource(img_res_data_handle);
+
+			// リソースのポインタが存在する場合
+			if (p_res_data)
+				// リソースのサイズを取得
+				res_data_size = ::SizeofResource(hinst, img_res_handle);
+
+			// リソースのサイズが存在する場合
+			if (res_data_size)
+				// ストリームを作成
+				hr = p_imaging_factory->CreateStream(&p_stream);
+
+			// ストリームの作成に成功した場合
 			if (SUCCEEDED(hr)) {
+				// ストリームをメモリのデータで初期化
+				hr = p_stream->InitializeFromMemory(
+					reinterpret_cast<BYTE*>(p_res_data),
+					res_data_size
+				);
+			}
+			// ストリームの初期化に成功した場合
+			if (SUCCEEDED(hr)) {
+				// ストリームからデコーダを作成
 				hr = p_imaging_factory->CreateDecoderFromStream(
 					p_stream,
 					NULL,
@@ -853,13 +876,19 @@ namespace mkaul {
 					&p_decoder
 				);
 			}
-			if (SUCCEEDED(hr)) {
+			// デコーダの作成に成功した場合
+			if (SUCCEEDED(hr))
+				// ビットマップのフレームを取得
 				hr = p_decoder->GetFrame(0, &p_source);
-			}
-			if (SUCCEEDED(hr)) {
+			
+			// フレームの取得に成功した場合
+			if (SUCCEEDED(hr))
+				// フォーマットコンバータを作成
 				hr = p_imaging_factory->CreateFormatConverter(&p_converter);
-			}
+			
+			// フォーマットコンバータの作成に成功した場合
 			if (SUCCEEDED(hr)) {
+				// フォーマットコンバータの初期化
 				hr = p_converter->Initialize(
 					p_source,
 					GUID_WICPixelFormat32bppPBGRA,
@@ -869,7 +898,10 @@ namespace mkaul {
 					WICBitmapPaletteTypeMedianCut
 				);
 			}
+
+			// フォーマットコンバータの初期化に成功した場合
 			if (SUCCEEDED(hr)) {
+				// ビットマップを作成
 				hr = p_render_target->CreateBitmapFromWicBitmap(
 					p_converter,
 					NULL,
@@ -877,9 +909,12 @@ namespace mkaul {
 				);
 			}
 
+			// ビットマップの作成に失敗した場合
 			if (FAILED(hr))
+				// ビットマップを開放
 				dx_release(pp_dxbitmap);
 
+			// コンバータ・フレーム・デコーダ・ストリームを開放
 			dx_release(&p_converter);
 			dx_release(&p_source);
 			dx_release(&p_decoder);
@@ -900,98 +935,101 @@ namespace mkaul {
 		{
 			auto p_d2d1_bitmap = reinterpret_cast<ID2D1Bitmap*>(bitmap->data);
 			D2D1_RECT_F rect_f;
-			auto size_u = p_d2d1_bitmap->GetPixelSize();
+			
+			if (p_d2d1_bitmap) {
+				auto size_u = p_d2d1_bitmap->GetPixelSize();
 
-			// アンカーポイントの位置
-			switch (anchor_pos) {
-			case Anchor_Position::Center:
-			default:
-				rect_f = D2D1::RectF(
-					point.x - size_u.width * 0.5f,
-					point.y - size_u.height * 0.5f,
-					point.x + size_u.width * 0.5f,
-					point.y + size_u.height * 0.5f
-				);
-				break;
+				// アンカーポイントの位置
+				switch (anchor_pos) {
+				case Anchor_Position::Center:
+				default:
+					rect_f = D2D1::RectF(
+						point.x - size_u.width * 0.5f,
+						point.y - size_u.height * 0.5f,
+						point.x + size_u.width * 0.5f,
+						point.y + size_u.height * 0.5f
+					);
+					break;
 
-			case Anchor_Position::Left:
-				rect_f = D2D1::RectF(
-					point.x,
-					point.y - size_u.height * 0.5f,
-					point.x + size_u.width,
-					point.y + size_u.height * 0.5f
-				);
-				break;
+				case Anchor_Position::Left:
+					rect_f = D2D1::RectF(
+						point.x,
+						point.y - size_u.height * 0.5f,
+						point.x + size_u.width,
+						point.y + size_u.height * 0.5f
+					);
+					break;
 
-			case Anchor_Position::Top:
-				rect_f = D2D1::RectF(
-					point.x - size_u.width * 0.5f,
-					point.y,
-					point.x + size_u.width * 0.5f,
-					point.y + size_u.height
-				);
-				break;
+				case Anchor_Position::Top:
+					rect_f = D2D1::RectF(
+						point.x - size_u.width * 0.5f,
+						point.y,
+						point.x + size_u.width * 0.5f,
+						point.y + size_u.height
+					);
+					break;
 
-			case Anchor_Position::Right:
-				rect_f = D2D1::RectF(
-					point.x - size_u.width,
-					point.y - size_u.height * 0.5f,
-					point.x,
-					point.y + size_u.height * 0.5f
-				);
-				break;
+				case Anchor_Position::Right:
+					rect_f = D2D1::RectF(
+						point.x - size_u.width,
+						point.y - size_u.height * 0.5f,
+						point.x,
+						point.y + size_u.height * 0.5f
+					);
+					break;
 
-			case Anchor_Position::Bottom:
-				rect_f = D2D1::RectF(
-					point.x - size_u.width * 0.5f,
-					point.y - size_u.height,
-					point.x + size_u.width * 0.5f,
-					point.y
-				);
-				break;
+				case Anchor_Position::Bottom:
+					rect_f = D2D1::RectF(
+						point.x - size_u.width * 0.5f,
+						point.y - size_u.height,
+						point.x + size_u.width * 0.5f,
+						point.y
+					);
+					break;
 
-			case Anchor_Position::Left_Top:
-				rect_f = D2D1::RectF(
-					point.x,
-					point.y,
-					point.x + size_u.width,
-					point.y + size_u.height
-				);
-				break;
+				case Anchor_Position::Left_Top:
+					rect_f = D2D1::RectF(
+						point.x,
+						point.y,
+						point.x + size_u.width,
+						point.y + size_u.height
+					);
+					break;
 
-			case Anchor_Position::Right_Top:
-				rect_f = D2D1::RectF(
-					point.x - size_u.width,
-					point.y,
-					point.x,
-					point.y + size_u.height
-				);
-				break;
+				case Anchor_Position::Right_Top:
+					rect_f = D2D1::RectF(
+						point.x - size_u.width,
+						point.y,
+						point.x,
+						point.y + size_u.height
+					);
+					break;
 
-			case Anchor_Position::Left_Bottom:
-				rect_f = D2D1::RectF(
-					point.x,
-					point.y - size_u.height,
-					point.x + size_u.width,
-					point.y
-				);
-				break;
+				case Anchor_Position::Left_Bottom:
+					rect_f = D2D1::RectF(
+						point.x,
+						point.y - size_u.height,
+						point.x + size_u.width,
+						point.y
+					);
+					break;
 
-			case Anchor_Position::Right_Bottom:
-				rect_f = D2D1::RectF(
-					point.x - size_u.width,
-					point.y - size_u.height,
-					point.x,
-					point.y
+				case Anchor_Position::Right_Bottom:
+					rect_f = D2D1::RectF(
+						point.x - size_u.width,
+						point.y - size_u.height,
+						point.x,
+						point.y
+					);
+					break;
+				}
+
+				p_render_target->DrawBitmap(
+					p_d2d1_bitmap,
+					rect_f,
+					opacity
 				);
-				break;
 			}
-
-			p_render_target->DrawBitmap(
-				p_d2d1_bitmap,
-				rect_f,
-				opacity
-			);
 		}
 
 
@@ -1002,8 +1040,10 @@ namespace mkaul {
 			float opacity
 		)
 		{
-			p_render_target->DrawBitmap(
-				reinterpret_cast<ID2D1Bitmap*>(bitmap->data),
+			auto p_d2d1_bitmap = reinterpret_cast<ID2D1Bitmap*>(bitmap->data);
+
+			if (p_d2d1_bitmap) p_render_target->DrawBitmap(
+				p_d2d1_bitmap,
 				D2D1::RectF(
 					rect.left,
 					rect.top,

@@ -167,7 +167,7 @@ namespace mkaul {
 		{
 			constexpr float pi = std::numbers::pi_v<float>;
 
-			float x = size.width * size.height / (float)std::sqrt(size.height * size.height + size.width * size.width * std::pow(std::tan(angle), 2)) * (float)sign(std::cos(angle));
+			float x = size.width * size.height / std::sqrt(size.height * size.height + size.width * size.width * (float)std::pow(std::tan(angle), 2)) * (float)sign(std::cos(angle));
 			float y = x * std::tan(angle);
 
 			p_pt->x = x;
@@ -291,7 +291,9 @@ namespace mkaul {
 			// リソースからビットマップを作成
 			virtual bool load_bitmap_from_resource(
 				Bitmap* pp_bitmap,
-				const char* resource
+				HINSTANCE hinst,
+				const char* res_name,
+				const char* res_type = RT_BITMAP
 			) = 0;
 
 			// ビットマップを描画(アンカーポイント指定)
