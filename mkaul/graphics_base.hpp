@@ -69,9 +69,10 @@ namespace mkaul {
 
 		// ビットマップ(抽象クラス)
 		struct Bitmap {
-		public:
+		protected:
 			void* data;
 
+		public:
 			Bitmap() :
 				data(nullptr)
 			{}
@@ -79,9 +80,18 @@ namespace mkaul {
 			// ビットマップを破棄
 			virtual void release() = 0;
 
+			// データを取得
+			template <typename Ptr>
+			Ptr get_data() const
+			{
+				return reinterpret_cast<Ptr>(data);
+			}
+			// データを設定
+			void set_data(void* ptr) { data = ptr; };
+
 			// 幅・高さを取得
-			virtual size_t get_width() = 0;
-			virtual size_t get_height() = 0;
+			virtual size_t get_width() const = 0;
+			virtual size_t get_height() const = 0;
 		};
 
 
@@ -133,6 +143,12 @@ namespace mkaul {
 			};
 
 			virtual void release() = 0;
+
+			template <typename Ptr>
+			Ptr get_data(int idx) const
+			{
+				return reinterpret_cast<Ptr>(data[idx]);
+			}
 
 			virtual bool begin(const Point<float>& pt) = 0;
 			virtual void end(Figure_End fe = Figure_End::Closed) = 0;
@@ -284,22 +300,35 @@ namespace mkaul {
 				const Color_F& col_f = 0
 			) = 0;
 
+			// パスを描画(線)
+			virtual void draw_path(
+				const Path* p_path,
+				const Color_F& col_f = 0,
+				const Stroke& stroke = Stroke()
+			) = 0;
+
+			// パスを描画(塗り)
+			virtual void fill_path(
+				const Path* p_path,
+				const Color_F& col_f = 0
+			) = 0;
+
 			// 空のビットマップを作成
 			virtual bool initialize_bitmap(
-				Bitmap* pp_bitmap,
+				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
 				Color_F col_f = 0
 			) = 0;
 
 			// ファイルからビットマップを作成
 			virtual bool load_bitmap_from_filename(
-				Bitmap* pp_bitmap,
+				Bitmap* p_bitmap,
 				const std::filesystem::path& path
 			) = 0;
 
 			// リソースからビットマップを作成
 			virtual bool load_bitmap_from_resource(
-				Bitmap* pp_bitmap,
+				Bitmap* p_bitmap,
 				HINSTANCE hinst,
 				const char* res_name,
 				const char* res_type = RT_BITMAP
@@ -307,7 +336,7 @@ namespace mkaul {
 
 			// ビットマップを描画(アンカーポイント指定)
 			virtual void draw_bitmap(
-				const Bitmap* bitmap,
+				const Bitmap* p_bitmap,
 				const Point<float>& point,
 				Anchor_Position anchor_pos,
 				float opacity = 1.f
@@ -315,7 +344,7 @@ namespace mkaul {
 
 			// ビットマップを描画(矩形指定)
 			virtual void draw_bitmap(
-				const Bitmap* bitmap,
+				const Bitmap* p_bitmap,
 				const Rectangle<float>& rect,
 				float opacity = 1.f
 			) = 0;

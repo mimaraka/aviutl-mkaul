@@ -42,8 +42,8 @@ namespace mkaul {
 
 			void release() override;
 
-			size_t get_width() override;
-			size_t get_height() override;
+			size_t get_width() const override;
+			size_t get_height() const override;
 		};
 
 
@@ -198,6 +198,19 @@ namespace mkaul {
 			// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
 			void fill_ellipse(
 				const Rectangle<float>& rectangle,
+				const Color_F& col_f = 0
+			) override;
+
+			// ƒpƒX‚ğ•`‰æ(ü)
+			void draw_path(
+				const Path* p_path,
+				const Color_F& col_f = 0,
+				const Stroke& stroke = Stroke()
+			) override;
+
+			// ƒpƒX‚ğ•`‰æ(“h‚è)
+			void fill_path(
+				const Path* p_path,
 				const Color_F& col_f = 0
 			) override;
 

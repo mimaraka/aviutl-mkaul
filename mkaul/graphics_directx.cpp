@@ -16,12 +16,12 @@ namespace mkaul {
 			dx_release(&p_bitmap);
 		}
 
-		size_t Bitmap_Directx::get_width()
+		size_t Bitmap_Directx::get_width() const
 		{
 			return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).width;
 		}
 
-		size_t Bitmap_Directx::get_height()
+		size_t Bitmap_Directx::get_height() const
 		{
 			return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).height;
 		}
@@ -84,56 +84,60 @@ namespace mkaul {
 		)
 		{
 			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
-			D2D1_SWEEP_DIRECTION sd;
-			D2D1_ARC_SIZE as;
+			
+			if (p_sink) {
+				D2D1_SWEEP_DIRECTION sd;
+				D2D1_ARC_SIZE as;
 
-			// 弧の開始・終了地点(楕円の中心からの相対座標)
-			// 弧の終了地点
-			// 楕円の中心
-			Point<float> pt_ofs_start, pt_ofs_end, pt_end, pt_o;
+				// 弧の開始・終了地点(楕円の中心からの相対座標)
+				// 弧の終了地点
+				// 楕円の中心
+				Point<float> pt_ofs_start, pt_ofs_end, pt_o;
 
-			// 角度を-360d ~ 360dの範囲に収める
-			angle_sweep = std::fmodf(angle_sweep, 360.f);
+				// 角度を-360d ~ 360dの範囲に収める
+				angle_sweep = std::fmodf(angle_sweep, 360.f);
 
-			ellipse_pos(size, angle_start, &pt_ofs_start);
-			ellipse_pos(size, angle_start + angle_sweep, &pt_ofs_end);
+				ellipse_pos(size, angle_start, &pt_ofs_start);
+				ellipse_pos(size, angle_start + angle_sweep, &pt_ofs_end);
 
-			pt_o = pt_last - pt_ofs_start;
-			pt_end = pt_o + pt_ofs_end;
+				pt_o = pt_last - pt_ofs_start;
+				// 最後の点を更新
+				pt_last = pt_o + pt_ofs_end;
 
-			// 時計回り
-			if (angle_sweep > 0) {
-				sd = D2D1_SWEEP_DIRECTION_CLOCKWISE;
+				// 時計回り
+				if (angle_sweep > 0) {
+					sd = D2D1_SWEEP_DIRECTION_CLOCKWISE;
 
-				// 弧の角度の大きさが180dより大きい場合
-				if (angle_sweep > 180.f)
-					as = D2D1_ARC_SIZE_LARGE;
-				// 弧の角度の大きさがπより小さい場合
-				else
-					as = D2D1_ARC_SIZE_SMALL;
+					// 弧の角度の大きさが180dより大きい場合
+					if (angle_sweep > 180.f)
+						as = D2D1_ARC_SIZE_LARGE;
+					// 弧の角度の大きさがπより小さい場合
+					else
+						as = D2D1_ARC_SIZE_SMALL;
+				}
+				// 反時計回り
+				else {
+					sd = D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE;
+
+					// 弧の角度の大きさが180dより大きい場合
+					if (angle_sweep < -180.f)
+						as = D2D1_ARC_SIZE_LARGE;
+					// 弧の角度の大きさがπより小さい場合
+					else
+						as = D2D1_ARC_SIZE_SMALL;
+				}
+
+
+				p_sink->AddArc(
+					D2D1::ArcSegment(
+						pt_last.to<D2D1_POINT_2F>(),
+						size.to<D2D1_SIZE_F>(),
+						0.f,
+						sd,
+						as
+					)
+				);
 			}
-			// 反時計回り
-			else {
-				sd = D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE;
-
-				// 弧の角度の大きさが180dより大きい場合
-				if (angle_sweep < -180.f)
-					as = D2D1_ARC_SIZE_LARGE;
-				// 弧の角度の大きさがπより小さい場合
-				else
-					as = D2D1_ARC_SIZE_SMALL;
-			}
-
-
-			p_sink->AddArc(
-				D2D1::ArcSegment(
-					pt_end.to<D2D1_POINT_2F>(),
-					size.to<D2D1_SIZE_F>(),
-					0.f,
-					sd,
-					as
-				)
-			);
 		}
 
 
@@ -144,9 +148,14 @@ namespace mkaul {
 		{
 			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 
-			p_sink->AddLine(
-				pt.to<D2D1_POINT_2F>()
-			);
+			if (p_sink) {
+				// 最後の点を更新
+				pt_last = pt;
+
+				p_sink->AddLine(
+					pt.to<D2D1_POINT_2F>()
+				);
+			}
 		}
 
 
@@ -159,13 +168,18 @@ namespace mkaul {
 		{
 			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 
-			p_sink->AddBezier(
-				D2D1::BezierSegment(
-					pt_0.to<D2D1_POINT_2F>(),
-					pt_1.to<D2D1_POINT_2F>(),
-					pt_2.to<D2D1_POINT_2F>()
-				)
-			);
+			if (p_sink) {
+				// 最後の点を更新
+				pt_last = pt_2;
+
+				p_sink->AddBezier(
+					D2D1::BezierSegment(
+						pt_0.to<D2D1_POINT_2F>(),
+						pt_1.to<D2D1_POINT_2F>(),
+						pt_2.to<D2D1_POINT_2F>()
+					)
+				);
+			}
 		}
 
 
@@ -769,6 +783,46 @@ namespace mkaul {
 		}
 
 
+		// パスを描画(線)
+		void Graphics_Directx::draw_path(
+			const Path* p_path,
+			const Color_F& col_f,
+			const Stroke& stroke
+		)
+		{
+			if (drawing && p_render_target && p_brush) {
+				ID2D1StrokeStyle* stroke_style = nullptr;
+				stroke_to_d2d_strokestyle(stroke, &stroke_style);
+
+				p_brush->SetColor(col_f.d2d1_colorf());
+
+				p_render_target->DrawGeometry(
+					p_path->get_data<ID2D1PathGeometry*>(0),
+					p_brush,
+					stroke.width,
+					stroke_style
+				);
+			}
+		}
+
+
+		// パスを描画(塗り)
+		void Graphics_Directx::fill_path(
+			const Path* p_path,
+			const Color_F& col_f
+		)
+		{
+			if (drawing && p_render_target && p_brush) {
+				p_brush->SetColor(col_f.d2d1_colorf());
+
+				p_render_target->FillGeometry(
+					p_path->get_data<ID2D1PathGeometry*>(0),
+					p_brush
+				);
+			}
+		}
+
+
 		// 空のビットマップを作成
 		bool Graphics_Directx::initialize_bitmap(
 			Bitmap* p_bitmap,
@@ -777,16 +831,20 @@ namespace mkaul {
 		)
 		{
 			if (p_render_target) {
-				HRESULT hr = E_FAIL;
-				hr = p_render_target->CreateBitmap(
+				ID2D1Bitmap* p_d2d1_bitmap = nullptr;
+
+				HRESULT hr = p_render_target->CreateBitmap(
 					D2D1::SizeU(size.width, size.height),
 					D2D1::BitmapProperties(),
-					reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data))
+					&p_d2d1_bitmap
 				);
 
-				if (SUCCEEDED(hr)) return true;
+				if (SUCCEEDED(hr)) {
+					p_bitmap->set_data(p_d2d1_bitmap);
+					return true;
+				}
 
-				dx_release(reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data)));
+				dx_release(&p_d2d1_bitmap);
 			}
 			return false;
 		}
@@ -802,8 +860,7 @@ namespace mkaul {
 			IWICBitmapFrameDecode* p_source = nullptr;
 			IWICFormatConverter* p_converter = nullptr;
 			HRESULT hr = E_FAIL;
-			auto pp_dxbitmap = reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data));
-			p_bitmap->data = nullptr;
+			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
 
 			// デコーダを生成
 			hr = p_imaging_factory->CreateDecoderFromFilename(
@@ -838,11 +895,14 @@ namespace mkaul {
 				hr = p_render_target->CreateBitmapFromWicBitmap(
 					p_converter,
 					NULL,
-					pp_dxbitmap
+					&p_d2d1_bitmap
 				);
 			}
 
-			if (FAILED(hr)) dx_release(pp_dxbitmap);
+			if (SUCCEEDED(hr))
+				p_bitmap->set_data(p_d2d1_bitmap);
+			else
+				dx_release(&p_d2d1_bitmap);
 
 			dx_release(&p_converter);
 			dx_release(&p_source);
@@ -882,8 +942,7 @@ namespace mkaul {
 			HRESULT hr = S_OK;
 
 			// ビットマップ(Direct2D)のポインタ
-			auto pp_dxbitmap = reinterpret_cast<ID2D1Bitmap**>(&(p_bitmap->data));
-			p_bitmap->data = nullptr;
+			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
 
 			// リソースを探す
 			img_res_handle = ::FindResourceA(
@@ -964,16 +1023,19 @@ namespace mkaul {
 					hr = p_render_target->CreateBitmapFromWicBitmap(
 						p_converter,
 						NULL,
-						pp_dxbitmap
+						&p_d2d1_bitmap
 					);
 				}
 				else hr = E_FAIL;
 			}
 
+			// ビットマップの作成に成功した場合
+			if (SUCCEEDED(hr))
+				p_bitmap->set_data(p_d2d1_bitmap);
 			// ビットマップの作成に失敗した場合
-			if (FAILED(hr))
+			else
 				// ビットマップを開放
-				dx_release(pp_dxbitmap);
+				dx_release(&p_d2d1_bitmap);
 
 			// コンバータ・フレーム・デコーダ・ストリームを開放
 			dx_release(&p_converter);
@@ -988,14 +1050,14 @@ namespace mkaul {
 
 		// ビットマップを描画(アンカーポイント指定)
 		void Graphics_Directx::draw_bitmap(
-			const Bitmap* bitmap,
+			const Bitmap* p_bitmap,
 			const Point<float>& point,
 			Anchor_Position anchor_pos,
 			float opacity
 		)
 		{
 			if (drawing) {
-				auto p_d2d1_bitmap = reinterpret_cast<ID2D1Bitmap*>(bitmap->data);
+				auto p_d2d1_bitmap = p_bitmap->get_data<ID2D1Bitmap*>();
 				D2D1_RECT_F rect_f;
 
 				if (p_d2d1_bitmap) {
@@ -1098,12 +1160,12 @@ namespace mkaul {
 
 		// ビットマップを描画(矩形指定)
 		void Graphics_Directx::draw_bitmap(
-			const Bitmap* bitmap,
+			const Bitmap* p_bitmap,
 			const Rectangle<float>& rect,
 			float opacity
 		)
 		{
-			auto p_d2d1_bitmap = reinterpret_cast<ID2D1Bitmap*>(bitmap->data);
+			auto p_d2d1_bitmap = p_bitmap->get_data<ID2D1Bitmap*>();
 
 			if (drawing && p_d2d1_bitmap && p_render_target) p_render_target->DrawBitmap(
 				p_d2d1_bitmap,

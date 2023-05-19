@@ -17,13 +17,13 @@ namespace mkaul {
 		}
 
 
-		size_t Bitmap_Gdiplus::get_width()
+		size_t Bitmap_Gdiplus::get_width() const
 		{
 			return reinterpret_cast<Gdiplus::Bitmap*>(data)->GetWidth();
 		}
 
 
-		size_t Bitmap_Gdiplus::get_height()
+		size_t Bitmap_Gdiplus::get_height() const
 		{
 			return reinterpret_cast<Gdiplus::Bitmap*>(data)->GetHeight();
 		}
@@ -69,13 +69,16 @@ namespace mkaul {
 		)
 		{
 			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
-			Point<float> pt_ofs_start, pt_o;
+			Point<float> pt_ofs_start, pt_ofs_end, pt_o;
 
 			// 角度を-360d ~ 360dの範囲に収める
 			angle_sweep = std::fmodf(angle_sweep, 360.f);
 
 			ellipse_pos(size, angle_start, &pt_ofs_start);
+			ellipse_pos(size, angle_start + angle_sweep, &pt_ofs_end);
 			pt_o = pt_last - pt_ofs_start;
+			// 最後の点を更新
+			pt_last = pt_o + pt_ofs_end;
 
 			if (p_path) p_path->AddArc(
 				Gdiplus::RectF(
@@ -101,6 +104,8 @@ namespace mkaul {
 				Gdiplus::PointF(pt_last.x, pt_last.y),
 				Gdiplus::PointF(pt.x, pt.y)
 			);
+			// 最後の点を更新
+			pt_last = pt;
 		}
 
 
@@ -119,6 +124,8 @@ namespace mkaul {
 				Gdiplus::PointF(pt_1.x, pt_1.y),
 				Gdiplus::PointF(pt_2.x, pt_2.y)
 			);
+			// 最後の点を更新
+			pt_last = pt_2;
 		}
 
 
@@ -197,27 +204,29 @@ namespace mkaul {
 		// 描画開始
 		bool Graphics_Gdiplus::begin_draw()
 		{
-			gdip_release(&p_graphics_buffer);
-			gdip_release(&p_bitmap_buffer);
-
-			RECT rect;
-
-			if (::GetClientRect(hwnd, &rect)) {
-				p_bitmap_buffer = new Gdiplus::Bitmap(rect.right, rect.bottom);
-				p_graphics_buffer = new Gdiplus::Graphics(p_bitmap_buffer);
-			}
-
-			if (p_bitmap_buffer && p_graphics_buffer) {
-				p_graphics_buffer->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-
-				return true;
-			}
-			else {
+			if (!drawing) {
 				gdip_release(&p_graphics_buffer);
 				gdip_release(&p_bitmap_buffer);
 
-				return false;
+				RECT rect;
+
+				if (::GetClientRect(hwnd, &rect)) {
+					p_bitmap_buffer = new Gdiplus::Bitmap(rect.right, rect.bottom);
+					p_graphics_buffer = new Gdiplus::Graphics(p_bitmap_buffer);
+				}
+
+				if (p_bitmap_buffer && p_graphics_buffer) {
+					p_graphics_buffer->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+					drawing = true;
+
+					return true;
+				}
+				else {
+					gdip_release(&p_graphics_buffer);
+					gdip_release(&p_bitmap_buffer);
+				}
 			}
+			return false;
 		}
 
 
@@ -226,21 +235,23 @@ namespace mkaul {
 		{
 			bool result = false;
 
-			if (p_graphics_buffer && p_bitmap_buffer) {
-				PAINTSTRUCT ps;
-				HDC hdc = ::BeginPaint(hwnd, &ps);
-				Gdiplus::Graphics p_graphics(hdc);
-				p_graphics.DrawImage(p_bitmap_buffer, 0, 0);
+			if (drawing) {
+				if (p_graphics_buffer && p_bitmap_buffer) {
+					PAINTSTRUCT ps;
+					HDC hdc = ::BeginPaint(hwnd, &ps);
+					Gdiplus::Graphics p_graphics(hdc);
+					p_graphics.DrawImage(p_bitmap_buffer, 0, 0);
 
-				::EndPaint(hwnd, &ps);
+					::EndPaint(hwnd, &ps);
+					drawing = false;
 
-				result = true;
+					result = true;
+				}
+				else result = false;
+
+				gdip_release(&p_graphics_buffer);
+				gdip_release(&p_bitmap_buffer);
 			}
-			else result = false;
-
-			gdip_release(&p_graphics_buffer);
-			gdip_release(&p_bitmap_buffer);
-
 			return result;
 		}
 
@@ -286,7 +297,7 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, col_f, stroke);
 
@@ -307,7 +318,7 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, col_f, stroke);
 
@@ -339,7 +350,7 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, col_f, stroke);
 
@@ -362,7 +373,7 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, col_f, stroke);
 
@@ -393,7 +404,7 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, col_f, stroke);
 				
@@ -484,7 +495,7 @@ namespace mkaul {
 			const Color_F& col_f
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Color_I8 col_i8(col_f);
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
@@ -583,7 +594,7 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, col_f, stroke);
 
@@ -606,7 +617,7 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
 				apply_pen_style(&pen, col_f, stroke);
 
@@ -630,7 +641,7 @@ namespace mkaul {
 			const Color_F& col_f
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Color_I8 col_i8(col_f);
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
@@ -659,7 +670,7 @@ namespace mkaul {
 			const Color_F& col_f
 		)
 		{
-			if (p_graphics_buffer) {
+			if (drawing && p_graphics_buffer) {
 				Color_I8 col_i8(col_f);
 
 				Gdiplus::SolidBrush brush(
@@ -683,6 +694,51 @@ namespace mkaul {
 		}
 
 
+		// パスを描画(線)
+		void Graphics_Gdiplus::draw_path(
+			const Path* p_path,
+			const Color_F& col_f,
+			const Stroke& stroke
+		)
+		{
+			if (drawing && p_graphics_buffer) {
+				Gdiplus::Pen pen(Gdiplus::Color(0));
+				apply_pen_style(&pen, col_f, stroke);
+
+				p_graphics_buffer->DrawPath(
+					&pen,
+					p_path->get_data<Gdiplus::GraphicsPath*>(0)
+				);
+			}
+		}
+
+
+		// パスを描画(塗り)
+		void Graphics_Gdiplus::fill_path(
+			const Path* p_path,
+			const Color_F& col_f
+		)
+		{
+			if (drawing && p_graphics_buffer) {
+				Color_I8 col_i8(col_f);
+
+				Gdiplus::SolidBrush brush(
+					Gdiplus::Color(
+						(BYTE)col_i8.a,
+						(BYTE)col_i8.r,
+						(BYTE)col_i8.g,
+						(BYTE)col_i8.b
+					)
+				);
+
+				p_graphics_buffer->FillPath(
+					&brush,
+					p_path->get_data<Gdiplus::GraphicsPath*>(0)
+				);
+			}
+		}
+
+
 		// 空のビットマップを作成
 		bool Graphics_Gdiplus::initialize_bitmap(
 			Bitmap* p_bitmap,
@@ -692,7 +748,7 @@ namespace mkaul {
 		{
 			auto p_gdip_bitmap = new Gdiplus::Bitmap(size.width, size.height);
 			if (p_gdip_bitmap && p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
-				p_bitmap->data = p_gdip_bitmap;
+				p_bitmap->set_data(p_gdip_bitmap);
 				return true;
 			}
 			else return false;
@@ -708,7 +764,7 @@ namespace mkaul {
 			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
 			p_gdip_bitmap = new Gdiplus::Bitmap(path.c_str());
 			if (p_gdip_bitmap && p_gdip_bitmap->GetWidth() != 0 && p_gdip_bitmap->GetHeight() != 0) {
-				p_bitmap->data = p_gdip_bitmap;
+				p_bitmap->set_data(p_gdip_bitmap);
 				return true;
 			}
 			else return false;
@@ -819,7 +875,7 @@ namespace mkaul {
 
 			// ビットマップの作成に成功した場合
 			if (p_gdip_bitmap && p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
-				p_bitmap->data = p_gdip_bitmap;
+				p_bitmap->set_data(p_gdip_bitmap);
 				return true;
 			}
 			else return false;
@@ -834,7 +890,7 @@ namespace mkaul {
 			float opacity
 		)
 		{
-			auto p_gdip_bitmap = reinterpret_cast<Gdiplus::Bitmap*>(bitmap->data);
+			auto p_gdip_bitmap = bitmap->get_data<Gdiplus::Bitmap*>();
 			Gdiplus::RectF rect_f;
 			int width = p_gdip_bitmap->GetWidth();
 			int height = p_gdip_bitmap->GetHeight();
@@ -939,7 +995,7 @@ namespace mkaul {
 		)
 		{
 			p_graphics_buffer->DrawImage(
-				reinterpret_cast<Gdiplus::Bitmap*>(bitmap->data),
+				bitmap->get_data<Gdiplus::Bitmap*>(),
 				Gdiplus::RectF(
 					rect.left,
 					rect.top,
