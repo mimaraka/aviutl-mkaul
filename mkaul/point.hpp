@@ -7,6 +7,7 @@
 #pragma once
 
 #include "common.hpp"
+#include "utils.hpp"
 
 
 
@@ -16,11 +17,13 @@ namespace mkaul {
 	struct Point {
 		T x, y;
 
+		// “™‰¿
 		inline bool operator == (const Point<T>& pt) const
 		{
 			return (this->x == pt.x && this->y == pt.y);
 		}
 
+		// ‰ÁZ
 		template <typename PtType>
 		inline Point<T> operator + (const PtType& pt) const
 		{
@@ -30,6 +33,7 @@ namespace mkaul {
 			};
 		}
 
+		// Œ¸Z
 		template <typename PtType>
 		inline Point<T> operator - (const PtType& pt) const
 		{
@@ -39,11 +43,20 @@ namespace mkaul {
 			};
 		}
 
+		// “àÏ
 		template <typename PtType>
-		inline void operator = (const PtType& pt)
+		inline T operator * (const PtType& pt) const
+		{
+			return this->x * (T)pt.x + this->y * (T)pt.y;
+		}
+
+		// ‘ã“ü
+		template <typename PtType>
+		inline Point<T> operator = (const PtType& pt)
 		{
 			this->x = (T)pt.x;
 			this->y = (T)pt.y;
+			return *this;
 		}
 
 		Point(T x_ = 0, T y_ = 0) :
@@ -56,6 +69,7 @@ namespace mkaul {
 			y((T)pt.y)
 		{}
 
+		// ‘¼‚ÌŒ^‚É•ÏŠ·
 		template <typename PtType>
 		auto to() const
 		{
@@ -64,6 +78,23 @@ namespace mkaul {
 			pt.y = static_cast<decltype(pt.y)>(y);
 
 			return pt;
+		}
+
+		// ’è””{
+		template <typename U>
+		void scale(U scl)
+		{
+			x = (T)(x * scl);
+			y = (T)(y * scl);
+		}
+
+		// ‰ñ“]
+		void rotate(double deg)
+		{
+			auto rad = deg2rad(-deg);
+			auto t = x;
+			x = (T)(x * std::cos(rad) - y * std::sin(rad));
+			y = (T)(-t * std::sin(rad) - y * std::cos(rad));
 		}
 	};
 

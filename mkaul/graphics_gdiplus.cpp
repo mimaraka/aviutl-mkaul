@@ -13,7 +13,7 @@ namespace mkaul {
 	namespace graphics {
 		void Bitmap_Gdiplus::release()
 		{
-			delete reinterpret_cast<Gdiplus::Bitmap*>(data);
+			gdip_release(reinterpret_cast<Gdiplus::Bitmap**>(&data));
 		}
 
 
@@ -32,10 +32,7 @@ namespace mkaul {
 		// 開放
 		void Path_Gdiplus::release()
 		{
-			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
-			if (p_path)
-				delete p_path;
-			data[0] = nullptr;
+			gdip_release(reinterpret_cast<Gdiplus::GraphicsPath**>(&data[0]));
 		}
 
 
@@ -72,11 +69,10 @@ namespace mkaul {
 		)
 		{
 			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
-			constexpr float pi = std::numbers::pi_v<float>;
 			Point<float> pt_ofs_start, pt_o;
 
-			// 角度を-2π ~ 2πの範囲に収める
-			angle_sweep = std::fmodf(angle_sweep, pi * 2.f);
+			// 角度を-360d ~ 360dの範囲に収める
+			angle_sweep = std::fmodf(angle_sweep, 360.f);
 
 			ellipse_pos(size, angle_start, &pt_ofs_start);
 			pt_o = pt_last - pt_ofs_start;
@@ -88,8 +84,8 @@ namespace mkaul {
 					size.width * 2.f,
 					size.height * 2.f
 				),
-				-rad2deg(angle_start),
-				-rad2deg(angle_sweep)
+				angle_start + 90.f,
+				angle_sweep
 			);
 		}
 
@@ -156,10 +152,10 @@ namespace mkaul {
 			Color_I8 col_i8(col_f);
 			p_pen->SetColor(
 				Gdiplus::Color(
-					col_i8.a,
-					col_i8.r,
-					col_i8.g,
-					col_i8.b
+					(BYTE)col_i8.a,
+					(BYTE)col_i8.r,
+					(BYTE)col_i8.g,
+					(BYTE)col_i8.b
 				)
 			);
 
@@ -182,58 +178,103 @@ namespace mkaul {
 		// 初期化(インスタンス毎)
 		bool Graphics_Gdiplus::init(HWND hwnd_)
 		{
-			hwnd = hwnd_;
-			return true;
+			if (::IsWindow(hwnd_)) {
+				hwnd = hwnd_;
+				return true;
+			}
+			else return false;
 		}
 
 
 		// 終了(インスタンス毎)
 		void Graphics_Gdiplus::exit()
 		{
-			if (p_bitmap_buffer) {
-				delete p_bitmap_buffer;
-				p_bitmap_buffer = nullptr;
-			}
+			gdip_release(&p_graphics_buffer);
+			gdip_release(&p_bitmap_buffer);
 		}
 
 
 		// 描画開始
-		void Graphics_Gdiplus::begin_draw()
+		bool Graphics_Gdiplus::begin_draw()
 		{
-			delete p_graphics_buffer;
-			delete p_bitmap_buffer;
+			gdip_release(&p_graphics_buffer);
+			gdip_release(&p_bitmap_buffer);
 
-			RECT rect_wnd;
-			::GetClientRect(hwnd, &rect_wnd);
-			p_bitmap_buffer = new Gdiplus::Bitmap(rect_wnd.right, rect_wnd.bottom);
-			p_graphics_buffer = new Gdiplus::Graphics(p_bitmap_buffer);
-			p_graphics_buffer->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+			RECT rect;
+
+			if (::GetClientRect(hwnd, &rect)) {
+				p_bitmap_buffer = new Gdiplus::Bitmap(rect.right, rect.bottom);
+				p_graphics_buffer = new Gdiplus::Graphics(p_bitmap_buffer);
+			}
+
+			if (p_bitmap_buffer && p_graphics_buffer) {
+				p_graphics_buffer->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+
+				return true;
+			}
+			else {
+				gdip_release(&p_graphics_buffer);
+				gdip_release(&p_bitmap_buffer);
+
+				return false;
+			}
 		}
 
 
 		// 描画終了(&バッファ送信)
 		bool Graphics_Gdiplus::end_draw()
 		{
-			if (p_graphics_buffer) {
-				delete p_graphics_buffer;
-				p_graphics_buffer = nullptr;
+			bool result = false;
 
-				if (p_bitmap_buffer) {
-					PAINTSTRUCT ps;
-					HDC hdc = ::BeginPaint(hwnd, &ps);
-					Gdiplus::Graphics p_graphics(hdc);
-					p_graphics.DrawImage(p_bitmap_buffer, 0, 0);
+			if (p_graphics_buffer && p_bitmap_buffer) {
+				PAINTSTRUCT ps;
+				HDC hdc = ::BeginPaint(hwnd, &ps);
+				Gdiplus::Graphics p_graphics(hdc);
+				p_graphics.DrawImage(p_bitmap_buffer, 0, 0);
 
-					::EndPaint(hwnd, &ps);
+				::EndPaint(hwnd, &ps);
 
-					delete p_bitmap_buffer;
-					p_bitmap_buffer = nullptr;
-
-					return true;
-				}
-				else return false;
+				result = true;
 			}
-			else return false;
+			else result = false;
+
+			gdip_release(&p_graphics_buffer);
+			gdip_release(&p_bitmap_buffer);
+
+			return result;
+		}
+
+
+		// 背景を塗りつぶし
+		void Graphics_Gdiplus::fill_background(
+			const Color_F& col_f
+		)
+		{
+			if (drawing && p_graphics_buffer) {
+				Color_I8 col_i8(col_f);
+				RECT rect;
+
+				Gdiplus::SolidBrush brush(
+					Gdiplus::Color(
+						(BYTE)col_i8.a,
+						(BYTE)col_i8.r,
+						(BYTE)col_i8.g,
+						(BYTE)col_i8.b
+					)
+				);
+
+				if (::GetClientRect(hwnd, &rect)) {
+					p_graphics_buffer->FillRectangle(
+						&brush,
+						Gdiplus::Rect(
+							rect.left,
+							rect.top,
+							rect.right,
+							rect.bottom
+						)
+					);
+				}
+			}
 		}
 
 
@@ -294,13 +335,13 @@ namespace mkaul {
 			const Point<float>& point_1,
 			const Point<float>& point_2,
 			const Point<float>& point_3,
-			const Color_F& color_f,
+			const Color_F& col_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
-				apply_pen_style(&pen, color_f, stroke);
+				apply_pen_style(&pen, col_f, stroke);
 
 				p_graphics_buffer->DrawBezier(
 					&pen,
@@ -317,13 +358,13 @@ namespace mkaul {
 		void Graphics_Gdiplus::draw_beziers(
 			const Point<float>* points,
 			size_t n_points,
-			const Color_F& color_f,
+			const Color_F& col_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
-				apply_pen_style(&pen, color_f, stroke);
+				apply_pen_style(&pen, col_f, stroke);
 
 				auto gdip_points = new Gdiplus::PointF[n_points];
 
@@ -348,13 +389,13 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			float round_radius_x,
 			float round_radius_y,
-			const Color_F& color_f,
+			const Color_F& col_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
-				apply_pen_style(&pen, color_f, stroke);
+				apply_pen_style(&pen, col_f, stroke);
 				
 				// 角丸矩形を描画
 				if (round_radius_x > 0 || round_radius_y > 0) {
@@ -538,13 +579,13 @@ namespace mkaul {
 			const Point<float>& point,
 			float radius_x,
 			float radius_y,
-			const Color_F& color_f,
+			const Color_F& col_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
-				apply_pen_style(&pen, color_f, stroke);
+				apply_pen_style(&pen, col_f, stroke);
 
 				Gdiplus::RectF rect_f(
 					point.x - radius_x,
@@ -561,13 +602,13 @@ namespace mkaul {
 		// 楕円を描画(線)(矩形指定)
 		void Graphics_Gdiplus::draw_ellipse(
 			const Rectangle<float>& rectangle,
-			const Color_F& color_f,
+			const Color_F& col_f,
 			const Stroke& stroke
 		)
 		{
 			if (p_graphics_buffer) {
 				Gdiplus::Pen pen(Gdiplus::Color(0));
-				apply_pen_style(&pen, color_f, stroke);
+				apply_pen_style(&pen, col_f, stroke);
 
 				Gdiplus::RectF rect_f(
 					rectangle.left,
@@ -643,13 +684,18 @@ namespace mkaul {
 
 
 		// 空のビットマップを作成
-		void Graphics_Gdiplus::initialize_bitmap(
+		bool Graphics_Gdiplus::initialize_bitmap(
 			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
-			Color_F color_f
+			Color_F col_f
 		)
 		{
-			p_bitmap->data = new Gdiplus::Bitmap(size.width, size.height);
+			auto p_gdip_bitmap = new Gdiplus::Bitmap(size.width, size.height);
+			if (p_gdip_bitmap && p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
+				p_bitmap->data = p_gdip_bitmap;
+				return true;
+			}
+			else return false;
 		}
 
 
