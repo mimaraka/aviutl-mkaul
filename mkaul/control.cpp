@@ -21,7 +21,7 @@ namespace mkaul {
 			const Rectangle<LONG>&	rect,
 			const Color_F*			p_col_bg_,
 			const Color_F*			p_col_control_,
-			BYTE					round_edge_flag_,
+			Round_Edge_Flag			round_edge_flag_,
 			float					round_radius_,
 			HCURSOR					cursor
 		)
@@ -31,6 +31,9 @@ namespace mkaul {
 			round_radius = round_radius_;
 			p_col_bg = const_cast<Color_F*>(p_col_bg_);
 			p_col_control = const_cast<Color_F*>(p_col_control_);
+
+			// 描画オブジェクトを作成
+			graphics::Manager::create_graphics(&p_graphics);
 
 			return Window::create(
 				hinst,
@@ -76,9 +79,17 @@ namespace mkaul {
 
 
 		// ステータスを設定
-		void Control::set_status(int status_)
+		void Control::set_status(Status status_)
 		{
 			status = status_;
+			redraw();
+		}
+
+
+		// ステータスを追加
+		void Control::add_status(Status status_)
+		{
+			status = (Status)((uint32_t)status | (uint32_t)status_);
 			redraw();
 		}
 
@@ -86,7 +97,42 @@ namespace mkaul {
 		// ラウンドエッジを描画
 		void Control::draw_round_edge()
 		{
+			// 描画オブジェクトが存在し、描画中である場合
+			if (p_graphics && p_graphics->is_drawing()) {
+				RECT rect;
+				if (::GetClientRect(hwnd, &rect)) {
+					// 始点の配列
+					Point<float> pts[] = {
+						Point((float)rect.left, (float)rect.top),
+						Point((float)rect.right, (float)rect.top),
+						Point((float)rect.right, (float)rect.bottom),
+						Point((float)rect.left, (float)rect.bottom)
+					};
 
+					auto pt = Point(0.f, round_radius);
+					float angle = -90.f;
+
+					for (int i = 0; i < 4; i++) {
+						// 角を丸くするフラグが立っている場合
+						if ((uint32_t)round_edge_flag & 1 << i) {
+							graphics::Path* path;
+							graphics::Manager::create_path(&path);
+
+							path->begin(pts[i]);
+							path->add_line(pts[i] + pt);
+							path->add_arc(
+								Size(round_radius * 2.f, round_radius * 2.f),
+								angle, 90.f
+							);
+							path->end();
+						}
+
+						// 90d回転
+						angle += 90.f;
+						pt.rotate(90.);
+					}
+				}
+			}
 		}
 	}
 }

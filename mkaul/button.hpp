@@ -31,7 +31,7 @@ namespace mkaul {
 				const Color_F* p_col_control_,
 				const Rectangle<LONG>& rect,
 				const std::string& tooltip_label_ = NULL,
-				int round_edge_flag_ = ROUND_EDGE_ALL,
+				Round_Edge_Flag round_edge_flag_ = Round_Edge_Flag::None,
 				float round_radius_ = 0.f
 			);
 
@@ -51,7 +51,9 @@ namespace mkaul {
 		class Button_Label : public Button {
 		public:
 
-			Button_Label()
+			Button_Label() :
+				label(),
+				p_col_label(nullptr)
 			{}
 
 			// É{É^ÉìÇçÏê¨
@@ -65,7 +67,7 @@ namespace mkaul {
 				const Color_F* p_col_label,
 				const Rectangle<LONG>& rect,
 				const std::string& tooltip_label_ = NULL,
-				int round_edge_flag_ = ROUND_EDGE_ALL,
+				Round_Edge_Flag round_edge_flag_ = Round_Edge_Flag::None,
 				float round_radius_ = 0.f
 			);
 
@@ -81,13 +83,13 @@ namespace mkaul {
 		class Button_Icon : public Button {
 		public:
 			enum class Source_Type {
-				Filename,
+				File,
 				Resource
 			};
 
 			Button_Icon() :
 				icon(nullptr),
-				icon_source(),
+				icon_src(),
 				icon_resource_num(0)
 			{}
 
@@ -96,20 +98,20 @@ namespace mkaul {
 				HINSTANCE hinst,
 				HWND hwnd_parent_,
 				int id_,
-				const char* icon_source_,
-				Source_Type source_type_,
+				const char* icon_src_,
+				Source_Type src_type_,
 				const Color_F* p_col_bg_,
 				const Color_F* p_col_control_,
 				const Rectangle<LONG>& rect,
 				const std::string& tooltip_label_ = NULL,
-				BYTE round_edge_flag_ = ROUND_EDGE_ALL,
+				Round_Edge_Flag round_edge_flag_ = Round_Edge_Flag::None,
 				float round_radius_ = 0.f
 			);
 
 		protected:
 			graphics::Bitmap* icon;
-			Source_Type source_type;
-			std::string icon_source;
+			Source_Type src_type;
+			std::string icon_src;
 			uint16_t icon_resource_num;
 
 			virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) override;

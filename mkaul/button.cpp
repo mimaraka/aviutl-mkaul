@@ -21,7 +21,7 @@ namespace mkaul {
 			const Color_F* p_col_control_,
 			const Rectangle<LONG>& rect,
 			const std::string& tooltip_label_,
-			int round_edge_flag_,
+			Round_Edge_Flag round_edge_flag_,
 			float round_radius_
 		)
 		{
@@ -55,11 +55,12 @@ namespace mkaul {
 			const Color_F* p_col_label_,
 			const Rectangle<LONG>& rect,
 			const std::string& tooltip_label_,
-			int round_edge_flag_,
+			Round_Edge_Flag round_edge_flag_,
 			float round_radius_
 		)
 		{
 			label = label_;
+			p_col_label = const_cast<Color_F*>(p_col_label_);
 
 			return Button::create(
 				hinst,
@@ -80,27 +81,33 @@ namespace mkaul {
 			HINSTANCE hinst,
 			HWND hwnd_parent_,
 			int id_,
-			const char* icon_source_,
-			Source_Type source_type_,
+			const char* icon_src_,
+			Source_Type src_type_,
 			const Color_F* p_col_bg_,
 			const Color_F* p_col_control_,
 			const Rectangle<LONG>& rect,
 			const std::string& tooltip_label_,
-			BYTE round_edge_flag_,
+			Round_Edge_Flag round_edge_flag_,
 			float round_radius_
 		)
 		{
-			source_type = source_type_;
-			switch (source_type_) {
-			case Source_Type::Filename:
-				icon_source = icon_source_;
+			src_type = src_type_;
+
+			// ソースの種類で場合分け
+			switch (src_type_) {
+			// ファイル
+			case Source_Type::File:
+				icon_src = icon_src_;
 				break;
 
+			// リソース
 			case Source_Type::Resource:
-				if (!HIWORD(icon_source_))
-					icon_resource_num = LOWORD(icon_source_);
+				// リソースが数値の場合
+				if (!HIWORD(icon_src_))
+					icon_resource_num = LOWORD(icon_src_);
+				// リソースが文字列の場合
 				else
-					icon_source = icon_source_;
+					icon_src = icon_src_;
 				break;
 
 			default:
@@ -122,8 +129,34 @@ namespace mkaul {
 
 
 		// ウィンドウプロシージャ
-		LRESULT Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+		LRESULT Button::wndproc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
+			RECT rect_wnd;
+			::GetClientRect(hwnd_, &rect_wnd);
+
+			switch (msg) {
+			case WM_CREATE:
+				p_graphics->init(hwnd_);
+				break;
+
+			case WM_CLOSE:
+				p_graphics->exit();
+				break;
+
+			case WM_SIZE:
+				p_graphics->resize();
+				break;
+
+			case WM_PAINT:
+				p_graphics->begin_draw();
+
+				p_graphics->end_draw();
+				break;
+
+			default:
+				return ::DefWindowProc(hwnd_, msg, wparam, lparam);
+			}
+
 			return 0;
 		}
 	}
