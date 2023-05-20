@@ -31,6 +31,7 @@ namespace mkaul {
 			// ステータス
 			Status					status;
 			TRACKMOUSEEVENT			tme;
+			HWND					hwnd_parent;
 			graphics::Graphics*		p_graphics;
 
 			static LRESULT CALLBACK	wndproc_static(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -53,10 +54,11 @@ namespace mkaul {
 
 			// コンストラクタ
 			Control() :
+				hwnd_parent(NULL),
 				id(0),
 				status(Status::Null),
-				p_col_bg(0),
-				p_col_control(0),
+				p_col_bg(nullptr),
+				p_col_control(nullptr),
 				round_radius(0.f),
 				round_edge_flag(Round_Edge_Flag::None),
 				tme({ 0 }),

@@ -19,6 +19,7 @@ namespace mkaul {
 				hwnd_tooltip(NULL),
 				tool_info({ 0 }),
 				tooltip_label(),
+				hover_highlight(0.f),
 				hovered(false),
 				clicked(false)
 			{}
@@ -32,7 +33,8 @@ namespace mkaul {
 				const Rectangle<LONG>& rect,
 				const std::string& tooltip_label_ = NULL,
 				Round_Edge_Flag round_edge_flag_ = Round_Edge_Flag::None,
-				float round_radius_ = 0.f
+				float round_radius_ = 0.f,
+				float hover_highlight_ = 0.04f
 			);
 
 		protected:
@@ -41,6 +43,7 @@ namespace mkaul {
 			HWND                    hwnd_tooltip;
 			TOOLINFO	    		tool_info;
 			std::string				tooltip_label;
+			float					hover_highlight;
 			bool			    	hovered, clicked;
 
 			virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) override;
@@ -68,7 +71,8 @@ namespace mkaul {
 				const Rectangle<LONG>& rect,
 				const std::string& tooltip_label_ = NULL,
 				Round_Edge_Flag round_edge_flag_ = Round_Edge_Flag::None,
-				float round_radius_ = 0.f
+				float round_radius_ = 0.f,
+				float hover_highlight_ = 0.04f
 			);
 
 		protected:
@@ -106,7 +110,8 @@ namespace mkaul {
 				const Rectangle<LONG>& rect,
 				const std::string& tooltip_label_ = NULL,
 				Round_Edge_Flag round_edge_flag_ = Round_Edge_Flag::None,
-				float round_radius_ = 0.f
+				float round_radius_ = 0.f,
+				float hover_highlight_ = 0.04f
 			);
 
 		protected:

@@ -15,21 +15,23 @@ namespace mkaul {
 		// ボタンを作成
 		bool Button::create(
 			HINSTANCE hinst,
-			HWND hwnd_parent,
+			HWND hwnd_parent_,
 			int id_,
 			const Color_F* p_col_bg_,
 			const Color_F* p_col_control_,
 			const Rectangle<LONG>& rect,
 			const std::string& tooltip_label_,
 			Round_Edge_Flag round_edge_flag_,
-			float round_radius_
+			float round_radius_,
+			float hover_highlight_
 		)
 		{
 			tooltip_label = tooltip_label_;
+			hover_highlight = hover_highlight_;
 
 			return Control::create(
 				hinst,
-				hwnd_parent,
+				hwnd_parent_,
 				id_,
 				TEXT("MKAUL_BUTTON"),
 				NULL,
@@ -47,7 +49,7 @@ namespace mkaul {
 		// ボタンを作成(ラベル)
 		bool Button_Label::create(
 			HINSTANCE hinst,
-			HWND hwnd_parent,
+			HWND hwnd_parent_,
 			int id_,
 			const std::string& label_,
 			const Color_F* p_col_bg_,
@@ -56,7 +58,8 @@ namespace mkaul {
 			const Rectangle<LONG>& rect,
 			const std::string& tooltip_label_,
 			Round_Edge_Flag round_edge_flag_,
-			float round_radius_
+			float round_radius_,
+			float hover_highlight_
 		)
 		{
 			label = label_;
@@ -64,14 +67,15 @@ namespace mkaul {
 
 			return Button::create(
 				hinst,
-				hwnd_parent,
+				hwnd_parent_,
 				id_,
 				p_col_bg_,
 				p_col_control_,
 				rect,
 				tooltip_label_,
 				round_edge_flag_,
-				round_radius_
+				round_radius_,
+				hover_highlight_
 			);
 		}
 
@@ -79,7 +83,7 @@ namespace mkaul {
 		// ボタンを作成(アイコン)
 		bool Button_Icon::create(
 			HINSTANCE hinst,
-			HWND hwnd_parent,
+			HWND hwnd_parent_,
 			int id_,
 			const char* icon_src_,
 			Source_Type src_type_,
@@ -88,7 +92,8 @@ namespace mkaul {
 			const Rectangle<LONG>& rect,
 			const std::string& tooltip_label_,
 			Round_Edge_Flag round_edge_flag_,
-			float round_radius_
+			float round_radius_,
+			float hover_highlight_
 		)
 		{
 			src_type = src_type_;
@@ -116,14 +121,15 @@ namespace mkaul {
 
 			return Button::create(
 				hinst,
-				hwnd_parent,
+				hwnd_parent_,
 				id_,
 				p_col_bg_,
 				p_col_control_,
 				rect,
 				tooltip_label_,
 				round_edge_flag_,
-				round_radius_
+				round_radius_,
+				hover_highlight_
 			);
 		}
 
@@ -137,6 +143,10 @@ namespace mkaul {
 			switch (msg) {
 			case WM_CREATE:
 				p_graphics->init(hwnd_);
+
+				tme.cbSize = sizeof(tme);
+				tme.dwFlags = TME_LEAVE;
+				tme.hwndTrack = hwnd_;
 				break;
 
 			case WM_CLOSE:
@@ -148,13 +158,54 @@ namespace mkaul {
 				break;
 
 			case WM_PAINT:
+			{
+				Color_F col_f = *p_col_control;
+
+				if (clicked)
+					col_f.change_brightness(-hover_highlight);
+				else if (hovered)
+					col_f.change_brightness(hover_highlight);
+
 				p_graphics->begin_draw();
-
-				p_graphics->fill_background(*p_col_control);
-
+				p_graphics->fill_background(col_f);
 				draw_round_edge();
-
 				p_graphics->end_draw();
+
+				break;
+			}
+
+			// マウスが動いたとき
+			case WM_MOUSEMOVE:
+				if (!((uint32_t)status & (uint32_t)Status::Disabled)) {
+					hovered = true;
+					redraw();
+					::TrackMouseEvent(&tme);
+				}
+				break;
+
+			// 左クリックがされたとき
+			case WM_LBUTTONDOWN:
+				if (!((uint32_t)status & (uint32_t)Status::Disabled)) {
+					clicked = true;
+					redraw();
+					::TrackMouseEvent(&tme);
+				}
+				break;
+
+			// 左クリックが終わったとき
+			case WM_LBUTTONUP:
+				if (!((uint32_t)status & (uint32_t)Status::Disabled) && clicked) {
+					clicked = false;
+					::SendMessage(hwnd_parent, WM_COMMAND, id, 0);
+					redraw();
+				}
+				break;
+
+			// マウスがウィンドウから離れたとき
+			case WM_MOUSELEAVE:
+				clicked = false;
+				hovered = false;
+				redraw();
 				break;
 
 			default:

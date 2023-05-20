@@ -13,7 +13,7 @@ namespace mkaul {
 		// ƒRƒ“ƒgƒ[ƒ‹‚ğì¬
 		bool Control::create(
 			HINSTANCE				hinst,
-			HWND					hwnd_parent,
+			HWND					hwnd_parent_,
 			int						id_,
 			const std::string&		class_name,
 			LONG					window_style,
@@ -27,6 +27,7 @@ namespace mkaul {
 		)
 		{
 			id = id_;
+			hwnd_parent = hwnd_parent_;
 			round_edge_flag = round_edge_flag_;
 			round_radius = round_radius_;
 			p_col_bg = const_cast<Color_F*>(p_col_bg_);
@@ -37,7 +38,7 @@ namespace mkaul {
 
 			return Window::create(
 				hinst,
-				hwnd_parent,
+				hwnd_parent_,
 				"",
 				class_name,
 				wndproc_static,

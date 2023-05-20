@@ -24,7 +24,6 @@ namespace mkaul {
 		// ウィンドウクラス
 		class Window {
 		public:
-			static constexpr int WM_REDRAW = WM_APP;
 			HWND hwnd;
 
 			Window() :
@@ -71,6 +70,8 @@ namespace mkaul {
 			if (hwnd) {
 				std::vector<HWND> hwnd_list;
 				get_all_children(hwnd, &hwnd_list);
+				// 自身を再描画
+				::InvalidateRect(hwnd, NULL, FALSE);
 
 				// 下層のウィンドウを全て再描画
 				for (auto hw : hwnd_list)
