@@ -80,14 +80,15 @@ namespace mkaul {
 			// 最後の点を更新
 			pt_last = pt_o + pt_ofs_end;
 
+			// 座標のずれ補正
 			if (p_path) p_path->AddArc(
 				Gdiplus::RectF(
-					pt_o.x - size.width,
-					pt_o.y - size.height,
+					pt_o.x - size.width - 0.5f,
+					pt_o.y - size.height - 0.5f,
 					size.width * 2.f,
 					size.height * 2.f
 				),
-				angle_start + 90.f,
+				angle_start - 90.f,
 				angle_sweep
 			);
 		}
@@ -100,9 +101,10 @@ namespace mkaul {
 		{
 			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
 
+			// 座標のずれ補正
 			if (p_path) p_path->AddLine(
-				Gdiplus::PointF(pt_last.x, pt_last.y),
-				Gdiplus::PointF(pt.x, pt.y)
+				Gdiplus::PointF(pt_last.x - 0.5f, pt_last.y - 0.5f),
+				Gdiplus::PointF(pt.x - 0.5f, pt.y - 0.5f)
 			);
 			// 最後の点を更新
 			pt_last = pt;
@@ -118,11 +120,12 @@ namespace mkaul {
 		{
 			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
 
+			// 座標のずれ補正
 			if (p_path) p_path->AddBezier(
-				Gdiplus::PointF(pt_last.x, pt_last.y),
-				Gdiplus::PointF(pt_0.x, pt_0.y),
-				Gdiplus::PointF(pt_1.x, pt_1.y),
-				Gdiplus::PointF(pt_2.x, pt_2.y)
+				Gdiplus::PointF(pt_last.x - 0.5f, pt_last.y - 0.5f),
+				Gdiplus::PointF(pt_0.x - 0.5f, pt_0.y - 0.5f),
+				Gdiplus::PointF(pt_1.x - 0.5f, pt_1.y - 0.5f),
+				Gdiplus::PointF(pt_2.x - 0.5f, pt_2.y - 0.5f)
 			);
 			// 最後の点を更新
 			pt_last = pt_2;
@@ -275,13 +278,14 @@ namespace mkaul {
 				);
 
 				if (::GetClientRect(hwnd, &rect)) {
+					// 境界付近が切れるので広めにとる
 					p_graphics_buffer->FillRectangle(
 						&brush,
 						Gdiplus::Rect(
-							rect.left,
-							rect.top,
-							rect.right,
-							rect.bottom
+							rect.left - 1,
+							rect.top - 1,
+							rect.right + 1,
+							rect.bottom + 1
 						)
 					);
 				}

@@ -91,10 +91,10 @@ namespace mkaul {
 		// ‰ñ“]
 		void rotate(double deg)
 		{
-			auto rad = deg2rad(-deg);
+			auto rad = deg2rad(deg);
 			auto t = x;
 			x = (T)(x * std::cos(rad) - y * std::sin(rad));
-			y = (T)(-t * std::sin(rad) - y * std::cos(rad));
+			y = (T)(t * std::sin(rad) + y * std::cos(rad));
 		}
 	};
 

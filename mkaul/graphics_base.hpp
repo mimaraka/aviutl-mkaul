@@ -183,7 +183,7 @@ namespace mkaul {
 		)
 		{
 			float rad = deg2rad(-angle + 90.f);
-			float x = size.width * size.height / std::sqrt(size.height * size.height + size.width * size.width * (float)std::pow(std::tan(rad), 2)) * (float)sign(std::cos(rad));
+			float x = size.width * size.height / std::sqrt(size.height * size.height + size.width * size.width * (float)std::pow(std::tan(rad), 2)) * sign(std::cos(rad));
 			float y = -x * std::tan(rad);
 
 			p_pt->x = x;

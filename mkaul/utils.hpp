@@ -71,13 +71,14 @@ namespace mkaul {
 	}
 
 
+	// •„†ŠÖ”
 	template <typename T>
-	inline int sign(T value)
+	inline T sign(T value)
 	{
-		if (0 > value)
-			return -1;
-		else if (value == 0)
-			return 0;
-		else return 1;
+		if ((T)0 > value)
+			return (T)(-1);
+		else if (value == (T)0)
+			return (T)0;
+		else return (T)1;
 	}
 }
