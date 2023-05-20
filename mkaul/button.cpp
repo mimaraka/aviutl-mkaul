@@ -15,7 +15,7 @@ namespace mkaul {
 		// ボタンを作成
 		bool Button::create(
 			HINSTANCE hinst,
-			HWND hwnd_parent_,
+			HWND hwnd_parent,
 			int id_,
 			const Color_F* p_col_bg_,
 			const Color_F* p_col_control_,
@@ -29,7 +29,7 @@ namespace mkaul {
 
 			return Control::create(
 				hinst,
-				hwnd_parent_,
+				hwnd_parent,
 				id_,
 				TEXT("MKAUL_BUTTON"),
 				NULL,
@@ -47,7 +47,7 @@ namespace mkaul {
 		// ボタンを作成(ラベル)
 		bool Button_Label::create(
 			HINSTANCE hinst,
-			HWND hwnd_parent_,
+			HWND hwnd_parent,
 			int id_,
 			const std::string& label_,
 			const Color_F* p_col_bg_,
@@ -64,7 +64,7 @@ namespace mkaul {
 
 			return Button::create(
 				hinst,
-				hwnd_parent_,
+				hwnd_parent,
 				id_,
 				p_col_bg_,
 				p_col_control_,
@@ -79,7 +79,7 @@ namespace mkaul {
 		// ボタンを作成(アイコン)
 		bool Button_Icon::create(
 			HINSTANCE hinst,
-			HWND hwnd_parent_,
+			HWND hwnd_parent,
 			int id_,
 			const char* icon_src_,
 			Source_Type src_type_,
@@ -116,7 +116,7 @@ namespace mkaul {
 
 			return Button::create(
 				hinst,
-				hwnd_parent_,
+				hwnd_parent,
 				id_,
 				p_col_bg_,
 				p_col_control_,
@@ -149,6 +149,10 @@ namespace mkaul {
 
 			case WM_PAINT:
 				p_graphics->begin_draw();
+
+				p_graphics->fill_background(*p_col_control);
+
+				draw_round_edge();
 
 				p_graphics->end_draw();
 				break;

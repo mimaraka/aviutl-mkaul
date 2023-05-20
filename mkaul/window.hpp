@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <windows.h>
-#include <commctrl.h>
 #include "common.hpp"
+#include <commctrl.h>
 #include "rectangle.hpp"
+#include "utils.hpp"
 
 #pragma comment(lib, "comctl32.lib")
 
@@ -17,6 +17,11 @@
 
 namespace mkaul {
 	namespace window {
+		// 子ウィンドウを再帰的に検索
+		void get_all_children(HWND hwnd, std::vector<HWND>* hwnd_list);
+
+
+		// ウィンドウクラス
 		class Window {
 		public:
 			static constexpr int WM_REDRAW = WM_APP;
@@ -64,7 +69,13 @@ namespace mkaul {
 		inline bool Window::redraw() const
 		{
 			if (hwnd) {
-				::PostMessage(hwnd, WM_REDRAW, 0, 0);
+				std::vector<HWND> hwnd_list;
+				get_all_children(hwnd, &hwnd_list);
+
+				// 下層のウィンドウを全て再描画
+				for (auto hw : hwnd_list)
+					::InvalidateRect(hw, NULL, FALSE);
+				
 				return true;
 			}
 			else return false;

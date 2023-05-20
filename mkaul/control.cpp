@@ -38,7 +38,7 @@ namespace mkaul {
 			return Window::create(
 				hinst,
 				hwnd_parent,
-				NULL,
+				"",
 				class_name,
 				wndproc_static,
 				WS_CHILD | window_style,
@@ -100,16 +100,19 @@ namespace mkaul {
 			// 描画オブジェクトが存在し、描画中である場合
 			if (p_graphics && p_graphics->is_drawing()) {
 				RECT rect;
+
 				if (::GetClientRect(hwnd, &rect)) {
 					// 始点の配列
 					Point<float> pts[] = {
-						Point((float)rect.left, (float)rect.top),
-						Point((float)rect.right, (float)rect.top),
+						Point(0.f, 0.f),
+						Point((float)rect.right, 0.f),
 						Point((float)rect.right, (float)rect.bottom),
-						Point((float)rect.left, (float)rect.bottom)
+						Point(0.f, (float)rect.bottom)
 					};
 
-					auto pt = Point(0.f, round_radius);
+					auto r = std::min(std::min(rect.right * 0.5f, rect.bottom * 0.5f), round_radius);
+
+					auto pt = Point(0.f, r);
 					float angle = -90.f;
 
 					for (int i = 0; i < 4; i++) {
@@ -121,10 +124,16 @@ namespace mkaul {
 							path->begin(pts[i]);
 							path->add_line(pts[i] + pt);
 							path->add_arc(
-								Size(round_radius * 2.f, round_radius * 2.f),
+								Size(r, r),
 								angle, 90.f
 							);
 							path->end();
+
+							p_graphics->fill_path(
+								path,
+								*p_col_bg
+							);
+							path->release();
 						}
 
 						// 90d回転

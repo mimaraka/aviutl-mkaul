@@ -90,6 +90,7 @@ namespace mkaul {
 			Button_Icon() :
 				icon(nullptr),
 				icon_src(),
+				src_type(Source_Type::File),
 				icon_resource_num(0)
 			{}
 
