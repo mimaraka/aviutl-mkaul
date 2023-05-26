@@ -33,17 +33,17 @@ namespace mkaul {
 			virtual bool create(
 				HINSTANCE				hinst,
 				HWND					hwnd_parent,
-				const std::string&		window_name,
-				const std::string&		class_name,
+				LPCTSTR					window_name,
+				LPCTSTR					class_name,
 				WNDPROC					wndproc_,
 				LONG					window_style,
 				LONG					class_style,
-				const Rectangle<LONG>&	rect,
+				const Window_Rectangle&	rect,
 				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW),
 				LPVOID					lp_param = nullptr
 			);
 
-			bool move(const Rectangle<LONG>& rect) const;
+			bool move(const Window_Rectangle& rect) const;
 			bool redraw() const;
 			bool close() const;
 			bool show() const;
@@ -52,12 +52,12 @@ namespace mkaul {
 
 
 		// ウィンドウを移動
-		inline bool Window::move(const Rectangle<LONG>& rect) const
+		inline bool Window::move(const Window_Rectangle& rect) const
 		{
 			return ::MoveWindow(
 				hwnd,
-				(std::min)(rect.left, rect.right),
-				(std::min)(rect.top, rect.bottom),
+				std::min(rect.left, rect.right),
+				std::min(rect.top, rect.bottom),
 				std::abs(rect.right - rect.left),
 				std::abs(rect.bottom - rect.top),
 				TRUE

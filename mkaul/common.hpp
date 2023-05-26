@@ -5,7 +5,6 @@
 //----------------------------------------------------------------------------------
 
 #pragma once
-#define NOMINMAX
 
 #include <windows.h>
 #include <stdlib.h>
@@ -15,3 +14,10 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif

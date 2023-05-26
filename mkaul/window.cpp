@@ -31,12 +31,12 @@ namespace mkaul {
 		bool Window::create(
 			HINSTANCE				hinst,
 			HWND					hwnd_parent,
-			const std::string&		window_name,
-			const std::string&		class_name,
+			LPCTSTR					window_name,
+			LPCTSTR					class_name,
 			WNDPROC					wndproc_,
 			LONG					window_style,
 			LONG					class_style,
-			const Rectangle<LONG>&	rect,
+			const Window_Rectangle&	rect,
 			HCURSOR					cursor,
 			LPVOID					lp_param
 		)
@@ -52,14 +52,14 @@ namespace mkaul {
 			ws.hCursor = cursor;
 			ws.hbrBackground = NULL;
 			ws.lpszMenuName = NULL;
-			ws.lpszClassName = class_name.c_str();
+			ws.lpszClassName = class_name;
 			ws.hIconSm = NULL;
 
 			if (::RegisterClassEx(&ws)) {
 				hwnd = ::CreateWindowEx(
 					NULL,
-					class_name.c_str(),
-					window_name.c_str(),
+					class_name,
+					window_name,
 					WS_VISIBLE | WS_CLIPCHILDREN | window_style,
 					rect.left,
 					rect.top,

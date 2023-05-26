@@ -26,12 +26,14 @@ namespace mkaul {
 				);
 		}
 
-		void operator = (const RECT& rc)
+		Rectangle<T> operator = (const RECT& rc)
 		{
 			this->left = (T)rc.left;
 			this->top = (T)rc.top;
 			this->right = (T)rc.right;
 			this->bottom = (T)rc.bottom;
+
+			return *this;
 		}
 
 		Rectangle(
@@ -65,13 +67,28 @@ namespace mkaul {
 
 
 	// 矩形(ウィンドウ用)
-	struct Window_Rectangle {
-		RECT rect;
+	struct Window_Rectangle : public Rectangle<LONG> {
+		enum class Direction {
+			Vertical,
+			Horizontal
+		};
 
-		void set(const RECT& rc);
+		Window_Rectangle operator = (const RECT& rc)
+		{
+			Rectangle<LONG>::operator=(rc);
+			return *this;
+		}
+
+		using Rectangle<LONG>::Rectangle;
+
 		void set(int left, int top, int right, int bottom);
 		void set_margin(int left, int top, int right, int bottom);
-		void divide(LPRECT rects_child[], float weights[], int n) const;
+		void divide(
+			Direction dir,
+			Window_Rectangle* rects_child[],
+			float weights[],
+			int n
+		) const;
 		void client_to_screen(HWND hwnd);
 		void screen_to_client(HWND hwnd);
 	};
