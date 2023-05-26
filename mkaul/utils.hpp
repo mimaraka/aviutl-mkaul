@@ -7,6 +7,9 @@
 #pragma once
 
 #include "common.hpp"
+#include <imagehlp.h>
+
+#pragma comment(lib, "imagehlp.lib")
 
 
 
@@ -81,4 +84,8 @@ namespace mkaul {
 			return (T)0;
 		else return (T)1;
 	}
+
+
+	// 関数ポインタの置き換え
+	void* rewrite_function(LPCSTR mod_name, LPCSTR func_name, void* func_ptr);
 }
