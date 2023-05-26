@@ -18,14 +18,14 @@ namespace mkaul {
 		T x, y;
 
 		// ìôâø
-		inline bool operator == (const Point<T>& pt) const
+		inline bool operator == (const Point<T>& pt) const noexcept
 		{
 			return (this->x == pt.x && this->y == pt.y);
 		}
 
 		// â¡éZ
 		template <typename PtType>
-		inline Point<T> operator + (const PtType& pt) const
+		inline Point<T> operator + (const PtType& pt) const noexcept
 		{
 			return {
 				this->x + (T)pt.x,
@@ -35,7 +35,7 @@ namespace mkaul {
 
 		// å∏éZ
 		template <typename PtType>
-		inline Point<T> operator - (const PtType& pt) const
+		inline Point<T> operator - (const PtType& pt) const noexcept
 		{
 			return {
 				this->x - (T)pt.x,
@@ -45,14 +45,14 @@ namespace mkaul {
 
 		// ì‡êœ
 		template <typename PtType>
-		inline T operator * (const PtType& pt) const
+		inline T operator * (const PtType& pt) const noexcept
 		{
 			return this->x * (T)pt.x + this->y * (T)pt.y;
 		}
 
 		// ë„ì¸
 		template <typename PtType>
-		inline Point<T> operator = (const PtType& pt)
+		inline Point<T> operator = (const PtType& pt) noexcept
 		{
 			this->x = (T)pt.x;
 			this->y = (T)pt.y;
@@ -71,7 +71,7 @@ namespace mkaul {
 
 		// ëºÇÃå^Ç…ïœä∑
 		template <typename PtType>
-		auto to() const
+		auto to() const noexcept
 		{
 			PtType pt = { 0 };
 			pt.x = static_cast<decltype(pt.x)>(x);
@@ -82,14 +82,14 @@ namespace mkaul {
 
 		// íËêîî{
 		template <typename U>
-		void scale(U scl)
+		void scale(U scl) noexcept
 		{
 			x = (T)(x * scl);
 			y = (T)(y * scl);
 		}
 
 		// âÒì]
-		void rotate(double deg)
+		void rotate(double deg) noexcept
 		{
 			auto rad = deg2rad(deg);
 			auto t = x;
@@ -104,13 +104,13 @@ namespace mkaul {
 	struct Size {
 		T width, height;
 
-		inline bool operator == (const Size<T>& size) const
+		inline bool operator == (const Size<T>& size) const noexcept
 		{
 			return (this->width == size.width && this->height == size.height);
 		}
 
 		template <typename SizeType>
-		inline Size<T> operator + (const SizeType& size) const
+		inline Size<T> operator + (const SizeType& size) const noexcept
 		{
 			return {
 				this->width + (T)size.width,
@@ -119,7 +119,7 @@ namespace mkaul {
 		}
 
 		template <typename SizeType>
-		inline Size<T> operator - (const SizeType& size) const
+		inline Size<T> operator - (const SizeType& size) const noexcept
 		{
 			return {
 				this->width - (T)size.width,
@@ -128,7 +128,7 @@ namespace mkaul {
 		}
 
 		template <typename SizeType>
-		inline void operator = (const SizeType& size)
+		inline void operator = (const SizeType& size) noexcept
 		{
 			this->width = (T)size.width;
 			this->height = (T)size.height;
@@ -140,7 +140,7 @@ namespace mkaul {
 		{}
 
 		template <typename SizeType>
-		auto to() const
+		auto to() const noexcept
 		{
 			SizeType size = { 0 };
 			size.width = static_cast<decltype(size.width)>(width);
@@ -149,7 +149,7 @@ namespace mkaul {
 			return size;
 		}
 
-		inline void scale(double scale)
+		inline void scale(double scale) noexcept
 		{
 			width *= std::abs(scale);
 			height *= std::abs(scale);
