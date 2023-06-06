@@ -28,11 +28,11 @@ namespace mkaul {
 				HINSTANCE hinst,
 				HWND hwnd_parent_,
 				int id_,
-				const Color_F* p_col_bg_,
-				const Color_F* p_col_control_,
-				const Window_Rectangle& rect,
+				const ColorF* p_col_bg_,
+				const ColorF* p_col_control_,
+				const WindowRectangle& rect,
 				const std::string& tooltip_label_ = NULL,
-				Round_Edge_Flag round_edge_flag_ = Round_Edge_Flag::None,
+				RoundEdgeFlag round_edge_flag_ = RoundEdgeFlag::None,
 				float round_radius_ = 0.f,
 				float hover_highlight_ = 0.04f
 			);
@@ -46,15 +46,15 @@ namespace mkaul {
 			float					hover_highlight;
 			bool			    	hovered, clicked;
 
-			virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) override;
+			virtual LRESULT wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		};
 
 
 		// ボタン(ラベル)
-		class Button_Label : public Button {
+		class ButtonLabel : public Button {
 		public:
 
-			Button_Label() :
+			ButtonLabel() :
 				label(),
 				p_col_label(nullptr)
 			{}
@@ -65,36 +65,36 @@ namespace mkaul {
 				HWND hwnd_parent_,
 				int id_,
 				const std::string& label_,
-				const Color_F* p_col_bg_,
-				const Color_F* p_col_control_,
-				const Color_F* p_col_label,
-				const Window_Rectangle& rect,
+				const ColorF* p_col_bg_,
+				const ColorF* p_col_control_,
+				const ColorF* p_col_label,
+				const WindowRectangle& rect,
 				const std::string& tooltip_label_ = NULL,
-				Round_Edge_Flag round_edge_flag_ = Round_Edge_Flag::None,
+				RoundEdgeFlag round_edge_flag_ = RoundEdgeFlag::None,
 				float round_radius_ = 0.f,
 				float hover_highlight_ = 0.04f
 			);
 
 		protected:
 			std::string				label;
-			Color_F*				p_col_label;
+			ColorF*				p_col_label;
 
-			virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) override;
+			virtual LRESULT wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		};
 
 
 		// ボタン(アイコン)
-		class Button_Icon : public Button {
+		class ButtonIcon : public Button {
 		public:
-			enum class Source_Type {
+			enum class SourceType {
 				File,
 				Resource
 			};
 
-			Button_Icon() :
+			ButtonIcon() :
 				icon(nullptr),
 				icon_src(),
-				src_type(Source_Type::File),
+				src_type(SourceType::File),
 				icon_resource_num(0)
 			{}
 
@@ -104,23 +104,23 @@ namespace mkaul {
 				HWND hwnd_parent_,
 				int id_,
 				const char* icon_src_,
-				Source_Type src_type_,
-				const Color_F* p_col_bg_,
-				const Color_F* p_col_control_,
-				const Window_Rectangle& rect,
+				SourceType src_type_,
+				const ColorF* p_col_bg_,
+				const ColorF* p_col_control_,
+				const WindowRectangle& rect,
 				const std::string& tooltip_label_ = NULL,
-				Round_Edge_Flag round_edge_flag_ = Round_Edge_Flag::None,
+				RoundEdgeFlag round_edge_flag_ = RoundEdgeFlag::None,
 				float round_radius_ = 0.f,
 				float hover_highlight_ = 0.04f
 			);
 
 		protected:
 			graphics::Bitmap* icon;
-			Source_Type src_type;
+			SourceType src_type;
 			std::string icon_src;
 			uint16_t icon_resource_num;
 
-			virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) override;
+			virtual LRESULT wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		};
 	}
 }

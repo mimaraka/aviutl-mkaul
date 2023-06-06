@@ -90,10 +90,10 @@ namespace mkaul {
 	}
 
 
-	struct Color_I8;
+	struct ColorI8;
 
 	// Color (float)
-	struct Color_F : public Color<float> {
+	struct ColorF : public Color<float> {
 		void operator = (COLORREF cr) noexcept
 		{
 			this->r = GetRValue(cr) / (float)MAX;
@@ -102,9 +102,9 @@ namespace mkaul {
 			this->a = 1.f;
 		}
 
-		Color_F(COLORREF cr = (COLORREF)0l) noexcept;
-		Color_F(const Color_I8& col_i8) noexcept;
-		Color_F(int r, int g, int b, int a = 1) noexcept;
+		ColorF(COLORREF cr = (COLORREF)0l) noexcept;
+		ColorF(const ColorI8& col_i8) noexcept;
+		ColorF(int r, int g, int b, int a = 1) noexcept;
 
 		void clamp() noexcept;
 		void invert() noexcept;
@@ -115,7 +115,7 @@ namespace mkaul {
 
 
 	// Color (int)
-	struct Color_I8 : public Color<int> {
+	struct ColorI8 : public Color<int> {
 		void operator = (COLORREF cr)
 		{
 			this->r = GetRValue(cr);
@@ -124,8 +124,8 @@ namespace mkaul {
 			this->a = MAX;
 		}
 
-		Color_I8(COLORREF cr = (COLORREF)0l) noexcept;
-		Color_I8(const Color_F& col_f) noexcept;
+		ColorI8(COLORREF cr = (COLORREF)0l) noexcept;
+		ColorI8(const ColorF& col_f) noexcept;
 
 		void clamp() noexcept;
 		void invert() noexcept;
@@ -136,7 +136,7 @@ namespace mkaul {
 
 
 	// コンストラクタ(1)
-	inline Color_F::Color_F(COLORREF cr) noexcept
+	inline ColorF::ColorF(COLORREF cr) noexcept
 	{
 		r = GetRValue(cr) / (float)MAX;
 		g = GetGValue(cr) / (float)MAX;
@@ -146,7 +146,7 @@ namespace mkaul {
 
 
 	// コンストラクタ(2)
-	inline Color_F::Color_F(const Color_I8& col_i8) noexcept
+	inline ColorF::ColorF(const ColorI8& col_i8) noexcept
 	{
 		r = col_i8.r / (float)MAX;
 		g = col_i8.g / (float)MAX;
@@ -156,7 +156,7 @@ namespace mkaul {
 
 
 	// コンストラクタ(3)
-	inline Color_F::Color_F(int r_, int g_, int b_, int a_) noexcept
+	inline ColorF::ColorF(int r_, int g_, int b_, int a_) noexcept
 	{
 		r = r_ / (float)MAX;
 		g = g_ / (float)MAX;
@@ -165,7 +165,7 @@ namespace mkaul {
 	}
 
 
-	inline void Color_F::clamp() noexcept
+	inline void ColorF::clamp() noexcept
 	{
 		r = std::clamp(r, 0.f, 1.f);
 		g = std::clamp(g, 0.f, 1.f);
@@ -174,7 +174,7 @@ namespace mkaul {
 	}
 
 
-	inline void Color_F::invert() noexcept
+	inline void ColorF::invert() noexcept
 	{
 		r = 1.f - r;
 		g = 1.f - g;
@@ -182,7 +182,7 @@ namespace mkaul {
 	}
 
 
-	inline void Color_F::change_contrast(float val) noexcept
+	inline void ColorF::change_contrast(float val) noexcept
 	{
 		r = 0.5f + (r - 0.5f) * val;
 		g = 0.5f + (g - 0.5f) * val;
@@ -190,7 +190,7 @@ namespace mkaul {
 	}
 
 
-	inline COLORREF Color_F::colorref() const noexcept
+	inline COLORREF ColorF::colorref() const noexcept
 	{
 		return RGB(
 			std::clamp((int)(r * MAX), 0, MAX),
@@ -200,7 +200,7 @@ namespace mkaul {
 	}
 
 
-	inline D2D1_COLOR_F Color_F::d2d1_colorf() const noexcept
+	inline D2D1_COLOR_F ColorF::d2d1_colorf() const noexcept
 	{
 		return D2D1::ColorF(
 			std::clamp(b, 0.f, 1.f),
@@ -213,7 +213,7 @@ namespace mkaul {
 
 
 	// コンストラクタ(1)
-	inline Color_I8::Color_I8(COLORREF cr) noexcept
+	inline ColorI8::ColorI8(COLORREF cr) noexcept
 	{
 		r = GetRValue(cr);
 		g = GetGValue(cr);
@@ -223,7 +223,7 @@ namespace mkaul {
 
 
 	// コンストラクタ(2)
-	inline Color_I8::Color_I8(const Color_F& col_f) noexcept
+	inline ColorI8::ColorI8(const ColorF& col_f) noexcept
 	{
 		r = (int)(col_f.r * MAX);
 		g = (int)(col_f.g * MAX);
@@ -232,7 +232,7 @@ namespace mkaul {
 	}
 
 
-	inline void Color_I8::clamp() noexcept
+	inline void ColorI8::clamp() noexcept
 	{
 		r = std::clamp(r, 0, MAX);
 		g = std::clamp(g, 0, MAX);
@@ -241,7 +241,7 @@ namespace mkaul {
 	}
 
 
-	inline void Color_I8::invert() noexcept
+	inline void ColorI8::invert() noexcept
 	{
 		r = MAX - r;
 		g = MAX - g;
@@ -249,7 +249,7 @@ namespace mkaul {
 	}
 
 
-	inline void Color_I8::change_contrast(float val) noexcept
+	inline void ColorI8::change_contrast(float val) noexcept
 	{
 		r = MAX / 2 + (int)((r - MAX / 2) * val);
 		g = MAX / 2 + (int)((g - MAX / 2) * val);
@@ -257,7 +257,7 @@ namespace mkaul {
 	}
 
 
-	inline COLORREF Color_I8::colorref() const noexcept
+	inline COLORREF ColorI8::colorref() const noexcept
 	{
 		return RGB(
 			std::clamp(r, 0, MAX),
@@ -267,7 +267,7 @@ namespace mkaul {
 	}
 
 
-	inline D2D1_COLOR_F Color_I8::d2d1_colorf() const noexcept
+	inline D2D1_COLOR_F ColorI8::d2d1_colorf() const noexcept
 	{
 		return D2D1::ColorF(
 			std::clamp(b / (float)MAX, 0.f, 1.f),

@@ -10,7 +10,7 @@
 
 namespace mkaul {
 	// 初期化
-	void Window_Rectangle::set(int l, int t, int r, int b)
+	void WindowRectangle::set(int l, int t, int r, int b)
 	{
 		left = l;
 		top = t;
@@ -20,9 +20,9 @@ namespace mkaul {
 
 
 	// 矩形をn個に分割
-	void Window_Rectangle::divide(
+	void WindowRectangle::divide(
 		Direction dir,
-		Window_Rectangle* rects_child[],
+		WindowRectangle* rects_child[],
 		float weights[],
 		int n
 	) const
@@ -30,7 +30,6 @@ namespace mkaul {
 		int l_parent, l_child;
 		float weights_sum = 0.f;
 		std::vector<float> list_weights_sum;
-		int st, ed;
 
 		if (weights) {
 			for (int i = 0; i < n; i++) {
@@ -46,6 +45,8 @@ namespace mkaul {
 		l_child = l_parent / n;
 
 		for (int i = 0; i < n; i++) {
+			int st, ed;
+
 			if (weights) {
 				st = (int)(l_parent * ((i == 0) ? 0 : list_weights_sum[i - 1]) / weights_sum);
 				ed = (int)(l_parent * list_weights_sum[i] / weights_sum);
@@ -71,7 +72,7 @@ namespace mkaul {
 	}
 
 	// マージンを設定
-	void Window_Rectangle::set_margin(int l, int t, int r, int b)
+	void WindowRectangle::set_margin(int l, int t, int r, int b)
 	{
 		left += l;
 		top += t;
@@ -86,7 +87,7 @@ namespace mkaul {
 
 
 	// クライアント -> スクリーン
-	void Window_Rectangle::client_to_screen(HWND hwnd)
+	void WindowRectangle::client_to_screen(HWND hwnd)
 	{
 		POINT pt[] = {
 			{left, top},
@@ -103,7 +104,7 @@ namespace mkaul {
 	}
 
 	// スクリーン -> クライアント
-	void Window_Rectangle::screen_to_client(HWND hwnd)
+	void WindowRectangle::screen_to_client(HWND hwnd)
 	{
 		POINT pt[] = {
 			{left, top},

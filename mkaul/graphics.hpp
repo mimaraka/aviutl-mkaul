@@ -13,21 +13,24 @@
 
 namespace mkaul {
 	namespace graphics {
-		class Manager {
+		class Manager final {
 		public:
 			// 描画方式
-			enum class Api {
+			enum class GraphicApi {
 				Null,
 				Gdiplus,
 				Directx
 			};
 
+			Manager() = delete;
+			~Manager() = delete;
+
 			// 描画環境の用意
-			static bool startup(Api api_ = Api::Gdiplus);
+			static bool startup(GraphicApi api_ = GraphicApi::Gdiplus);
 			// 描画環境の破棄
 			static bool shutdown();
 
-			static Api get_api() { return api; }
+			static auto get_api() { return api; }
 
 			// グラフィックス作成
 			static bool create_graphics(Graphics** pp_graphics);
@@ -39,7 +42,7 @@ namespace mkaul {
 			static bool create_path(Path** pp_path);
 
 		private:
-			inline static Api api = Api::Null;
+			inline static GraphicApi api = GraphicApi::Null;
 		};
 	}
 }

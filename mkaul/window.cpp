@@ -36,7 +36,7 @@ namespace mkaul {
 			WNDPROC					wndproc_,
 			LONG					window_style,
 			LONG					class_style,
-			const Window_Rectangle&	rect,
+			const WindowRectangle&	rect,
 			HCURSOR					cursor,
 			LPVOID					lp_param
 		)

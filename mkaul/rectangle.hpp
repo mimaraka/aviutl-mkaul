@@ -67,13 +67,13 @@ namespace mkaul {
 
 
 	// 矩形(ウィンドウ用)
-	struct Window_Rectangle : public Rectangle<LONG> {
+	struct WindowRectangle : public Rectangle<LONG> {
 		enum class Direction {
 			Vertical,
 			Horizontal
 		};
 
-		Window_Rectangle operator = (const RECT& rc)
+		WindowRectangle operator = (const RECT& rc)
 		{
 			Rectangle<LONG>::operator=(rc);
 			return *this;
@@ -85,7 +85,7 @@ namespace mkaul {
 		void set_margin(int left, int top, int right, int bottom);
 		void divide(
 			Direction dir,
-			Window_Rectangle* rects_child[],
+			WindowRectangle* rects_child[],
 			float weights[],
 			int n
 		) const;

@@ -16,7 +16,7 @@
 namespace mkaul {
 	namespace graphics {
 		// GDI+共通の基底クラス
-		class Gdiplus_Base {
+		class GdiplusBase {
 		protected:
 			// オブジェクトを開放
 			template <class Interface>
@@ -31,7 +31,7 @@ namespace mkaul {
 
 
 		// ビットマップ
-		struct Bitmap_Gdiplus : public Bitmap, protected Gdiplus_Base {
+		struct GdiplusBitmap : public Bitmap, protected GdiplusBase {
 		public:
 			using Bitmap::Bitmap;
 
@@ -43,14 +43,14 @@ namespace mkaul {
 
 
 		// パス
-		struct Path_Gdiplus : public Path, protected Gdiplus_Base {
+		struct GdiplusPath : public Path, protected GdiplusBase {
 		public:
 			using Path::Path;
 
 			void release() override;
 
 			bool begin(const Point<float>& pt) override;
-			void end(Figure_End fe = Figure_End::Closed) override;
+			void end(FigureEnd fe = FigureEnd::Closed) override;
 
 			// 弧を追加
 			void add_arc(
@@ -74,14 +74,14 @@ namespace mkaul {
 
 
 		// グラフィックス
-		class Graphics_Gdiplus : public Graphics, protected Gdiplus_Base {
+		class GdiplusGraphics : public Graphics, protected GdiplusBase {
 		private:
 			inline static ULONG_PTR gdiplus_token = NULL;
 			Gdiplus::Graphics* p_graphics_buffer;
 			Gdiplus::Bitmap* p_bitmap_buffer;
 
 		public:
-			Graphics_Gdiplus() :
+			GdiplusGraphics() :
 				p_graphics_buffer(nullptr),
 				p_bitmap_buffer(nullptr)
 			{}
@@ -92,7 +92,7 @@ namespace mkaul {
 			// Strokeの情報をPenに反映
 			static void apply_pen_style(
 				Gdiplus::Pen* p_pen,
-				const Color_F& col_f,
+				const ColorF& col_f,
 				const Stroke& stroke
 			);
 
@@ -110,14 +110,14 @@ namespace mkaul {
 
 			// 背景を塗りつぶし
 			void fill_background(
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) override;
 
 			// 線を描画
 			void draw_line(
 				const Point<float>& point_from,
 				const Point<float>& point_to,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -125,7 +125,7 @@ namespace mkaul {
 			void draw_lines(
 				const Point<float>* points,
 				size_t n_points,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -135,7 +135,7 @@ namespace mkaul {
 				const Point<float>& point_1,
 				const Point<float>& point_2,
 				const Point<float>& point_3,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -143,7 +143,7 @@ namespace mkaul {
 			void draw_beziers(
 				const Point<float>* points,
 				size_t n_points,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -152,7 +152,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -161,7 +161,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) override;
 
 			// 楕円を描画(線)(中心点指定)
@@ -169,14 +169,14 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
 			// 楕円を描画(線)(矩形指定)
 			void draw_ellipse(
 				const Rectangle<float>& rectangle,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -185,33 +185,33 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) override;
 
 			// 楕円を描画(塗り)(矩形指定)
 			void fill_ellipse(
 				const Rectangle<float>& rectangle,
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) override;
 
 			// パスを描画(線)
 			void draw_path(
 				const Path* p_path,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
 			// パスを描画(塗り)
 			void fill_path(
 				const Path* p_path,
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) override;
 
 			// 空のビットマップを作成
 			bool initialize_bitmap(
 				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
-				Color_F col_f = 0
+				ColorF col_f = 0
 			) override;
 
 			// ファイルからビットマップを作成
@@ -232,7 +232,7 @@ namespace mkaul {
 			void draw_bitmap(
 				const Bitmap* bitmap,
 				const Point<float>& point,
-				Anchor_Position anchor_pos,
+				AnchorPosition anchor_pos,
 				float opacity = 1.f
 			) override;
 

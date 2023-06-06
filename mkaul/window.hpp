@@ -9,7 +9,7 @@
 #include "common.hpp"
 #include <commctrl.h>
 #include "rectangle.hpp"
-#include "utils.hpp"
+#include "util.hpp"
 
 #pragma comment(lib, "comctl32.lib")
 
@@ -38,12 +38,12 @@ namespace mkaul {
 				WNDPROC					wndproc_,
 				LONG					window_style,
 				LONG					class_style,
-				const Window_Rectangle&	rect,
+				const WindowRectangle&	rect,
 				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW),
 				LPVOID					lp_param = nullptr
 			);
 
-			bool move(const Window_Rectangle& rect) const;
+			bool move(const WindowRectangle& rect) const;
 			bool redraw() const;
 			bool close() const;
 			bool show() const;
@@ -52,7 +52,7 @@ namespace mkaul {
 
 
 		// ウィンドウを移動
-		inline bool Window::move(const Window_Rectangle& rect) const
+		inline bool Window::move(const WindowRectangle& rect) const
 		{
 			return ::MoveWindow(
 				hwnd,

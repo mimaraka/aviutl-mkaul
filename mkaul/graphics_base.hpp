@@ -8,9 +8,10 @@
 
 #include <Windows.h>
 #include "point.hpp"
+#include "size.hpp"
 #include "rectangle.hpp"
 #include "color.hpp"
-#include "utils.hpp"
+#include "util.hpp"
 
 
 
@@ -20,21 +21,21 @@ namespace mkaul {
 		struct Stroke {
 		public:
 			float width;
-			enum class Dash_Style {
+			enum class DashStyle {
 				Solid,
 				Dash,
 				Dot,
-				Dash_Dot,
-				Dash_Dot_Dot,
+				DashDot,
+				DashDotDot,
 				Custom
 			} dash_style;
-			enum class Cap_Style {
+			enum class CapStyle {
 				Flat,
 				Square,
 				Round,
 				Triangle
 			} start_cap, end_cap, dash_cap;
-			enum class Line_Join {
+			enum class LineJoin {
 				Miter,
 				Bevel,
 				Round
@@ -45,11 +46,11 @@ namespace mkaul {
 
 			Stroke(
 				float width_ = 1.f,
-				Dash_Style dash_style_ = Dash_Style::Solid,
-				Cap_Style start_cap_ = Cap_Style::Round,
-				Cap_Style end_cap_ = Cap_Style::Round,
-				Cap_Style dash_cap_ = Cap_Style::Round,
-				Line_Join line_join_ = Line_Join::Round,
+				DashStyle dash_style_ = DashStyle::Solid,
+				CapStyle start_cap_ = CapStyle::Round,
+				CapStyle end_cap_ = CapStyle::Round,
+				CapStyle dash_cap_ = CapStyle::Round,
+				LineJoin line_join_ = LineJoin::Round,
 				float* custom_dashes_ = nullptr,
 				int dashes_count_ = 0,
 				float dash_offset_ = 0.f
@@ -96,16 +97,16 @@ namespace mkaul {
 
 
 		// アンカーポイントの位置
-		enum class Anchor_Position {
+		enum class AnchorPosition {
 			Center,
 			Left,
 			Top,
 			Right,
 			Bottom,
-			Left_Top,
-			Right_Top,
-			Left_Bottom,
-			Right_Bottom
+			LeftTop,
+			RightTop,
+			LeftBottom,
+			RightBottom
 		};
 
 
@@ -127,19 +128,9 @@ namespace mkaul {
 				pt_last()
 			{}
 
-			enum class Figure_End {
+			enum class FigureEnd {
 				Open,
 				Closed
-			};
-
-			enum class Sweep_Direction {
-				Counter_Clockwise,
-				Clockwise				
-			};
-
-			enum class Arc_Size {
-				Small,
-				Large
 			};
 
 			virtual void release() = 0;
@@ -151,7 +142,7 @@ namespace mkaul {
 			}
 
 			virtual bool begin(const Point<float>& pt) = 0;
-			virtual void end(Figure_End fe = Figure_End::Closed) = 0;
+			virtual void end(FigureEnd fe = FigureEnd::Closed) = 0;
 
 			// 弧を追加
 			virtual void add_arc(
@@ -216,14 +207,14 @@ namespace mkaul {
 
 			// 背景を塗りつぶし
 			virtual void fill_background(
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) = 0;
 
 			// 線を描画
 			virtual void draw_line(
 				const Point<float>& point_from,
 				const Point<float>& point_to,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -231,7 +222,7 @@ namespace mkaul {
 			virtual void draw_lines(
 				const Point<float>* p_points,
 				size_t n_points,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -241,7 +232,7 @@ namespace mkaul {
 				const Point<float>& point_1,
 				const Point<float>& point_2,
 				const Point<float>& point_3,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -249,7 +240,7 @@ namespace mkaul {
 			virtual void draw_beziers(
 				const Point<float>* points,
 				size_t n_points,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -258,7 +249,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -267,7 +258,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) = 0;
 
 			// 楕円を描画(線)(中心点指定)
@@ -275,14 +266,14 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
 			// 楕円を描画(線)(矩形指定)
 			virtual void draw_ellipse(
 				const Rectangle<float>& rectangle,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -291,33 +282,33 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) = 0;
 
 			// 楕円を描画(塗り)(矩形指定)
 			virtual void fill_ellipse(
 				const Rectangle<float>& rectangle,
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) = 0;
 
 			// パスを描画(線)
 			virtual void draw_path(
 				const Path* p_path,
-				const Color_F& col_f = 0,
+				const ColorF& col_f = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
 			// パスを描画(塗り)
 			virtual void fill_path(
 				const Path* p_path,
-				const Color_F& col_f = 0
+				const ColorF& col_f = 0
 			) = 0;
 
 			// 空のビットマップを作成
 			virtual bool initialize_bitmap(
 				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
-				Color_F col_f = 0
+				ColorF col_f = 0
 			) = 0;
 
 			// ファイルからビットマップを作成
@@ -338,7 +329,7 @@ namespace mkaul {
 			virtual void draw_bitmap(
 				const Bitmap* p_bitmap,
 				const Point<float>& point,
-				Anchor_Position anchor_pos,
+				AnchorPosition anchor_pos,
 				float opacity = 1.f
 			) = 0;
 
@@ -348,6 +339,12 @@ namespace mkaul {
 				const Rectangle<float>& rect,
 				float opacity = 1.f
 			) = 0;
+
+			//// テキストを描画
+			//virtual void draw_text(
+			//	const std::string& str,
+			//	const std::string& font
+			//) = 0;
 		};
 	}
 }

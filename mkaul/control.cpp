@@ -18,10 +18,10 @@ namespace mkaul {
 			LPCTSTR					class_name,
 			LONG					window_style,
 			LONG					class_style,
-			const Window_Rectangle&	rect,
-			const Color_F*			p_col_bg_,
-			const Color_F*			p_col_control_,
-			Round_Edge_Flag			round_edge_flag_,
+			const WindowRectangle&	rect,
+			const ColorF*			p_col_bg_,
+			const ColorF*			p_col_control_,
+			RoundEdgeFlag			round_edge_flag_,
 			float					round_radius_,
 			HCURSOR					cursor
 		)
@@ -30,8 +30,8 @@ namespace mkaul {
 			hwnd_parent = hwnd_parent_;
 			round_edge_flag = round_edge_flag_;
 			round_radius = round_radius_;
-			p_col_bg = const_cast<Color_F*>(p_col_bg_);
-			p_col_control = const_cast<Color_F*>(p_col_control_);
+			p_col_bg = const_cast<ColorF*>(p_col_bg_);
+			p_col_control = const_cast<ColorF*>(p_col_control_);
 
 			// 描画オブジェクトを作成
 			graphics::Manager::create_graphics(&p_graphics);
@@ -52,7 +52,7 @@ namespace mkaul {
 
 
 		// 静的ウィンドウプロシージャ
-		LRESULT CALLBACK Control::wndproc_static(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam)
+		LRESULT CALLBACK Control::wndproc_static(HWND hwnd_, UINT message, WPARAM wparam, LPARAM lparam)
 		{
 			// 自身のインスタンスのポインタをウィンドウに設定したユーザーデータから取得
 			// (静的メンバ関数内ではthisポインタおよび非静的メンバが使用できないため)
@@ -61,21 +61,21 @@ namespace mkaul {
 			// ウィンドウがまだ作成されていない場合
 			if (!app) {
 				// ここでウィンドウが作成される場合
-				if (msg == WM_CREATE) {
+				if (message == WM_CREATE) {
 					// lParamに格納されているLPCREATESTRUCTからユーザーデータにアクセスできるためそこから取得
 					app = (Control*)((LPCREATESTRUCT)lparam)->lpCreateParams;
 
 					if (app) {
 						::SetWindowLongPtr(hwnd_, GWLP_USERDATA, (LONG_PTR)app);
-						return app->wndproc(hwnd_, msg, wparam, lparam);
+						return app->wndproc(hwnd_, message, wparam, lparam);
 					}
 				}
-				return ::DefWindowProc(hwnd_, msg, wparam, lparam);
+				return ::DefWindowProc(hwnd_, message, wparam, lparam);
 			}
 			// ウィンドウが存在する場合
 			else
 				// メンバ関数のウィンドウプロシージャを参照
-				return app->wndproc(hwnd_, msg, wparam, lparam);
+				return app->wndproc(hwnd_, message, wparam, lparam);
 		}
 
 

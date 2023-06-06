@@ -10,24 +10,24 @@
 
 namespace mkaul {
 	namespace graphics {
-		void Bitmap_Directx::release()
+		void DirectxBitmap::release()
 		{
 			auto p_bitmap = reinterpret_cast<ID2D1Bitmap*>(data);
 			dx_release(&p_bitmap);
 		}
 
-		size_t Bitmap_Directx::get_width() const
+		size_t DirectxBitmap::get_width() const
 		{
 			return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).width;
 		}
 
-		size_t Bitmap_Directx::get_height() const
+		size_t DirectxBitmap::get_height() const
 		{
 			return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).height;
 		}
 
 
-		void Path_Directx::release()
+		void DirectxPath::release()
 		{
 			auto p_path = reinterpret_cast<ID2D1PathGeometry*>(data[0]);
 			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
@@ -37,14 +37,14 @@ namespace mkaul {
 		}
 
 
-		bool Path_Directx::begin(const Point<float>& pt)
+		bool DirectxPath::begin(const Point<float>& pt)
 		{
 			auto pp_path = reinterpret_cast<ID2D1PathGeometry**>(&data[0]);
 			auto pp_sink = reinterpret_cast<ID2D1GeometrySink**>(&data[1]);
 			data[0] = nullptr;
 			data[1] = nullptr;
 
-			auto hr = Graphics_Directx::get_factory()->CreatePathGeometry(pp_path);
+			auto hr = DirectxGraphics::get_factory()->CreatePathGeometry(pp_path);
 
 			if (SUCCEEDED(hr))
 				hr = (*pp_path)->Open(pp_sink);
@@ -67,7 +67,7 @@ namespace mkaul {
 		}
 
 
-		void Path_Directx::end(Figure_End fe)
+		void DirectxPath::end(FigureEnd fe)
 		{
 			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 
@@ -77,7 +77,7 @@ namespace mkaul {
 
 
 		// 弧を追加
-		void Path_Directx::add_arc(
+		void DirectxPath::add_arc(
 			const Size<float>& size,
 			float angle_start,
 			float angle_sweep
@@ -142,7 +142,7 @@ namespace mkaul {
 
 
 		// 線を追加
-		void Path_Directx::add_line(
+		void DirectxPath::add_line(
 			const Point<float>& pt
 		)
 		{
@@ -160,7 +160,7 @@ namespace mkaul {
 
 
 		// ベジェ曲線を追加
-		void Path_Directx::add_bezier(
+		void DirectxPath::add_bezier(
 			const Point<float>& pt_0,
 			const Point<float>& pt_1,
 			const Point<float>& pt_2
@@ -184,7 +184,7 @@ namespace mkaul {
 
 
 		// 描画環境の用意
-		bool Graphics_Directx::startup()
+		bool DirectxGraphics::startup()
 		{
 			HRESULT hr;
 
@@ -224,7 +224,7 @@ namespace mkaul {
 
 
 		// 描画環境の破棄
-		void Graphics_Directx::shutdown()
+		void DirectxGraphics::shutdown()
 		{
 			dx_release(&p_imaging_factory);
 			dx_release(&p_write_factory);
@@ -233,7 +233,7 @@ namespace mkaul {
 
 
 		// Stroke -> ID2D1StrokeStyle*
-		void Graphics_Directx::stroke_to_d2d_strokestyle(
+		void DirectxGraphics::stroke_to_d2d_strokestyle(
 			const Stroke& stroke,
 			ID2D1StrokeStyle** pp_stroke_style
 		)
@@ -256,7 +256,7 @@ namespace mkaul {
 
 
 		// 初期化
-		bool Graphics_Directx::init(HWND hwnd_)
+		bool DirectxGraphics::init(HWND hwnd_)
 		{
 			RECT rect;
 
@@ -292,7 +292,7 @@ namespace mkaul {
 
 
 		// 終了
-		void Graphics_Directx::exit()
+		void DirectxGraphics::exit()
 		{
 			dx_release(&p_brush);
 			dx_release(&p_render_target);
@@ -300,7 +300,7 @@ namespace mkaul {
 
 
 		// 描画開始
-		bool Graphics_Directx::begin_draw()
+		bool DirectxGraphics::begin_draw()
 		{
 			if (!drawing) {
 				auto hdc = ::BeginPaint(hwnd, &ps);
@@ -317,7 +317,7 @@ namespace mkaul {
 
 
 		// 描画終了
-		bool Graphics_Directx::end_draw()
+		bool DirectxGraphics::end_draw()
 		{
 			if (drawing) {
 				auto hr = p_render_target->EndDraw();
@@ -332,7 +332,7 @@ namespace mkaul {
 
 
 		// リサイズ
-		bool Graphics_Directx::resize()
+		bool DirectxGraphics::resize()
 		{
 			RECT rect;
 
@@ -352,8 +352,8 @@ namespace mkaul {
 
 
 		// 背景を塗りつぶし
-		void Graphics_Directx::fill_background(
-			const Color_F& col_f
+		void DirectxGraphics::fill_background(
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_render_target && p_brush) {
@@ -377,10 +377,10 @@ namespace mkaul {
 
 
 		// 線を描画
-		void Graphics_Directx::draw_line(
+		void DirectxGraphics::draw_line(
 			const Point<float>& pt_from,
 			const Point<float>& pt_to,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -405,10 +405,10 @@ namespace mkaul {
 
 
 		// 線を描画(複数)
-		void Graphics_Directx::draw_lines(
+		void DirectxGraphics::draw_lines(
 			const Point<float>* pts,
 			size_t n_pts,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke 
 		)
 		{
@@ -461,12 +461,12 @@ namespace mkaul {
 
 
 		// ベジェ曲線を描画
-		void Graphics_Directx::draw_bezier(
+		void DirectxGraphics::draw_bezier(
 			const Point<float>& pt_0,
 			const Point<float>& pt_1,
 			const Point<float>& pt_2,
 			const Point<float>& pt_3,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -516,10 +516,10 @@ namespace mkaul {
 
 
 		// ベジェ曲線を描画(複数)
-		void Graphics_Directx::draw_beziers(
+		void DirectxGraphics::draw_beziers(
 			const Point<float>* pts,
 			size_t n_pts,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -581,11 +581,11 @@ namespace mkaul {
 
 
 		// 矩形を描画(線)
-		void Graphics_Directx::draw_rectangle(
+		void DirectxGraphics::draw_rectangle(
 			const Rectangle<float>& rect,
 			float round_radius_x,
 			float round_radius_y,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -632,11 +632,11 @@ namespace mkaul {
 
 
 		// 矩形を描画(塗り)
-		void Graphics_Directx::fill_rectangle(
+		void DirectxGraphics::fill_rectangle(
 			const Rectangle<float>& rect,
 			float round_radius_x,
 			float round_radius_y,
-			const Color_F& col_f
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_render_target && p_brush) {
@@ -674,11 +674,11 @@ namespace mkaul {
 
 
 		// 楕円を描画(線)(中心点指定)
-		void Graphics_Directx::draw_ellipse(
+		void DirectxGraphics::draw_ellipse(
 			const Point<float>& pt,
 			float radius_x,
 			float radius_y,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -705,9 +705,9 @@ namespace mkaul {
 
 
 		// 楕円を描画(線)(矩形指定)
-		void Graphics_Directx::draw_ellipse(
+		void DirectxGraphics::draw_ellipse(
 			const Rectangle<float>& rect,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -737,11 +737,11 @@ namespace mkaul {
 
 
 		// 楕円を描画(塗り)(中心点指定)
-		void Graphics_Directx::fill_ellipse(
+		void DirectxGraphics::fill_ellipse(
 			const Point<float>& pt,
 			float radius_x,
 			float radius_y,
-			const Color_F& col_f
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_render_target && p_brush) {
@@ -760,9 +760,9 @@ namespace mkaul {
 
 
 		// 楕円を描画(塗り)(矩形指定)
-		void Graphics_Directx::fill_ellipse(
+		void DirectxGraphics::fill_ellipse(
 			const Rectangle<float>& rect,
-			const Color_F& col_f
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_render_target && p_brush) {
@@ -784,9 +784,9 @@ namespace mkaul {
 
 
 		// パスを描画(線)
-		void Graphics_Directx::draw_path(
+		void DirectxGraphics::draw_path(
 			const Path* p_path,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -807,9 +807,9 @@ namespace mkaul {
 
 
 		// パスを描画(塗り)
-		void Graphics_Directx::fill_path(
+		void DirectxGraphics::fill_path(
 			const Path* p_path,
-			const Color_F& col_f
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_render_target && p_brush) {
@@ -824,10 +824,10 @@ namespace mkaul {
 
 
 		// 空のビットマップを作成
-		bool Graphics_Directx::initialize_bitmap(
+		bool DirectxGraphics::initialize_bitmap(
 			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
-			Color_F col_f
+			ColorF col_f
 		)
 		{
 			if (p_render_target) {
@@ -851,7 +851,7 @@ namespace mkaul {
 
 
 		// ファイルからビットマップを作成
-		bool Graphics_Directx::load_bitmap_from_filename(
+		bool DirectxGraphics::load_bitmap_from_filename(
 			Bitmap* p_bitmap,
 			const std::filesystem::path& path
 		)
@@ -913,7 +913,7 @@ namespace mkaul {
 
 
 		// リソースからビットマップを作成
-		bool Graphics_Directx::load_bitmap_from_resource(
+		bool DirectxGraphics::load_bitmap_from_resource(
 			Bitmap* p_bitmap,
 			HINSTANCE hinst,
 			const char* res_name,
@@ -1049,10 +1049,10 @@ namespace mkaul {
 
 
 		// ビットマップを描画(アンカーポイント指定)
-		void Graphics_Directx::draw_bitmap(
+		void DirectxGraphics::draw_bitmap(
 			const Bitmap* p_bitmap,
 			const Point<float>& point,
-			Anchor_Position anchor_pos,
+			AnchorPosition anchor_pos,
 			float opacity
 		)
 		{
@@ -1065,7 +1065,7 @@ namespace mkaul {
 
 					// アンカーポイントの位置
 					switch (anchor_pos) {
-					case Anchor_Position::Center:
+					case AnchorPosition::Center:
 					default:
 						rect_f = D2D1::RectF(
 							point.x - size_u.width * 0.5f,
@@ -1075,7 +1075,7 @@ namespace mkaul {
 						);
 						break;
 
-					case Anchor_Position::Left:
+					case AnchorPosition::Left:
 						rect_f = D2D1::RectF(
 							point.x,
 							point.y - size_u.height * 0.5f,
@@ -1084,7 +1084,7 @@ namespace mkaul {
 						);
 						break;
 
-					case Anchor_Position::Top:
+					case AnchorPosition::Top:
 						rect_f = D2D1::RectF(
 							point.x - size_u.width * 0.5f,
 							point.y,
@@ -1093,7 +1093,7 @@ namespace mkaul {
 						);
 						break;
 
-					case Anchor_Position::Right:
+					case AnchorPosition::Right:
 						rect_f = D2D1::RectF(
 							point.x - size_u.width,
 							point.y - size_u.height * 0.5f,
@@ -1102,7 +1102,7 @@ namespace mkaul {
 						);
 						break;
 
-					case Anchor_Position::Bottom:
+					case AnchorPosition::Bottom:
 						rect_f = D2D1::RectF(
 							point.x - size_u.width * 0.5f,
 							point.y - size_u.height,
@@ -1111,7 +1111,7 @@ namespace mkaul {
 						);
 						break;
 
-					case Anchor_Position::Left_Top:
+					case AnchorPosition::LeftTop:
 						rect_f = D2D1::RectF(
 							point.x,
 							point.y,
@@ -1120,7 +1120,7 @@ namespace mkaul {
 						);
 						break;
 
-					case Anchor_Position::Right_Top:
+					case AnchorPosition::RightTop:
 						rect_f = D2D1::RectF(
 							point.x - size_u.width,
 							point.y,
@@ -1129,7 +1129,7 @@ namespace mkaul {
 						);
 						break;
 
-					case Anchor_Position::Left_Bottom:
+					case AnchorPosition::LeftBottom:
 						rect_f = D2D1::RectF(
 							point.x,
 							point.y - size_u.height,
@@ -1138,7 +1138,7 @@ namespace mkaul {
 						);
 						break;
 
-					case Anchor_Position::Right_Bottom:
+					case AnchorPosition::RightBottom:
 						rect_f = D2D1::RectF(
 							point.x - size_u.width,
 							point.y - size_u.height,
@@ -1159,7 +1159,7 @@ namespace mkaul {
 
 
 		// ビットマップを描画(矩形指定)
-		void Graphics_Directx::draw_bitmap(
+		void DirectxGraphics::draw_bitmap(
 			const Bitmap* p_bitmap,
 			const Rectangle<float>& rect,
 			float opacity

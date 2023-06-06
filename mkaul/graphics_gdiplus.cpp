@@ -11,33 +11,33 @@
 
 namespace mkaul {
 	namespace graphics {
-		void Bitmap_Gdiplus::release()
+		void GdiplusBitmap::release()
 		{
 			gdip_release(reinterpret_cast<Gdiplus::Bitmap**>(&data));
 		}
 
 
-		size_t Bitmap_Gdiplus::get_width() const
+		size_t GdiplusBitmap::get_width() const
 		{
 			return reinterpret_cast<Gdiplus::Bitmap*>(data)->GetWidth();
 		}
 
 
-		size_t Bitmap_Gdiplus::get_height() const
+		size_t GdiplusBitmap::get_height() const
 		{
 			return reinterpret_cast<Gdiplus::Bitmap*>(data)->GetHeight();
 		}
 
 
 		// 開放
-		void Path_Gdiplus::release()
+		void GdiplusPath::release()
 		{
 			gdip_release(reinterpret_cast<Gdiplus::GraphicsPath**>(&data[0]));
 		}
 
 
 		// パスの開始
-		bool Path_Gdiplus::begin(const Point<float>& pt)
+		bool GdiplusPath::begin(const Point<float>& pt)
 		{
 			if (!data[0]) {
 				auto p_path = new Gdiplus::GraphicsPath();
@@ -52,17 +52,17 @@ namespace mkaul {
 
 
 		// パスの終了
-		void Path_Gdiplus::end(Figure_End fe)
+		void GdiplusPath::end(FigureEnd fe)
 		{
 			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
 
-			if (fe == Figure_End::Closed)
+			if (fe == FigureEnd::Closed)
 				p_path->CloseAllFigures();
 		}
 
 
 		// 弧を追加
-		void Path_Gdiplus::add_arc(
+		void GdiplusPath::add_arc(
 			const Size<float>& size,
 			float angle_start,
 			float angle_sweep
@@ -95,7 +95,7 @@ namespace mkaul {
 
 
 		// 線を追加
-		void Path_Gdiplus::add_line(
+		void GdiplusPath::add_line(
 			const Point<float>& pt
 		)
 		{
@@ -112,7 +112,7 @@ namespace mkaul {
 
 
 		// ベジェ曲線を追加
-		void Path_Gdiplus::add_bezier(
+		void GdiplusPath::add_bezier(
 			const Point<float>& pt_0,
 			const Point<float>& pt_1,
 			const Point<float>& pt_2
@@ -133,7 +133,7 @@ namespace mkaul {
 
 
 		// 描画環境の用意
-		bool Graphics_Gdiplus::startup()
+		bool GdiplusGraphics::startup()
 		{
 			Gdiplus::GdiplusStartupInput gsi;
 
@@ -150,16 +150,16 @@ namespace mkaul {
 
 
 		// 描画環境の破棄
-		void Graphics_Gdiplus::shutdown()
+		void GdiplusGraphics::shutdown()
 		{
 			Gdiplus::GdiplusShutdown(gdiplus_token);
 		}
 
 
 		// Strokeの情報をPenに反映
-		void Graphics_Gdiplus::apply_pen_style(Gdiplus::Pen* p_pen, const Color_F& col_f, const Stroke& stroke)
+		void GdiplusGraphics::apply_pen_style(Gdiplus::Pen* p_pen, const ColorF& col_f, const Stroke& stroke)
 		{
-			Color_I8 col_i8(col_f);
+			ColorI8 col_i8(col_f);
 			p_pen->SetColor(
 				Gdiplus::Color(
 					(BYTE)col_i8.a,
@@ -174,8 +174,8 @@ namespace mkaul {
 			p_pen->SetEndCap((Gdiplus::LineCap)stroke.end_cap);
 
 			auto dash_cap = stroke.dash_cap;
-			if (dash_cap == Stroke::Cap_Style::Square)
-				dash_cap = Stroke::Cap_Style::Flat;
+			if (dash_cap == Stroke::CapStyle::Square)
+				dash_cap = Stroke::CapStyle::Flat;
 			p_pen->SetDashCap((Gdiplus::DashCap)dash_cap);
 
 			p_pen->SetDashStyle((Gdiplus::DashStyle)stroke.dash_style);
@@ -186,7 +186,7 @@ namespace mkaul {
 
 
 		// 初期化(インスタンス毎)
-		bool Graphics_Gdiplus::init(HWND hwnd_)
+		bool GdiplusGraphics::init(HWND hwnd_)
 		{
 			if (::IsWindow(hwnd_)) {
 				hwnd = hwnd_;
@@ -197,7 +197,7 @@ namespace mkaul {
 
 
 		// 終了(インスタンス毎)
-		void Graphics_Gdiplus::exit()
+		void GdiplusGraphics::exit()
 		{
 			gdip_release(&p_graphics_buffer);
 			gdip_release(&p_bitmap_buffer);
@@ -205,7 +205,7 @@ namespace mkaul {
 
 
 		// 描画開始
-		bool Graphics_Gdiplus::begin_draw()
+		bool GdiplusGraphics::begin_draw()
 		{
 			if (!drawing) {
 				gdip_release(&p_graphics_buffer);
@@ -234,7 +234,7 @@ namespace mkaul {
 
 
 		// 描画終了(&バッファ送信)
-		bool Graphics_Gdiplus::end_draw()
+		bool GdiplusGraphics::end_draw()
 		{
 			bool result = false;
 
@@ -260,12 +260,12 @@ namespace mkaul {
 
 
 		// 背景を塗りつぶし
-		void Graphics_Gdiplus::fill_background(
-			const Color_F& col_f
+		void GdiplusGraphics::fill_background(
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Color_I8 col_i8(col_f);
+				ColorI8 col_i8(col_f);
 				RECT rect;
 
 				Gdiplus::SolidBrush brush(
@@ -294,10 +294,10 @@ namespace mkaul {
 
 
 		// 線を描画
-		void Graphics_Gdiplus::draw_line(
+		void GdiplusGraphics::draw_line(
 			const Point<float>& pt_from,
 			const Point<float>& pt_to,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -315,10 +315,10 @@ namespace mkaul {
 
 
 		// 線を描画(複数)
-		void Graphics_Gdiplus::draw_lines(
+		void GdiplusGraphics::draw_lines(
 			const Point<float>* points,
 			size_t n_points,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -345,12 +345,12 @@ namespace mkaul {
 
 
 		// ベジェ曲線を描画
-		void Graphics_Gdiplus::draw_bezier(
+		void GdiplusGraphics::draw_bezier(
 			const Point<float>& point_0,
 			const Point<float>& point_1,
 			const Point<float>& point_2,
 			const Point<float>& point_3,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -370,10 +370,10 @@ namespace mkaul {
 
 
 		// ベジェ曲線を描画(複数)
-		void Graphics_Gdiplus::draw_beziers(
+		void GdiplusGraphics::draw_beziers(
 			const Point<float>* points,
 			size_t n_points,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -400,11 +400,11 @@ namespace mkaul {
 
 
 		// 矩形を描画(線)
-		void Graphics_Gdiplus::draw_rectangle(
+		void GdiplusGraphics::draw_rectangle(
 			const Rectangle<float>& rect,
 			float round_radius_x,
 			float round_radius_y,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -492,15 +492,15 @@ namespace mkaul {
 
 
 		// 矩形を描画(塗り)
-		void Graphics_Gdiplus::fill_rectangle(
+		void GdiplusGraphics::fill_rectangle(
 			const Rectangle<float>& rect,
 			float round_radius_x,
 			float round_radius_y,
-			const Color_F& col_f
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Color_I8 col_i8(col_f);
+				ColorI8 col_i8(col_f);
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
 						(BYTE)col_i8.a,
@@ -590,11 +590,11 @@ namespace mkaul {
 
 
 		// 楕円を描画(線)(中心点指定)
-		void Graphics_Gdiplus::draw_ellipse(
+		void GdiplusGraphics::draw_ellipse(
 			const Point<float>& point,
 			float radius_x,
 			float radius_y,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -615,9 +615,9 @@ namespace mkaul {
 
 
 		// 楕円を描画(線)(矩形指定)
-		void Graphics_Gdiplus::draw_ellipse(
+		void GdiplusGraphics::draw_ellipse(
 			const Rectangle<float>& rectangle,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -638,15 +638,15 @@ namespace mkaul {
 
 
 		// 楕円を描画(塗り)(中心点指定)
-		void Graphics_Gdiplus::fill_ellipse(
+		void GdiplusGraphics::fill_ellipse(
 			const Point<float>& point,
 			float radius_x,
 			float radius_y,
-			const Color_F& col_f
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Color_I8 col_i8(col_f);
+				ColorI8 col_i8(col_f);
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
 						(BYTE)col_i8.a,
@@ -669,13 +669,13 @@ namespace mkaul {
 
 
 		// 楕円を描画(塗り)(矩形指定)
-		void Graphics_Gdiplus::fill_ellipse(
+		void GdiplusGraphics::fill_ellipse(
 			const Rectangle<float>& rectangle,
-			const Color_F& col_f
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Color_I8 col_i8(col_f);
+				ColorI8 col_i8(col_f);
 
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
@@ -699,9 +699,9 @@ namespace mkaul {
 
 
 		// パスを描画(線)
-		void Graphics_Gdiplus::draw_path(
+		void GdiplusGraphics::draw_path(
 			const Path* p_path,
-			const Color_F& col_f,
+			const ColorF& col_f,
 			const Stroke& stroke
 		)
 		{
@@ -718,13 +718,13 @@ namespace mkaul {
 
 
 		// パスを描画(塗り)
-		void Graphics_Gdiplus::fill_path(
+		void GdiplusGraphics::fill_path(
 			const Path* p_path,
-			const Color_F& col_f
+			const ColorF& col_f
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Color_I8 col_i8(col_f);
+				ColorI8 col_i8(col_f);
 
 				Gdiplus::SolidBrush brush(
 					Gdiplus::Color(
@@ -744,10 +744,10 @@ namespace mkaul {
 
 
 		// 空のビットマップを作成
-		bool Graphics_Gdiplus::initialize_bitmap(
+		bool GdiplusGraphics::initialize_bitmap(
 			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
-			Color_F col_f
+			ColorF col_f
 		)
 		{
 			auto p_gdip_bitmap = new Gdiplus::Bitmap(size.width, size.height);
@@ -760,7 +760,7 @@ namespace mkaul {
 
 
 		// ファイルからビットマップを作成
-		bool Graphics_Gdiplus::load_bitmap_from_filename(
+		bool GdiplusGraphics::load_bitmap_from_filename(
 			Bitmap* p_bitmap,
 			const std::filesystem::path& path
 		)
@@ -776,7 +776,7 @@ namespace mkaul {
 
 
 		// リソースからビットマップを作成
-		bool Graphics_Gdiplus::load_bitmap_from_resource(
+		bool GdiplusGraphics::load_bitmap_from_resource(
 			Bitmap* p_bitmap,
 			HINSTANCE hinst,
 			const char* res_name,
@@ -887,10 +887,10 @@ namespace mkaul {
 
 
 		// ビットマップを描画(アンカーポイント指定)
-		void Graphics_Gdiplus::draw_bitmap(
+		void GdiplusGraphics::draw_bitmap(
 			const Bitmap* bitmap,
 			const Point<float>& point,
-			Anchor_Position anchor_pos,
+			AnchorPosition anchor_pos,
 			float opacity
 		)
 		{
@@ -901,7 +901,7 @@ namespace mkaul {
 
 			// アンカーポイントの位置
 			switch (anchor_pos) {
-			case Anchor_Position::Center:
+			case AnchorPosition::Center:
 			default:
 				rect_f = Gdiplus::RectF(
 					point.x - width * 0.5f,
@@ -911,7 +911,7 @@ namespace mkaul {
 				);
 				break;
 
-			case Anchor_Position::Left:
+			case AnchorPosition::Left:
 				rect_f = Gdiplus::RectF(
 					point.x,
 					point.y - height * 0.5f,
@@ -920,7 +920,7 @@ namespace mkaul {
 				);
 				break;
 
-			case Anchor_Position::Top:
+			case AnchorPosition::Top:
 				rect_f = Gdiplus::RectF(
 					point.x - width * 0.5f,
 					point.y,
@@ -929,7 +929,7 @@ namespace mkaul {
 				);
 				break;
 
-			case Anchor_Position::Right:
+			case AnchorPosition::Right:
 				rect_f = Gdiplus::RectF(
 					point.x - width,
 					point.y - height * 0.5f,
@@ -938,7 +938,7 @@ namespace mkaul {
 				);
 				break;
 
-			case Anchor_Position::Bottom:
+			case AnchorPosition::Bottom:
 				rect_f = Gdiplus::RectF(
 					point.x - width * 0.5f,
 					point.y - height,
@@ -947,7 +947,7 @@ namespace mkaul {
 				);
 				break;
 
-			case Anchor_Position::Left_Top:
+			case AnchorPosition::LeftTop:
 				rect_f = Gdiplus::RectF(
 					point.x,
 					point.y,
@@ -956,7 +956,7 @@ namespace mkaul {
 				);
 				break;
 
-			case Anchor_Position::Right_Top:
+			case AnchorPosition::RightTop:
 				rect_f = Gdiplus::RectF(
 					point.x - width,
 					point.y,
@@ -965,7 +965,7 @@ namespace mkaul {
 				);
 				break;
 
-			case Anchor_Position::Left_Bottom:
+			case AnchorPosition::LeftBottom:
 				rect_f = Gdiplus::RectF(
 					point.x,
 					point.y - height,
@@ -974,7 +974,7 @@ namespace mkaul {
 				);
 				break;
 
-			case Anchor_Position::Right_Bottom:
+			case AnchorPosition::RightBottom:
 				rect_f = Gdiplus::RectF(
 					point.x - width,
 					point.y - height,
@@ -992,7 +992,7 @@ namespace mkaul {
 
 
 		// ビットマップを描画(矩形指定)
-		void Graphics_Gdiplus::draw_bitmap(
+		void GdiplusGraphics::draw_bitmap(
 			const Bitmap* bitmap,
 			const Rectangle<float>& rect,
 			float opacity

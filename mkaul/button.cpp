@@ -17,11 +17,11 @@ namespace mkaul {
 			HINSTANCE hinst,
 			HWND hwnd_parent_,
 			int id_,
-			const Color_F* p_col_bg_,
-			const Color_F* p_col_control_,
-			const Window_Rectangle& rect,
+			const ColorF* p_col_bg_,
+			const ColorF* p_col_control_,
+			const WindowRectangle& rect,
 			const std::string& tooltip_label_,
-			Round_Edge_Flag round_edge_flag_,
+			RoundEdgeFlag round_edge_flag_,
 			float round_radius_,
 			float hover_highlight_
 		)
@@ -47,23 +47,23 @@ namespace mkaul {
 
 
 		// ボタンを作成(ラベル)
-		bool Button_Label::create(
+		bool ButtonLabel::create(
 			HINSTANCE hinst,
 			HWND hwnd_parent_,
 			int id_,
 			const std::string& label_,
-			const Color_F* p_col_bg_,
-			const Color_F* p_col_control_,
-			const Color_F* p_col_label_,
-			const Window_Rectangle& rect,
+			const ColorF* p_col_bg_,
+			const ColorF* p_col_control_,
+			const ColorF* p_col_label_,
+			const WindowRectangle& rect,
 			const std::string& tooltip_label_,
-			Round_Edge_Flag round_edge_flag_,
+			RoundEdgeFlag round_edge_flag_,
 			float round_radius_,
 			float hover_highlight_
 		)
 		{
 			label = label_;
-			p_col_label = const_cast<Color_F*>(p_col_label_);
+			p_col_label = const_cast<ColorF*>(p_col_label_);
 
 			return Button::create(
 				hinst,
@@ -81,17 +81,17 @@ namespace mkaul {
 
 
 		// ボタンを作成(アイコン)
-		bool Button_Icon::create(
+		bool ButtonIcon::create(
 			HINSTANCE hinst,
 			HWND hwnd_parent_,
 			int id_,
 			const char* icon_src_,
-			Source_Type src_type_,
-			const Color_F* p_col_bg_,
-			const Color_F* p_col_control_,
-			const Window_Rectangle& rect,
+			SourceType src_type_,
+			const ColorF* p_col_bg_,
+			const ColorF* p_col_control_,
+			const WindowRectangle& rect,
 			const std::string& tooltip_label_,
-			Round_Edge_Flag round_edge_flag_,
+			RoundEdgeFlag round_edge_flag_,
 			float round_radius_,
 			float hover_highlight_
 		)
@@ -101,12 +101,12 @@ namespace mkaul {
 			// ソースの種類で場合分け
 			switch (src_type_) {
 			// ファイル
-			case Source_Type::File:
+			case SourceType::File:
 				icon_src = icon_src_;
 				break;
 
 			// リソース
-			case Source_Type::Resource:
+			case SourceType::Resource:
 				// リソースが数値の場合
 				if (!HIWORD(icon_src_))
 					icon_resource_num = LOWORD(icon_src_);
@@ -135,12 +135,12 @@ namespace mkaul {
 
 
 		// ウィンドウプロシージャ
-		LRESULT Button::wndproc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam)
+		LRESULT Button::wndproc(HWND hwnd_, UINT message, WPARAM wparam, LPARAM lparam)
 		{
 			RECT rect_wnd;
 			::GetClientRect(hwnd_, &rect_wnd);
 
-			switch (msg) {
+			switch (message) {
 			case WM_CREATE:
 				p_graphics->init(hwnd_);
 
@@ -159,7 +159,7 @@ namespace mkaul {
 
 			case WM_PAINT:
 			{
-				Color_F col_f = *p_col_control;
+				ColorF col_f = *p_col_control;
 
 				if (clicked)
 					col_f.change_brightness(-hover_highlight);
@@ -209,7 +209,7 @@ namespace mkaul {
 				break;
 
 			default:
-				return ::DefWindowProc(hwnd_, msg, wparam, lparam);
+				return ::DefWindowProc(hwnd_, message, wparam, lparam);
 			}
 
 			return 0;

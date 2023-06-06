@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ヘッダー ファイル\graphics">
-      <UniqueIdentifier>{83aade43-4d84-48a6-9e8c-e74a67d60363}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Graphics">
       <UniqueIdentifier>{40f0834b-8a4d-48f4-9a60-f7632126758c}</UniqueIdentifier>
     </Filter>
@@ -31,6 +28,9 @@
     <Filter Include="ソース ファイル\Window\Control">
       <UniqueIdentifier>{de5724c5-d7ac-4df0-8da0-726a992c4319}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Graphics">
+      <UniqueIdentifier>{83aade43-4d84-48a6-9e8c-e74a67d60363}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mkaul.hpp">
@@ -39,7 +39,7 @@
     <ClInclude Include="common.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="utils.hpp">
+    <ClInclude Include="util.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="point.hpp">
@@ -52,16 +52,16 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="graphics_base.hpp">
-      <Filter>ヘッダー ファイル\graphics</Filter>
+      <Filter>ヘッダー ファイル\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics.hpp">
-      <Filter>ヘッダー ファイル\graphics</Filter>
+      <Filter>ヘッダー ファイル\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics_directx.hpp">
-      <Filter>ヘッダー ファイル\graphics</Filter>
+      <Filter>ヘッダー ファイル\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics_gdiplus.hpp">
-      <Filter>ヘッダー ファイル\graphics</Filter>
+      <Filter>ヘッダー ファイル\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="window.hpp">
       <Filter>ヘッダー ファイル\Window</Filter>
@@ -72,7 +72,16 @@
     <ClInclude Include="control.hpp">
       <Filter>ヘッダー ファイル\Window\Control</Filter>
     </ClInclude>
+    <ClInclude Include="exedit.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="size.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="aviutl.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="util_hook.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,7 +107,7 @@
     <ClCompile Include="control.cpp">
       <Filter>ソース ファイル\Window\Control</Filter>
     </ClCompile>
-    <ClCompile Include="utils.cpp">
+    <ClCompile Include="util_hook.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,16 +1,34 @@
-//----------------------------------------------------------------------------------
-//		MKAul (Utils)
-//		VC++ 2022
-//		developed by mimaraka
-//----------------------------------------------------------------------------------
+#include "util_hook.hpp"
+#include <imagehlp.h>
 
-#include "utils.hpp"
+#pragma comment(lib, "imagehlp.lib")
 
 
 
 namespace mkaul {
-	// 関数の置き換え
-	void* rewrite_function(LPCSTR mod_name, LPCSTR func_name, void* func_ptr)
+	// 関数の置き換え(アドレス指定)
+	bool replace_func(uintptr_t base_address, uintptr_t func_address, void* replaced_func)
+	{
+		DWORD old_protect;
+		auto address = (uintptr_t*)(base_address + func_address);
+
+		if (!::VirtualProtect(address, sizeof(address), PAGE_EXECUTE_READWRITE, &old_protect))
+			return false;
+		
+		*address = (uintptr_t)replaced_func - (uintptr_t)address - sizeof(address);
+
+		return ::VirtualProtect(address, sizeof(address), old_protect, &old_protect);
+	}
+
+
+	bool replace_func(const char* mod_name, uintptr_t func_address, void* replaced_func)
+	{
+		return replace_func((uintptr_t)::GetModuleHandle(mod_name), func_address, replaced_func);
+	}
+
+
+	// 関数の置き換え(関数名指定)
+	void* replace_func(const char* mod_name, const char* func_name, void* replaced_func)
 	{
 		// ベースアドレス
 		auto base_adr = (DWORD)::GetModuleHandle(mod_name);
@@ -51,11 +69,11 @@ namespace mkaul {
 						::WriteProcessMemory(
 							::GetCurrentProcess(),
 							&p_first_thunk->u1.Function,
-							&func_ptr,
+							&replaced_func,
 							sizeof(p_first_thunk->u1.Function),
 							NULL
 						);
-						p_first_thunk->u1.Function = (DWORD)(intptr_t)func_ptr;
+						p_first_thunk->u1.Function = (DWORD)(intptr_t)replaced_func;
 
 						// 保護状態を戻す
 						::VirtualProtect(
