@@ -17,47 +17,56 @@ namespace mkaul {
 	template <typename T>
 	struct Color {
 	protected:
-		static constexpr int MAX = 255;
+		static constexpr int MAX = 0xff;
+		T r_, g_, b_, a_;
 
 	public:
-		T r, g, b, a;
-
 		bool operator == (const Color& col) const noexcept
 		{
-			return this->r == col.r && this->g == col.g && this->b == col.b && this->a == col.a;
+			return this->r_ == col.get_r() && this->g_ == col.get_g() && this->b_ == col.get_b() && this->a_ == col.get_a();
 		}
 
 		Color operator + (const Color& col) const noexcept
 		{
-			return {
-				this->r + col.r,
-				this->g + col.g,
-				this->b + col.b,
-				this->a + col.a
-			};
+			return Color(
+				this->r_ + col.get_r(),
+				this->g_ + col.get_g(),
+				this->b_ + col.get_b(),
+				this->a_ + col.get_a()
+			);
 		}
 
 		Color operator - (const Color& col) const noexcept
 		{
-			return {
-				this->r - col.r,
-				this->g - col.g,
-				this->b - col.b,
-				this->a - col.a
-			};
+			return Color(
+				this->r_ - col.get_r(),
+				this->g_ - col.get_g(),
+				this->b_ - col.get_b(),
+				this->a_ - col.get_a()
+			);
 		}
 
 		Color(
-			T r_ = (T)0,
-			T g_ = (T)0,
-			T b_ = (T)0,
-			T a_ = (T)0
+			T r = (T)0,
+			T g = (T)0,
+			T b = (T)0,
+			T a = (T)0
 		) :
-			r(r_),
-			g(g_),
-			b(b_),
-			a(a_)
+			r_(r),
+			g_(g),
+			b_(b),
+			a_(a)
 		{}
+
+		auto get_r() const noexcept { return r_; }
+		auto get_g() const noexcept { return g_; }
+		auto get_b() const noexcept { return b_; }
+		auto get_a() const noexcept { return a_; }
+
+		void set_r(T r) noexcept { r_ = r; }
+		void set_g(T g) noexcept { g_ = g; }
+		void set_b(T b) noexcept { b_ = b; }
+		void set_a(T a) noexcept { a_ = a; }
 
 		void change_color(T r_, T g_, T b_, T a_) noexcept;
 		void change_brightness(T val) noexcept;
@@ -65,28 +74,28 @@ namespace mkaul {
 	};
 
 	template <typename T>
-	inline void Color<T>::change_color(T r_, T g_, T b_, T a_) noexcept
+	inline void Color<T>::change_color(T r, T g, T b, T a) noexcept
 	{
-		r = r_;
-		g = g_;
-		b = b_;
-		a = a_;
+		r_ = r;
+		g_ = g;
+		b_ = b;
+		a_ = a;
 	}
 
 	template <typename T>
 	inline void Color<T>::change_brightness(T val) noexcept
 	{
-		r += val;
-		g += val;
-		b += val;
+		r_ += val;
+		g_ += val;
+		b_ += val;
 	}
 
 	template <typename T>
 	inline void Color<T>::swap_br() noexcept
 	{
-		T tmp = r;
-		r = b;
-		b = tmp;
+		T tmp = r_;
+		r_ = b_;
+		b_ = tmp;
 	}
 
 
@@ -96,10 +105,10 @@ namespace mkaul {
 	struct ColorF : public Color<float> {
 		void operator = (COLORREF cr) noexcept
 		{
-			this->r = GetRValue(cr) / (float)MAX;
-			this->g = GetGValue(cr) / (float)MAX;
-			this->b = GetBValue(cr) / (float)MAX;
-			this->a = 1.f;
+			this->r_ = GetRValue(cr) / (float)MAX;
+			this->g_ = GetGValue(cr) / (float)MAX;
+			this->b_ = GetBValue(cr) / (float)MAX;
+			this->a_ = 1.f;
 		}
 
 		ColorF(COLORREF cr = (COLORREF)0l) noexcept;
@@ -118,10 +127,10 @@ namespace mkaul {
 	struct ColorI8 : public Color<int> {
 		void operator = (COLORREF cr)
 		{
-			this->r = GetRValue(cr);
-			this->g = GetGValue(cr);
-			this->b = GetBValue(cr);
-			this->a = MAX;
+			this->r_ = GetRValue(cr);
+			this->g_ = GetGValue(cr);
+			this->b_ = GetBValue(cr);
+			this->a_ = MAX;
 		}
 
 		ColorI8(COLORREF cr = (COLORREF)0l) noexcept;
@@ -138,64 +147,64 @@ namespace mkaul {
 	// コンストラクタ(1)
 	inline ColorF::ColorF(COLORREF cr) noexcept
 	{
-		r = GetRValue(cr) / (float)MAX;
-		g = GetGValue(cr) / (float)MAX;
-		b = GetBValue(cr) / (float)MAX;
-		a = 1.f;
+		r_ = GetRValue(cr) / (float)MAX;
+		g_ = GetGValue(cr) / (float)MAX;
+		b_ = GetBValue(cr) / (float)MAX;
+		a_ = 1.f;
 	}
 
 
 	// コンストラクタ(2)
 	inline ColorF::ColorF(const ColorI8& col_i8) noexcept
 	{
-		r = col_i8.r / (float)MAX;
-		g = col_i8.g / (float)MAX;
-		b = col_i8.b / (float)MAX;
-		a = col_i8.a / (float)MAX;
+		r_ = col_i8.get_r() / (float)MAX;
+		g_ = col_i8.get_g() / (float)MAX;
+		b_ = col_i8.get_b() / (float)MAX;
+		a_ = col_i8.get_a() / (float)MAX;
 	}
 
 
 	// コンストラクタ(3)
-	inline ColorF::ColorF(int r_, int g_, int b_, int a_) noexcept
+	inline ColorF::ColorF(int r, int g, int b, int a) noexcept
 	{
-		r = r_ / (float)MAX;
-		g = g_ / (float)MAX;
-		b = b_ / (float)MAX;
-		a = a_ / (float)MAX;
+		r_ = r / (float)MAX;
+		g_ = g / (float)MAX;
+		b_ = b / (float)MAX;
+		a_ = a / (float)MAX;
 	}
 
 
 	inline void ColorF::clamp() noexcept
 	{
-		r = std::clamp(r, 0.f, 1.f);
-		g = std::clamp(g, 0.f, 1.f);
-		b = std::clamp(b, 0.f, 1.f);
-		a = std::clamp(a, 0.f, 1.f);
+		r_ = std::clamp(r_, 0.f, 1.f);
+		g_ = std::clamp(g_, 0.f, 1.f);
+		b_ = std::clamp(b_, 0.f, 1.f);
+		a_ = std::clamp(a_, 0.f, 1.f);
 	}
 
 
 	inline void ColorF::invert() noexcept
 	{
-		r = 1.f - r;
-		g = 1.f - g;
-		b = 1.f - b;
+		r_ = 1.f - r_;
+		g_ = 1.f - g_;
+		b_ = 1.f - b_;
 	}
 
 
 	inline void ColorF::change_contrast(float val) noexcept
 	{
-		r = 0.5f + (r - 0.5f) * val;
-		g = 0.5f + (g - 0.5f) * val;
-		b = 0.5f + (b - 0.5f) * val;
+		r_ = 0.5f + (r_ - 0.5f) * val;
+		g_ = 0.5f + (g_ - 0.5f) * val;
+		b_ = 0.5f + (b_ - 0.5f) * val;
 	}
 
 
 	inline COLORREF ColorF::colorref() const noexcept
 	{
 		return RGB(
-			std::clamp((int)(r * MAX), 0, MAX),
-			std::clamp((int)(g * MAX), 0, MAX),
-			std::clamp((int)(b * MAX), 0, MAX)
+			std::clamp((int)(r_ * MAX), 0, MAX),
+			std::clamp((int)(g_ * MAX), 0, MAX),
+			std::clamp((int)(b_ * MAX), 0, MAX)
 		);
 	}
 
@@ -203,10 +212,10 @@ namespace mkaul {
 	inline D2D1_COLOR_F ColorF::d2d1_colorf() const noexcept
 	{
 		return D2D1::ColorF(
-			std::clamp(b, 0.f, 1.f),
-			std::clamp(g, 0.f, 1.f),
-			std::clamp(r, 0.f, 1.f),
-			std::clamp(a, 0.f, 1.f)
+			std::clamp(b_, 0.f, 1.f),
+			std::clamp(g_, 0.f, 1.f),
+			std::clamp(r_, 0.f, 1.f),
+			std::clamp(a_, 0.f, 1.f)
 		);
 	}
 
@@ -215,54 +224,54 @@ namespace mkaul {
 	// コンストラクタ(1)
 	inline ColorI8::ColorI8(COLORREF cr) noexcept
 	{
-		r = GetRValue(cr);
-		g = GetGValue(cr);
-		b = GetBValue(cr);
-		a = MAX;
+		r_ = GetRValue(cr);
+		g_ = GetGValue(cr);
+		b_ = GetBValue(cr);
+		a_ = MAX;
 	}
 
 
 	// コンストラクタ(2)
 	inline ColorI8::ColorI8(const ColorF& col_f) noexcept
 	{
-		r = (int)(col_f.r * MAX);
-		g = (int)(col_f.g * MAX);
-		b = (int)(col_f.b * MAX);
-		a = (int)(col_f.a * MAX);
+		r_ = (int)(col_f.get_r() * MAX);
+		g_ = (int)(col_f.get_g() * MAX);
+		b_ = (int)(col_f.get_b() * MAX);
+		a_ = (int)(col_f.get_a() * MAX);
 	}
 
 
 	inline void ColorI8::clamp() noexcept
 	{
-		r = std::clamp(r, 0, MAX);
-		g = std::clamp(g, 0, MAX);
-		b = std::clamp(b, 0, MAX);
-		a = std::clamp(a, 0, MAX);
+		r_ = std::clamp(r_, 0, MAX);
+		g_ = std::clamp(g_, 0, MAX);
+		b_ = std::clamp(b_, 0, MAX);
+		a_ = std::clamp(a_, 0, MAX);
 	}
 
 
 	inline void ColorI8::invert() noexcept
 	{
-		r = MAX - r;
-		g = MAX - g;
-		b = MAX - b;
+		r_ = MAX - r_;
+		g_ = MAX - g_;
+		b_ = MAX - b_;
 	}
 
 
 	inline void ColorI8::change_contrast(float val) noexcept
 	{
-		r = MAX / 2 + (int)((r - MAX / 2) * val);
-		g = MAX / 2 + (int)((g - MAX / 2) * val);
-		b = MAX / 2 + (int)((b - MAX / 2) * val);
+		r_ = MAX / 2 + (int)((r_ - MAX / 2) * val);
+		g_ = MAX / 2 + (int)((g_ - MAX / 2) * val);
+		b_ = MAX / 2 + (int)((b_ - MAX / 2) * val);
 	}
 
 
 	inline COLORREF ColorI8::colorref() const noexcept
 	{
 		return RGB(
-			std::clamp(r, 0, MAX),
-			std::clamp(g, 0, MAX),
-			std::clamp(b, 0, MAX)
+			std::clamp(r_, 0, MAX),
+			std::clamp(g_, 0, MAX),
+			std::clamp(b_, 0, MAX)
 		);
 	}
 
@@ -270,10 +279,10 @@ namespace mkaul {
 	inline D2D1_COLOR_F ColorI8::d2d1_colorf() const noexcept
 	{
 		return D2D1::ColorF(
-			std::clamp(b / (float)MAX, 0.f, 1.f),
-			std::clamp(g / (float)MAX, 0.f, 1.f),
-			std::clamp(r / (float)MAX, 0.f, 1.f),
-			std::clamp(a / (float)MAX, 0.f, 1.f)
+			std::clamp(b_ / (float)MAX, 0.f, 1.f),
+			std::clamp(g_ / (float)MAX, 0.f, 1.f),
+			std::clamp(r_ / (float)MAX, 0.f, 1.f),
+			std::clamp(a_ / (float)MAX, 0.f, 1.f)
 		);
 	}
 }

@@ -157,15 +157,15 @@ namespace mkaul {
 
 
 		// Stroke‚Ìî•ñ‚ðPen‚É”½‰f
-		void GdiplusGraphics::apply_pen_style(Gdiplus::Pen* p_pen, const ColorF& col_f, const Stroke& stroke)
+		void GdiplusGraphics::apply_pen_style(Gdiplus::Pen* p_pen, const ColorF& col_f, const Stroke& stroke) noexcept
 		{
 			ColorI8 col_i8(col_f);
 			p_pen->SetColor(
 				Gdiplus::Color(
-					(BYTE)col_i8.a,
-					(BYTE)col_i8.r,
-					(BYTE)col_i8.g,
-					(BYTE)col_i8.b
+					(BYTE)col_i8.get_a(),
+					(BYTE)col_i8.get_r(),
+					(BYTE)col_i8.get_g(),
+					(BYTE)col_i8.get_b()
 				)
 			);
 
@@ -182,6 +182,22 @@ namespace mkaul {
 			p_pen->SetDashOffset((Gdiplus::REAL)stroke.dash_offset);
 			p_pen->SetDashPattern((Gdiplus::REAL*)stroke.custom_dashes, stroke.dashes_count);
 			p_pen->SetLineJoin((Gdiplus::LineJoin)stroke.line_join);
+		}
+
+
+		// Brush‚ÌF‚ð”½‰f
+		void GdiplusGraphics::apply_brush_color(Gdiplus::SolidBrush* p_brush, const ColorF& col_f) noexcept
+		{
+			ColorI8 col_i8(col_f);
+
+			p_brush->SetColor(
+				Gdiplus::Color(
+					(BYTE)col_i8.get_a(),
+					(BYTE)col_i8.get_r(),
+					(BYTE)col_i8.get_g(),
+					(BYTE)col_i8.get_b()
+				)
+			);
 		}
 
 
@@ -265,17 +281,10 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				ColorI8 col_i8(col_f);
+				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
 				RECT rect;
 
-				Gdiplus::SolidBrush brush(
-					Gdiplus::Color(
-						(BYTE)col_i8.a,
-						(BYTE)col_i8.r,
-						(BYTE)col_i8.g,
-						(BYTE)col_i8.b
-					)
-				);
+				apply_brush_color(&brush, col_f);
 
 				if (::GetClientRect(hwnd, &rect)) {
 					// ‹«ŠE•t‹ß‚ªØ‚ê‚é‚Ì‚ÅL‚ß‚É‚Æ‚é
@@ -500,15 +509,9 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				ColorI8 col_i8(col_f);
-				Gdiplus::SolidBrush brush(
-					Gdiplus::Color(
-						(BYTE)col_i8.a,
-						(BYTE)col_i8.r,
-						(BYTE)col_i8.g,
-						(BYTE)col_i8.b
-					)
-				);
+				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
+
+				apply_brush_color(&brush, col_f);
 				
 				// ŠpŠÛ‹éŒ`‚ð•`‰æ
 				if (round_radius_x > 0 || round_radius_y > 0) {
@@ -646,15 +649,8 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				ColorI8 col_i8(col_f);
-				Gdiplus::SolidBrush brush(
-					Gdiplus::Color(
-						(BYTE)col_i8.a,
-						(BYTE)col_i8.r,
-						(BYTE)col_i8.g,
-						(BYTE)col_i8.b
-					)
-				);
+				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
+				apply_brush_color(&brush, col_f);
 
 				Gdiplus::RectF rect_f(
 					point.x - radius_x,
@@ -675,16 +671,8 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				ColorI8 col_i8(col_f);
-
-				Gdiplus::SolidBrush brush(
-					Gdiplus::Color(
-						(BYTE)col_i8.a,
-						(BYTE)col_i8.r,
-						(BYTE)col_i8.g,
-						(BYTE)col_i8.b
-					)
-				);
+				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
+				apply_brush_color(&brush, col_f);
 
 				Gdiplus::RectF rect_f(
 					rectangle.left,
@@ -724,16 +712,8 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				ColorI8 col_i8(col_f);
-
-				Gdiplus::SolidBrush brush(
-					Gdiplus::Color(
-						(BYTE)col_i8.a,
-						(BYTE)col_i8.r,
-						(BYTE)col_i8.g,
-						(BYTE)col_i8.b
-					)
-				);
+				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
+				apply_brush_color(&brush, col_f);
 
 				p_graphics_buffer->FillPath(
 					&brush,

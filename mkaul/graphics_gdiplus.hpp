@@ -94,7 +94,13 @@ namespace mkaul {
 				Gdiplus::Pen* p_pen,
 				const ColorF& col_f,
 				const Stroke& stroke
-			);
+			) noexcept;
+
+			// Brushに色を反映
+			static void apply_brush_color(
+				Gdiplus::SolidBrush* p_brush,
+				const ColorF& col_f
+			) noexcept;
 
 			// インスタンス初期化
 			bool init(HWND hwnd) override;
