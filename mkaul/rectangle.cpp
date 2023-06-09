@@ -10,7 +10,7 @@
 
 namespace mkaul {
 	// 初期化
-	void WindowRectangle::set(int l, int t, int r, int b)
+	void WindowRectangle::set(int l, int t, int r, int b) noexcept
 	{
 		left = l;
 		top = t;
@@ -25,7 +25,7 @@ namespace mkaul {
 		WindowRectangle* rects_child[],
 		float weights[],
 		int n
-	) const
+	) const noexcept
 	{
 		int l_parent, l_child;
 		float weights_sum = 0.f;
@@ -72,7 +72,7 @@ namespace mkaul {
 	}
 
 	// マージンを設定
-	void WindowRectangle::set_margin(int l, int t, int r, int b)
+	void WindowRectangle::set_margin(int l, int t, int r, int b) noexcept
 	{
 		left += l;
 		top += t;
@@ -86,8 +86,14 @@ namespace mkaul {
 	}
 
 
+	RECT WindowRectangle::get_rect() const noexcept
+	{
+		return { left, top, right, bottom };
+	}
+
+
 	// クライアント -> スクリーン
-	void WindowRectangle::client_to_screen(HWND hwnd)
+	void WindowRectangle::client_to_screen(HWND hwnd) noexcept
 	{
 		POINT pt[] = {
 			{left, top},
@@ -104,7 +110,7 @@ namespace mkaul {
 	}
 
 	// スクリーン -> クライアント
-	void WindowRectangle::screen_to_client(HWND hwnd)
+	void WindowRectangle::screen_to_client(HWND hwnd) noexcept
 	{
 		POINT pt[] = {
 			{left, top},

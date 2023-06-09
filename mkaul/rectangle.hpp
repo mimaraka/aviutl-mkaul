@@ -56,7 +56,7 @@ namespace mkaul {
 		{}
 
 		template <typename U>
-		inline void convert_to(Rectangle<U>* r)
+		inline void convert_to(Rectangle<U>* r) const noexcept
 		{
 			r->left = (U)left;
 			r->top = (U)top;
@@ -75,21 +75,22 @@ namespace mkaul {
 
 		WindowRectangle operator = (const RECT& rc)
 		{
-			Rectangle<LONG>::operator=(rc);
+			Rectangle<LONG>::operator = (rc);
 			return *this;
 		}
 
 		using Rectangle<LONG>::Rectangle;
 
-		void set(int left, int top, int right, int bottom);
-		void set_margin(int left, int top, int right, int bottom);
+		void set(int left, int top, int right, int bottom) noexcept;
+		void set_margin(int left, int top, int right, int bottom) noexcept;
 		void divide(
 			Direction dir,
 			WindowRectangle* rects_child[],
 			float weights[],
 			int n
-		) const;
-		void client_to_screen(HWND hwnd);
-		void screen_to_client(HWND hwnd);
+		) const noexcept;
+		RECT get_rect() const noexcept;
+		void client_to_screen(HWND hwnd) noexcept;
+		void screen_to_client(HWND hwnd) noexcept;
 	};
 }

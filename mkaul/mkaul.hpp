@@ -11,6 +11,7 @@
 #include "point.hpp"
 #include "size.hpp"
 #include "util.hpp"
+#include "util_hook.hpp"
 #include "aviutl.hpp"
 #include "exedit.hpp"
 #include "graphics.hpp"

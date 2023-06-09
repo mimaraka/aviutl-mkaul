@@ -15,7 +15,7 @@
 
 namespace mkaul {
 	template <typename T>
-	struct Color {
+	class Color {
 	protected:
 		static constexpr int MAX = 0xff;
 		T r_, g_, b_, a_;
@@ -99,10 +99,11 @@ namespace mkaul {
 	}
 
 
-	struct ColorI8;
+	class ColorI8;
 
 	// Color (float)
-	struct ColorF : public Color<float> {
+	class ColorF : public Color<float> {
+	public:
 		void operator = (COLORREF cr) noexcept
 		{
 			this->r_ = GetRValue(cr) / (float)MAX;
@@ -124,7 +125,8 @@ namespace mkaul {
 
 
 	// Color (int)
-	struct ColorI8 : public Color<int> {
+	class ColorI8 : public Color<int> {
+	public:
 		void operator = (COLORREF cr)
 		{
 			this->r_ = GetRValue(cr);

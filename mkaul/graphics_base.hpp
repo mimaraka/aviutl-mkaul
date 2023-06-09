@@ -68,6 +68,23 @@ namespace mkaul {
 		};
 
 
+		// フォント
+		struct Font {
+			enum class FontStyle {
+
+			};
+
+			std::string family_name;
+			float height;
+			int weight;
+
+			Font() :
+				family_name(),
+				height(0.f)
+			{}
+		};
+
+
 		// ビットマップ(抽象クラス)
 		struct Bitmap {
 		protected:
@@ -340,11 +357,11 @@ namespace mkaul {
 				float opacity = 1.f
 			) = 0;
 
-			//// テキストを描画
-			//virtual void draw_text(
-			//	const std::string& str,
-			//	const std::string& font
-			//) = 0;
+			// テキストを描画
+			/*virtual void draw_text(
+				const std::string& str,
+				const std::string& font
+			) = 0;*/
 		};
 	}
 }

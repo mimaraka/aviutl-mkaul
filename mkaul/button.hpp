@@ -31,7 +31,7 @@ namespace mkaul {
 				const ColorF* p_col_bg_,
 				const ColorF* p_col_control_,
 				const WindowRectangle& rect,
-				const std::string& tooltip_label_ = NULL,
+				const std::string& tooltip_label_ = "",
 				RoundEdgeFlag round_edge_flag_ = RoundEdgeFlag::None,
 				float round_radius_ = 0.f,
 				float hover_highlight_ = 0.04f
@@ -69,7 +69,7 @@ namespace mkaul {
 				const ColorF* p_col_control_,
 				const ColorF* p_col_label,
 				const WindowRectangle& rect,
-				const std::string& tooltip_label_ = NULL,
+				const std::string& tooltip_label_ = "",
 				RoundEdgeFlag round_edge_flag_ = RoundEdgeFlag::None,
 				float round_radius_ = 0.f,
 				float hover_highlight_ = 0.04f
@@ -108,7 +108,7 @@ namespace mkaul {
 				const ColorF* p_col_bg_,
 				const ColorF* p_col_control_,
 				const WindowRectangle& rect,
-				const std::string& tooltip_label_ = NULL,
+				const std::string& tooltip_label_ = "",
 				RoundEdgeFlag round_edge_flag_ = RoundEdgeFlag::None,
 				float round_radius_ = 0.f,
 				float hover_highlight_ = 0.04f

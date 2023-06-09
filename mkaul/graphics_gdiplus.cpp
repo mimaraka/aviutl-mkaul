@@ -40,7 +40,7 @@ namespace mkaul {
 		bool GdiplusPath::begin(const Point<float>& pt)
 		{
 			if (!data[0]) {
-				auto p_path = new Gdiplus::GraphicsPath();
+				auto p_path = new Gdiplus::GraphicsPath;
 				data[0] = p_path;
 
 				pt_last = pt;
@@ -82,12 +82,12 @@ namespace mkaul {
 
 			// 座標のずれ補正
 			if (p_path) p_path->AddArc(
-				Gdiplus::RectF(
+				Gdiplus::RectF{
 					pt_o.x - size.width - 0.5f,
 					pt_o.y - size.height - 0.5f,
 					size.width * 2.f,
 					size.height * 2.f
-				),
+				},
 				angle_start - 90.f,
 				angle_sweep
 			);
@@ -103,8 +103,8 @@ namespace mkaul {
 
 			// 座標のずれ補正
 			if (p_path) p_path->AddLine(
-				Gdiplus::PointF(pt_last.x - 0.5f, pt_last.y - 0.5f),
-				Gdiplus::PointF(pt.x - 0.5f, pt.y - 0.5f)
+				Gdiplus::PointF{pt_last.x - 0.5f, pt_last.y - 0.5f},
+				Gdiplus::PointF{pt.x - 0.5f, pt.y - 0.5f}
 			);
 			// 最後の点を更新
 			pt_last = pt;
@@ -122,10 +122,10 @@ namespace mkaul {
 
 			// 座標のずれ補正
 			if (p_path) p_path->AddBezier(
-				Gdiplus::PointF(pt_last.x - 0.5f, pt_last.y - 0.5f),
-				Gdiplus::PointF(pt_0.x - 0.5f, pt_0.y - 0.5f),
-				Gdiplus::PointF(pt_1.x - 0.5f, pt_1.y - 0.5f),
-				Gdiplus::PointF(pt_2.x - 0.5f, pt_2.y - 0.5f)
+				Gdiplus::PointF{pt_last.x - 0.5f, pt_last.y - 0.5f},
+				Gdiplus::PointF{pt_0.x - 0.5f, pt_0.y - 0.5f},
+				Gdiplus::PointF{pt_1.x - 0.5f, pt_1.y - 0.5f},
+				Gdiplus::PointF{pt_2.x - 0.5f, pt_2.y - 0.5f}
 			);
 			// 最後の点を更新
 			pt_last = pt_2;
@@ -159,7 +159,7 @@ namespace mkaul {
 		// Strokeの情報をPenに反映
 		void GdiplusGraphics::apply_pen_style(Gdiplus::Pen* p_pen, const ColorF& col_f, const Stroke& stroke) noexcept
 		{
-			ColorI8 col_i8(col_f);
+			ColorI8 col_i8{ col_f };
 			p_pen->SetColor(
 				Gdiplus::Color(
 					(BYTE)col_i8.get_a(),
@@ -188,7 +188,7 @@ namespace mkaul {
 		// Brushの色を反映
 		void GdiplusGraphics::apply_brush_color(Gdiplus::SolidBrush* p_brush, const ColorF& col_f) noexcept
 		{
-			ColorI8 col_i8(col_f);
+			ColorI8 col_i8{ col_f };
 
 			p_brush->SetColor(
 				Gdiplus::Color(
@@ -230,8 +230,8 @@ namespace mkaul {
 				RECT rect;
 
 				if (::GetClientRect(hwnd, &rect)) {
-					p_bitmap_buffer = new Gdiplus::Bitmap(rect.right, rect.bottom);
-					p_graphics_buffer = new Gdiplus::Graphics(p_bitmap_buffer);
+					p_bitmap_buffer = new Gdiplus::Bitmap{ rect.right, rect.bottom };
+					p_graphics_buffer = new Gdiplus::Graphics{ p_bitmap_buffer };
 				}
 
 				if (p_bitmap_buffer && p_graphics_buffer) {
@@ -258,7 +258,7 @@ namespace mkaul {
 				if (p_graphics_buffer && p_bitmap_buffer) {
 					PAINTSTRUCT ps;
 					HDC hdc = ::BeginPaint(hwnd, &ps);
-					Gdiplus::Graphics p_graphics(hdc);
+					Gdiplus::Graphics p_graphics{hdc};
 					p_graphics.DrawImage(p_bitmap_buffer, 0, 0);
 
 					::EndPaint(hwnd, &ps);
@@ -281,7 +281,7 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
+				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 				RECT rect;
 
 				apply_brush_color(&brush, col_f);
@@ -290,12 +290,12 @@ namespace mkaul {
 					// 境界付近が切れるので広めにとる
 					p_graphics_buffer->FillRectangle(
 						&brush,
-						Gdiplus::Rect(
+						Gdiplus::Rect{
 							rect.left - 1,
 							rect.top - 1,
 							rect.right + 1,
 							rect.bottom + 1
-						)
+						}
 					);
 				}
 			}
@@ -311,13 +311,13 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::Pen pen(Gdiplus::Color(0));
+				Gdiplus::Pen pen{Gdiplus::Color{0}};
 				apply_pen_style(&pen, col_f, stroke);
 
 				p_graphics_buffer->DrawLine(
 					&pen,
-					Gdiplus::PointF(pt_from.x, pt_from.y),
-					Gdiplus::PointF(pt_to.x, pt_to.y)
+					Gdiplus::PointF{pt_from.x, pt_from.y},
+					Gdiplus::PointF{pt_to.x, pt_to.y}
 				);
 			}
 		}
@@ -332,7 +332,7 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::Pen pen(Gdiplus::Color(0));
+				Gdiplus::Pen pen{Gdiplus::Color{0}};
 				apply_pen_style(&pen, col_f, stroke);
 
 				auto gdiplus_points = new Gdiplus::PointF[n_points];
@@ -364,15 +364,15 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::Pen pen(Gdiplus::Color(0));
+				Gdiplus::Pen pen{Gdiplus::Color{0}};
 				apply_pen_style(&pen, col_f, stroke);
 
 				p_graphics_buffer->DrawBezier(
 					&pen,
-					Gdiplus::PointF(point_0.x, point_0.y),
-					Gdiplus::PointF(point_1.x, point_1.y),
-					Gdiplus::PointF(point_2.x, point_2.y),
-					Gdiplus::PointF(point_3.x, point_3.y)
+					Gdiplus::PointF{point_0.x, point_0.y},
+					Gdiplus::PointF{point_1.x, point_1.y},
+					Gdiplus::PointF{point_2.x, point_2.y},
+					Gdiplus::PointF{point_3.x, point_3.y}
 				);
 			}
 		}
@@ -387,7 +387,7 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::Pen pen(Gdiplus::Color(0));
+				Gdiplus::Pen pen{Gdiplus::Color{0}};
 				apply_pen_style(&pen, col_f, stroke);
 
 				auto gdip_points = new Gdiplus::PointF[n_points];
@@ -418,7 +418,7 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::Pen pen(Gdiplus::Color(0));
+				Gdiplus::Pen pen{Gdiplus::Color{0}};
 				apply_pen_style(&pen, col_f, stroke);
 				
 				// 角丸矩形を描画
@@ -432,12 +432,12 @@ namespace mkaul {
 
 					// 左上
 					path.AddArc(
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							std::min(rect.left, rect.right),
 							std::min(rect.top, rect.bottom),
 							round_radius_x * 2.f,
 							round_radius_y * 2.f
-						),
+						},
 						angle,
 						90.f
 					);
@@ -445,12 +445,12 @@ namespace mkaul {
 					// 右上
 					angle += 90.f;
 					path.AddArc(
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							std::max(rect.left, rect.right) - (round_radius_x * 2.f),
 							std::min(rect.top, rect.bottom),
 							round_radius_x * 2.f,
 							round_radius_y * 2.f
-						),
+						},
 						angle,
 						90.f
 					);
@@ -458,12 +458,12 @@ namespace mkaul {
 					// 右下
 					angle += 90.f;
 					path.AddArc(
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							std::max(rect.left, rect.right) - (round_radius_x * 2.f),
 							std::max(rect.top, rect.bottom) - (round_radius_y * 2.f),
 							round_radius_x * 2.f,
 							round_radius_y * 2.f
-						),
+						},
 						angle,
 						90.f
 					);
@@ -471,12 +471,12 @@ namespace mkaul {
 					// 左下
 					angle += 90.f;
 					path.AddArc(
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							std::min(rect.left, rect.right),
 							std::max(rect.top, rect.bottom) - (round_radius_y * 2.f),
 							round_radius_x * 2.f,
 							round_radius_y * 2.f
-						),
+						},
 						angle,
 						90.f
 					);
@@ -488,12 +488,12 @@ namespace mkaul {
 				else {
 					p_graphics_buffer->DrawRectangle(
 						&pen,
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							rect.left,
 							rect.top,
 							rect.right - rect.left,
 							rect.bottom - rect.top
-						)
+						}
 					);
 				}
 			}
@@ -509,7 +509,7 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
+				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 
 				apply_brush_color(&brush, col_f);
 				
@@ -524,12 +524,12 @@ namespace mkaul {
 
 					// 左上
 					path.AddArc(
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							std::min(rect.left, rect.right),
 							std::min(rect.top, rect.bottom),
 							round_radius_x * 2.f,
 							round_radius_y * 2.f
-						),
+						},
 						angle,
 						90.f
 					);
@@ -537,12 +537,12 @@ namespace mkaul {
 					// 右上
 					angle += 90.f;
 					path.AddArc(
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							std::max(rect.left, rect.right) - (round_radius_x * 2.f),
 							std::min(rect.top, rect.bottom),
 							round_radius_x * 2.f,
 							round_radius_y * 2.f
-						),
+						},
 						angle,
 						90.f
 					);
@@ -550,12 +550,12 @@ namespace mkaul {
 					// 右下
 					angle += 90.f;
 					path.AddArc(
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							std::max(rect.left, rect.right) - (round_radius_x * 2.f),
 							std::max(rect.top, rect.bottom) - (round_radius_y * 2.f),
 							round_radius_x * 2.f,
 							round_radius_y * 2.f
-						),
+						},
 						angle,
 						90.f
 					);
@@ -563,12 +563,12 @@ namespace mkaul {
 					// 左下
 					angle += 90.f;
 					path.AddArc(
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							std::min(rect.left, rect.right),
 							std::max(rect.top, rect.bottom) - (round_radius_y * 2.f),
 							round_radius_x * 2.f,
 							round_radius_y * 2.f
-						),
+						},
 						angle,
 						90.f
 					);
@@ -580,12 +580,12 @@ namespace mkaul {
 				else {
 					p_graphics_buffer->FillRectangle(
 						&brush,
-						Gdiplus::RectF(
+						Gdiplus::RectF{
 							rect.left,
 							rect.top,
 							rect.right - rect.left,
 							rect.bottom - rect.top
-						)
+						}
 					);
 				}
 			}
@@ -602,15 +602,15 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::Pen pen(Gdiplus::Color(0));
+				Gdiplus::Pen pen{Gdiplus::Color{0}};
 				apply_pen_style(&pen, col_f, stroke);
 
-				Gdiplus::RectF rect_f(
+				Gdiplus::RectF rect_f{
 					point.x - radius_x,
 					point.y - radius_y,
 					point.x + radius_x,
 					point.y + radius_y
-				);
+				};
 
 				p_graphics_buffer->DrawEllipse(&pen, rect_f);
 			}
@@ -625,15 +625,15 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::Pen pen(Gdiplus::Color(0));
+				Gdiplus::Pen pen{Gdiplus::Color{0}};
 				apply_pen_style(&pen, col_f, stroke);
 
-				Gdiplus::RectF rect_f(
+				Gdiplus::RectF rect_f{
 					rectangle.left,
 					rectangle.top,
 					rectangle.right,
 					rectangle.bottom
-				);
+				};
 
 				p_graphics_buffer->DrawEllipse(&pen, rect_f);
 			}
@@ -649,15 +649,15 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
+				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 				apply_brush_color(&brush, col_f);
 
-				Gdiplus::RectF rect_f(
+				Gdiplus::RectF rect_f{
 					point.x - radius_x,
 					point.y - radius_y,
 					point.x + radius_x,
 					point.y + radius_y
-				);
+				};
 
 				p_graphics_buffer->FillEllipse(&brush, rect_f);
 			}
@@ -671,15 +671,15 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
+				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 				apply_brush_color(&brush, col_f);
 
-				Gdiplus::RectF rect_f(
+				Gdiplus::RectF rect_f{
 					rectangle.left,
 					rectangle.top,
 					rectangle.right,
 					rectangle.bottom
-				);
+				};
 
 				p_graphics_buffer->FillEllipse(&brush, rect_f);
 			}
@@ -694,7 +694,7 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::Pen pen(Gdiplus::Color(0));
+				Gdiplus::Pen pen{Gdiplus::Color{0}};
 				apply_pen_style(&pen, col_f, stroke);
 
 				p_graphics_buffer->DrawPath(
@@ -712,7 +712,7 @@ namespace mkaul {
 		)
 		{
 			if (drawing && p_graphics_buffer) {
-				Gdiplus::SolidBrush brush(Gdiplus::Color(0));
+				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 				apply_brush_color(&brush, col_f);
 
 				p_graphics_buffer->FillPath(
@@ -730,7 +730,8 @@ namespace mkaul {
 			ColorF col_f
 		)
 		{
-			auto p_gdip_bitmap = new Gdiplus::Bitmap(size.width, size.height);
+			auto p_gdip_bitmap = new Gdiplus::Bitmap{ (INT)size.width, (INT)size.height };
+
 			if (p_gdip_bitmap && p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
 				p_bitmap->set_data(p_gdip_bitmap);
 				return true;
@@ -746,7 +747,8 @@ namespace mkaul {
 		)
 		{
 			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
-			p_gdip_bitmap = new Gdiplus::Bitmap(path.c_str());
+			p_gdip_bitmap = new Gdiplus::Bitmap{ path.c_str() };
+
 			if (p_gdip_bitmap && p_gdip_bitmap->GetWidth() != 0 && p_gdip_bitmap->GetHeight() != 0) {
 				p_bitmap->set_data(p_gdip_bitmap);
 				return true;
@@ -883,39 +885,39 @@ namespace mkaul {
 			switch (anchor_pos) {
 			case AnchorPosition::Center:
 			default:
-				rect_f = Gdiplus::RectF(
+				rect_f = Gdiplus::RectF{
 					point.x - width * 0.5f,
 					point.y - height * 0.5f,
 					(Gdiplus::REAL)width,
 					(Gdiplus::REAL)height
-				);
+				};
 				break;
 
 			case AnchorPosition::Left:
-				rect_f = Gdiplus::RectF(
+				rect_f = Gdiplus::RectF{
 					point.x,
 					point.y - height * 0.5f,
 					(Gdiplus::REAL)width,
 					(Gdiplus::REAL)height
-				);
+				};
 				break;
 
 			case AnchorPosition::Top:
-				rect_f = Gdiplus::RectF(
+				rect_f = Gdiplus::RectF{
 					point.x - width * 0.5f,
 					point.y,
 					(Gdiplus::REAL)width,
 					(Gdiplus::REAL)height
-				);
+				};
 				break;
 
 			case AnchorPosition::Right:
-				rect_f = Gdiplus::RectF(
+				rect_f = Gdiplus::RectF{
 					point.x - width,
 					point.y - height * 0.5f,
 					(Gdiplus::REAL)width,
 					(Gdiplus::REAL)height
-				);
+				};
 				break;
 
 			case AnchorPosition::Bottom:
@@ -928,39 +930,39 @@ namespace mkaul {
 				break;
 
 			case AnchorPosition::LeftTop:
-				rect_f = Gdiplus::RectF(
+				rect_f = Gdiplus::RectF{
 					point.x,
 					point.y,
 					(Gdiplus::REAL)width,
 					(Gdiplus::REAL)height
-				);
+				};
 				break;
 
 			case AnchorPosition::RightTop:
-				rect_f = Gdiplus::RectF(
+				rect_f = Gdiplus::RectF{
 					point.x - width,
 					point.y,
 					(Gdiplus::REAL)width,
 					(Gdiplus::REAL)height
-				);
+				};
 				break;
 
 			case AnchorPosition::LeftBottom:
-				rect_f = Gdiplus::RectF(
+				rect_f = Gdiplus::RectF{
 					point.x,
 					point.y - height,
 					(Gdiplus::REAL)width,
 					(Gdiplus::REAL)height
-				);
+				};
 				break;
 
 			case AnchorPosition::RightBottom:
-				rect_f = Gdiplus::RectF(
+				rect_f = Gdiplus::RectF{
 					point.x - width,
 					point.y - height,
 					(Gdiplus::REAL)width,
 					(Gdiplus::REAL)height
-				);
+				};
 				break;
 			}
 
@@ -988,5 +990,18 @@ namespace mkaul {
 				)
 			);
 		}
+
+
+
+		//void draw_text(const char* str, const Font& font, float height, float max_width);
+
+
+		/*void draw_text()
+		{
+			Gdiplus::FontFamily font_family;
+			Gdiplus::Font font{&font_family, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel};
+			Gdiplus::Font font2{};
+			font.GetSize();
+		}*/
 	}
 }
