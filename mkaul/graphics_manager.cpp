@@ -4,7 +4,7 @@
 //		developed by mimaraka
 //----------------------------------------------------------------------------------
 
-#include "graphics.hpp"
+#include "graphics_manager.hpp"
 
 
 
