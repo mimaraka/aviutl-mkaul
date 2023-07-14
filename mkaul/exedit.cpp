@@ -22,7 +22,8 @@ namespace mkaul {
 					p_hwnd_timeline_ = (HWND*)(exedit_base + 0x177a44);
 					p_hwnd_objdialog_ = (HWND*)(exedit_base + 0x1539c8);
 					wndproc_objdialog_orig_ = (WNDPROC)(exedit_base + 0x02cde0);
-					wndproc_objdialog_ = *(WNDPROC*)(exedit_base + 0x02e804);
+					p_wndproc_objdialog_ = (WNDPROC*)(exedit_base + 0x02e804);
+					wndproc_objdialog_ = *p_wndproc_objdialog_;
 					p_obj_table_ = (ExEdit::Object**)(exedit_base + 0x168fa8);
 					p_filter_table_ = (ExEdit::Filter**)(exedit_base + 0x187c98);
 					p_current_scene_idx_ = (int32_t*)(exedit_base + 0x1a5310);

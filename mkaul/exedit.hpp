@@ -23,6 +23,7 @@ namespace mkaul {
 			BOOL(*wndproc_timeline_)(HWND, UINT, WPARAM, LPARAM, AviUtl::EditHandle*, AviUtl::FilterPlugin*);
 			WNDPROC wndproc_objdialog_orig_;
 			WNDPROC wndproc_objdialog_;
+			WNDPROC* p_wndproc_objdialog_;
 			ExEdit::Object** p_obj_table_;
 			ExEdit::Filter** p_filter_table_;
 			int32_t* p_current_scene_idx_;
@@ -50,8 +51,10 @@ namespace mkaul {
 				fp_(nullptr),
 				p_hwnd_timeline_(nullptr),
 				p_hwnd_objdialog_(nullptr),
+				wndproc_timeline_(nullptr),
 				wndproc_objdialog_orig_(nullptr),
 				wndproc_objdialog_(nullptr),
+				p_wndproc_objdialog_(nullptr),
 				p_obj_table_(nullptr),
 				p_filter_table_(nullptr),
 				p_current_scene_idx_(nullptr),
@@ -88,6 +91,7 @@ namespace mkaul {
 			auto get_wndproc_timeline() const noexcept { return wndproc_timeline_; }
 			auto get_wndproc_objdialog_orig() const noexcept { return wndproc_objdialog_orig_; }
 			auto get_wndproc_objdialog() const noexcept { return wndproc_objdialog_; }
+			auto p_wndproc_objdialog() const noexcept { return p_wndproc_objdialog_; }
 			auto p_obj_table() const noexcept { return p_obj_table_; }
 			auto p_filter_table() const noexcept { return p_filter_table_; }
 			auto p_current_scene_idx() const noexcept { return p_current_scene_idx_; }
