@@ -164,25 +164,37 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="aviutl.hpp" />
+    <ClInclude Include="bitmap_base.hpp" />
+    <ClInclude Include="bitmap_directx.hpp" />
+    <ClInclude Include="bitmap_gdiplus.hpp" />
+    <ClInclude Include="directx_common.hpp" />
     <ClInclude Include="exedit.hpp" />
     <ClInclude Include="button.hpp" />
     <ClInclude Include="color.hpp" />
     <ClInclude Include="control.hpp" />
+    <ClInclude Include="font.hpp" />
+    <ClInclude Include="gdiplus_common.hpp" />
     <ClInclude Include="graphics.hpp" />
     <ClInclude Include="graphics_base.hpp" />
     <ClInclude Include="graphics_manager.hpp" />
     <ClInclude Include="graphics_directx.hpp" />
     <ClInclude Include="graphics_gdiplus.hpp" />
     <ClInclude Include="mkaul.hpp" />
+    <ClInclude Include="path_base.hpp" />
+    <ClInclude Include="path_directx.hpp" />
+    <ClInclude Include="path_gdiplus.hpp" />
     <ClInclude Include="point.hpp" />
     <ClInclude Include="rectangle.hpp" />
     <ClInclude Include="size.hpp" />
+    <ClInclude Include="stroke.hpp" />
     <ClInclude Include="util.hpp" />
     <ClInclude Include="util_hook.hpp" />
     <ClInclude Include="http.hpp" />
     <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bitmap_directx.cpp" />
+    <ClCompile Include="bitmap_gdiplus.cpp" />
     <ClCompile Include="button.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -199,6 +211,9 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClCompile Include="graphics_manager.cpp" />
     <ClCompile Include="graphics_directx.cpp" />
     <ClCompile Include="graphics_gdiplus.cpp" />
+    <ClCompile Include="path_base.cpp" />
+    <ClCompile Include="path_directx.cpp" />
+    <ClCompile Include="path_gdiplus.cpp" />
     <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="util_hook.cpp" />
     <ClCompile Include="http.cpp" />
