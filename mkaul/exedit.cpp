@@ -12,10 +12,7 @@ namespace mkaul {
 			for (int i = 0; i < si.filter_n; i++) {
 				auto tfp = (AviUtl::FilterPlugin*)fp->exfunc->get_filterp(i);
 				if (
-					tfp->dll_hinst == ::GetModuleHandleA("exedit.auf")
-					&& !::strcmp(tfp->name, "Šg’£•ÒW")
-					&& !::strcmp(tfp->information, "Šg’£•ÒW(exedit) version 0.92 by ‚j‚d‚m‚­‚ñ")
-					) {
+					tfp->dll_hinst == ::GetModuleHandleA("exedit.auf")) {
 					fp_ = tfp;
 					auto exedit_base = (uint32_t)tfp->dll_hinst;
 
