@@ -4,6 +4,7 @@
 //		developed by mimaraka
 //----------------------------------------------------------------------------------
 
+#include <vector>
 #include "rectangle.hpp"
 
 
@@ -79,9 +80,9 @@ namespace mkaul {
 		right -= r;
 		bottom -= b;
 
-		if (left > right)
+		if (right < left)
 			left = right = (left + right) / 2;
-		if (top > bottom)
+		if (bottom < top)
 			top = bottom = (top + bottom) / 2;
 	}
 

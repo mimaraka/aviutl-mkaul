@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include "common.hpp"
+#include <cmath>
+#include <Windows.h>
 #include "util.hpp"
 
 

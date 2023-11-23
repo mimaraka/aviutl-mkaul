@@ -1,4 +1,5 @@
 #include "util_hook.hpp"
+#include <Windows.h>
 #include <imagehlp.h>
 
 #pragma comment(lib, "imagehlp.lib")

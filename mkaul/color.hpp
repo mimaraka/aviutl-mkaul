@@ -6,8 +6,9 @@
 
 #pragma once
 
+#include <algorithm>
+#include <Windows.h>
 #include <d2d1.h>
-#include "common.hpp"
 
 #pragma comment(lib, "d2d1.lib")
 
