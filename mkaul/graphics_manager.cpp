@@ -1,4 +1,8 @@
 #include "graphics_manager.hpp"
+#include "bitmap_gdiplus.hpp"
+#include "bitmap_directx.hpp"
+#include "path_gdiplus.hpp"
+#include "path_directx.hpp"
 
 
 

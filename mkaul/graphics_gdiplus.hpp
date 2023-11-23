@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics_base.hpp"
+#include "gdiplus_common.hpp"
 #include <gdiplus.h>
 
 #pragma comment(lib, "gdiplus.lib")
@@ -9,64 +10,6 @@
 
 namespace mkaul {
 	namespace graphics {
-		// GDI+共通の基底クラス
-		class GdiplusBase {
-		protected:
-			// オブジェクトを開放
-			template <class Interface>
-			static void gdip_release(Interface** pp_obj)
-			{
-				if (*pp_obj) {
-					delete (*pp_obj);
-					(*pp_obj) = nullptr;
-				}
-			}
-		};
-
-
-		// ビットマップ
-		struct GdiplusBitmap : public Bitmap, protected GdiplusBase {
-		public:
-			using Bitmap::Bitmap;
-
-			void release() override;
-
-			size_t get_width() const override;
-			size_t get_height() const override;
-		};
-
-
-		// パス
-		struct GdiplusPath : public Path, protected GdiplusBase {
-		public:
-			using Path::Path;
-
-			void release() override;
-
-			bool begin(const Point<float>& pt) override;
-			void end(FigureEnd fe = FigureEnd::Closed) override;
-
-			// 弧を追加
-			void add_arc(
-				const Size<float>& size,
-				float angle_start,
-				float angle_sweep
-			) override;
-
-			// 線を追加
-			void add_line(
-				const Point<float>& pt
-			) override;
-
-			// ベジェを追加
-			void add_bezier(
-				const Point<float>& pt_0,
-				const Point<float>& pt_1,
-				const Point<float>& pt_2
-			) override;
-		};
-
-
 		// グラフィックス
 		class GdiplusGraphics : public Graphics, protected GdiplusBase {
 		private:

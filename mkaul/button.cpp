@@ -35,7 +35,7 @@ namespace mkaul {
 				p_col_control_,
 				round_edge_flag_,
 				round_radius_,
-				::LoadCursor(NULL, IDC_HAND)
+				::LoadCursorA(NULL, IDC_HAND)
 			);
 		}
 
