@@ -70,7 +70,7 @@ namespace mkaul {
 			{}
 
 			// ƒRƒ“ƒgƒ[ƒ‹‚ğì¬
-			virtual bool create(
+			virtual HWND create(
 				HINSTANCE				hinst,
 				HWND					hwnd_parent,
 				int						id_,

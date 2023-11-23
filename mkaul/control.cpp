@@ -11,7 +11,7 @@
 namespace mkaul {
 	namespace window {
 		// コントロールを作成
-		bool Control::create(
+		HWND Control::create(
 			HINSTANCE				hinst,
 			HWND					hwnd_parent_,
 			int						id_,
@@ -34,7 +34,7 @@ namespace mkaul {
 			p_col_control = const_cast<ColorF*>(p_col_control_);
 
 			// 描画オブジェクトを作成
-			graphics::Manager::create_graphics(&p_graphics);
+			if (!graphics::Manager::create_graphics(&p_graphics)) return NULL;
 
 			return Window::create(
 				hinst,
