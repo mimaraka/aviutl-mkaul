@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -104,7 +104,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -126,7 +126,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -148,7 +148,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -167,7 +167,6 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="exedit.hpp" />
     <ClInclude Include="button.hpp" />
     <ClInclude Include="color.hpp" />
-    <ClInclude Include="common.hpp" />
     <ClInclude Include="control.hpp" />
     <ClInclude Include="graphics.hpp" />
     <ClInclude Include="graphics_base.hpp" />
@@ -180,6 +179,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="size.hpp" />
     <ClInclude Include="util.hpp" />
     <ClInclude Include="util_hook.hpp" />
+    <ClInclude Include="http.hpp" />
     <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -201,6 +201,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClCompile Include="graphics_gdiplus.cpp" />
     <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="util_hook.cpp" />
+    <ClCompile Include="http.cpp" />
     <ClCompile Include="window.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>

@@ -36,9 +36,6 @@
     <ClInclude Include="mkaul.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="common.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="util.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -87,6 +84,9 @@
     <ClInclude Include="graphics.hpp">
       <Filter>ヘッダー ファイル\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="http.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rectangle.cpp">
@@ -114,6 +114,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="exedit.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="http.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
