@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include "common.hpp"
+#include <cmath>
+#include <numbers>
 
 
 
@@ -35,39 +36,6 @@ namespace mkaul {
 	}
 
 
-	// 文字列を分割
-	inline auto split(const std::string& str, const char spr)
-	{
-		std::vector<std::string> elems;
-		std::string item;
-		for (const char c : str) {
-			if (c == spr) {
-				if (!item.empty()) {
-					elems.emplace_back(item);
-					item.clear();
-				}
-			}
-			else item += c;
-		}
-		if (!item.empty())
-			elems.emplace_back(item);
-
-		return elems;
-	}
-
-
-	// 文字列を結合
-	inline auto join(const std::vector<std::string>& vec_str, const std::string& spr)
-	{
-		std::string result;
-		for (auto str : vec_str) {
-			result += str + spr;
-		}
-		result.erase(result.size() - spr.size());
-		return result;
-	}
-
-
 	// ラジアン -> 度
 	inline constexpr auto rad2deg(auto rad) noexcept
 	{
@@ -78,14 +46,14 @@ namespace mkaul {
 	// 度 -> ラジアン
 	inline constexpr auto deg2rad(auto deg) noexcept
 	{
-		return std::numbers::pi_v<decltype(deg)> *deg / (decltype(deg))180;
+		return std::numbers::pi_v<decltype(deg)> * deg / (decltype(deg))180;
 	}
 
 
 	// 符号関数
 	inline constexpr auto sign(auto value) noexcept
 	{
-		if ((decltype(value))0 > value)
+		if (value < (decltype(value))0)
 			return (decltype(value))(-1);
 		else if (value == (decltype(value))0)
 			return (decltype(value))0;
