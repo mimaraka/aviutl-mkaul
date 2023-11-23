@@ -4,6 +4,7 @@
 //		developed by mimaraka
 //----------------------------------------------------------------------------------
 
+#include <vector>
 #include "window.hpp"
 
 
@@ -28,7 +29,7 @@ namespace mkaul {
 		}
 
 		// ウィンドウを作成
-		bool Window::create(
+		HWND Window::create(
 			HINSTANCE				hinst,
 			HWND					hwnd_parent,
 			LPCTSTR					window_name,
@@ -41,38 +42,40 @@ namespace mkaul {
 			LPVOID					lp_param
 		)
 		{
-			WNDCLASSEX ws;
-			ws.cbSize = sizeof(ws);
-			ws.style = CS_HREDRAW | CS_VREDRAW | class_style;
-			ws.lpfnWndProc = wndproc_;
-			ws.cbClsExtra = 0;
-			ws.cbWndExtra = 0;
-			ws.hInstance = hinst;
-			ws.hIcon = NULL;
-			ws.hCursor = cursor;
-			ws.hbrBackground = NULL;
-			ws.lpszMenuName = NULL;
-			ws.lpszClassName = class_name;
-			ws.hIconSm = NULL;
+			WNDCLASSEX tmp;
+			// 同名クラスが存在しない場合は作成
+			if (!::GetClassInfoExA(hinst, class_name, &tmp)) {
+				WNDCLASSEX ws;
+				ws.cbSize = sizeof(ws);
+				ws.style = CS_HREDRAW | CS_VREDRAW | class_style;
+				ws.lpfnWndProc = wndproc_;
+				ws.cbClsExtra = 0;
+				ws.cbWndExtra = 0;
+				ws.hInstance = hinst;
+				ws.hIcon = NULL;
+				ws.hCursor = cursor;
+				ws.hbrBackground = NULL;
+				ws.lpszMenuName = NULL;
+				ws.lpszClassName = class_name;
+				ws.hIconSm = NULL;
 
-			if (::RegisterClassEx(&ws)) {
-				hwnd = ::CreateWindowEx(
-					NULL,
-					class_name,
-					window_name,
-					WS_VISIBLE | WS_CLIPCHILDREN | window_style,
-					rect.left,
-					rect.top,
-					rect.right - rect.left,
-					rect.bottom - rect.top,
-					hwnd_parent,
-					NULL,
-					hinst,
-					lp_param
-				);
-				if (hwnd) return true;
+				if (!::RegisterClassExA(&ws)) return NULL;
 			}
-			return false;
+			
+			return hwnd = ::CreateWindowExA(
+				NULL,
+				class_name,
+				window_name,
+				WS_VISIBLE | WS_CLIPCHILDREN | window_style,
+				rect.left,
+				rect.top,
+				rect.right - rect.left,
+				rect.bottom - rect.top,
+				hwnd_parent,
+				NULL,
+				hinst,
+				lp_param
+			);
 		}
 	}
 }

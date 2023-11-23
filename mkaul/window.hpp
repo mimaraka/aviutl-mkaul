@@ -6,7 +6,9 @@
 
 #pragma once
 
-#include "common.hpp"
+#define NOMINMAX
+#include <vector>
+#include <Windows.h>
 #include <commctrl.h>
 #include "rectangle.hpp"
 #include "util.hpp"
@@ -30,7 +32,7 @@ namespace mkaul {
 				hwnd(NULL)
 			{}
 
-			virtual bool create(
+			virtual HWND create(
 				HINSTANCE				hinst,
 				HWND					hwnd_parent,
 				LPCTSTR					window_name,
