@@ -105,11 +105,11 @@ namespace mkaul {
 				pt_last = pt_o + pt_ofs_end;
 
 				// 時計回り
-				if (angle_sweep > 0) {
+				if (0 < angle_sweep) {
 					sd = D2D1_SWEEP_DIRECTION_CLOCKWISE;
 
 					// 弧の角度の大きさが180dより大きい場合
-					if (angle_sweep > 180.f)
+					if (180.f < angle_sweep)
 						as = D2D1_ARC_SIZE_LARGE;
 					// 弧の角度の大きさがπより小さい場合
 					else
@@ -602,7 +602,7 @@ namespace mkaul {
 				);
 
 				// 角丸矩形を描画
-				if (round_radius_x > 0 || round_radius_y > 0) {
+				if (0 < round_radius_x || 0 < round_radius_y) {
 					D2D1_ROUNDED_RECT rounded_rect = D2D1::RoundedRect(
 						rect_f,
 						round_radius_x,
@@ -650,7 +650,7 @@ namespace mkaul {
 				);
 
 				// 角丸矩形を描画
-				if (round_radius_x > 0 || round_radius_y > 0) {
+				if (0 < round_radius_x || 0 < round_radius_y) {
 					D2D1_ROUNDED_RECT rounded_rect = D2D1::RoundedRect(
 						rect_f,
 						round_radius_x,
@@ -827,7 +827,7 @@ namespace mkaul {
 		bool DirectxGraphics::initialize_bitmap(
 			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
-			ColorF col_f
+			const ColorF& col_f
 		)
 		{
 			if (p_render_target) {
@@ -1177,6 +1177,32 @@ namespace mkaul {
 				),
 				opacity
 			);
+		}
+
+
+		// テキストを描画(アンカーポイント指定)
+		void DirectxGraphics::draw_text(
+			const std::string& text,
+			const Point<float>& point,
+			const Font& font,
+			AnchorPosition anchor_pos,
+			const ColorF& col_f
+		)
+		{
+			
+		}
+
+		// テキストを描画(矩形指定)
+		void DirectxGraphics::draw_text(
+			const std::string& text,
+			const Rectangle<float>& rect,
+			const Font& font,
+			AnchorPosition anchor_pos,
+			bool fit_size,
+			const ColorF& col_f
+		)
+		{
+
 		}
 	}
 }

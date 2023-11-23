@@ -217,7 +217,7 @@ namespace mkaul {
 			bool initialize_bitmap(
 				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
-				ColorF col_f = 0
+				const ColorF& col_f = 0
 			) override;
 
 			// ファイルからビットマップを作成
@@ -247,6 +247,25 @@ namespace mkaul {
 				const Bitmap* bitmap,
 				const Rectangle<float>& rect,
 				float opacity = 1.f
+			) override;
+
+			// テキストを描画(アンカーポイント指定)
+			void draw_text(
+				const std::string& text,
+				const Point<float>& point,
+				const Font& font = Font{},
+				AnchorPosition anchor_pos = AnchorPosition::Center,
+				const ColorF& col_f = 0
+			) override;
+
+			// テキストを描画(矩形指定)
+			void draw_text(
+				const std::string& text,
+				const Rectangle<float>& rect,
+				const Font& font = Font{},
+				AnchorPosition anchor_pos = AnchorPosition::Center,
+				bool fit_size = true,
+				const ColorF& col_f = 0
 			) override;
 		};
 	}

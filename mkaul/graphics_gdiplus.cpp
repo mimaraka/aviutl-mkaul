@@ -4,7 +4,8 @@
 //		developed by mimaraka
 //----------------------------------------------------------------------------------
 
-#include "common.hpp"
+#define NOMINMAX
+#include <strconv2/strconv2.h>
 #include "graphics_gdiplus.hpp"
 
 
@@ -422,7 +423,7 @@ namespace mkaul {
 				apply_pen_style(&pen, col_f, stroke);
 				
 				// 角丸矩形を描画
-				if (round_radius_x > 0 || round_radius_y > 0) {
+				if (0 < round_radius_x || 0 < round_radius_y) {
 					float angle = 180.f;
 					Gdiplus::GraphicsPath path;
 
@@ -514,7 +515,7 @@ namespace mkaul {
 				apply_brush_color(&brush, col_f);
 				
 				// 角丸矩形を描画
-				if (round_radius_x > 0 || round_radius_y > 0) {
+				if (0 < round_radius_x || 0 < round_radius_y) {
 					float angle = 180.f;
 					Gdiplus::GraphicsPath path;
 
@@ -727,7 +728,7 @@ namespace mkaul {
 		bool GdiplusGraphics::initialize_bitmap(
 			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
-			ColorF col_f
+			const ColorF& col_f
 		)
 		{
 			auto p_gdip_bitmap = new Gdiplus::Bitmap{ (INT)size.width, (INT)size.height };
@@ -992,16 +993,112 @@ namespace mkaul {
 		}
 
 
-
-		//void draw_text(const char* str, const Font& font, float height, float max_width);
-
-
-		/*void draw_text()
+		// テキストを描画(アンカーポイント指定)
+		void GdiplusGraphics::draw_text(
+			const std::string& text,
+			const Point<float>& point,
+			const Font& font,
+			AnchorPosition anchor_pos,
+			const ColorF& col_f
+		)
 		{
-			Gdiplus::FontFamily font_family;
-			Gdiplus::Font font{&font_family, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel};
-			Gdiplus::Font font2{};
-			font.GetSize();
-		}*/
+			Gdiplus::SolidBrush brush{ Gdiplus::Color{0} };
+			apply_brush_color(&brush, col_f);
+
+			Gdiplus::Font gdip_font{
+				::sjis_to_wide(font.family_name).c_str(),
+				font.height,
+				Gdiplus::FontStyleRegular,
+				Gdiplus::UnitPixel
+			};
+
+			Gdiplus::StringFormat string_format;
+			string_format.SetAlignment(Gdiplus::StringAlignmentCenter);
+			string_format.SetLineAlignment(Gdiplus::StringAlignmentCenter);
+			
+			p_graphics_buffer->DrawString(
+				::sjis_to_wide(text).c_str(),
+				-1,
+				&gdip_font,
+				Gdiplus::PointF{ point.x, point.y },
+				&brush
+			);
+		}
+
+
+		// テキストを描画(矩形指定)
+		void GdiplusGraphics::draw_text(
+			const std::string& text,
+			const Rectangle<float>& rect,
+			const Font& font,
+			AnchorPosition anchor_pos,
+			bool fit_size,
+			const ColorF& col_f
+		)
+		{
+			Gdiplus::SolidBrush brush{ Gdiplus::Color{0} };
+			apply_brush_color(&brush, col_f);
+
+			Gdiplus::Font gdip_font{
+				::sjis_to_wide(font.family_name).c_str(),
+				font.height,
+				Gdiplus::FontStyleRegular,
+				Gdiplus::UnitPixel
+			};
+
+			Gdiplus::StringFormat string_format;
+			string_format.SetAlignment(Gdiplus::StringAlignmentCenter);
+			string_format.SetLineAlignment(Gdiplus::StringAlignmentCenter);
+			string_format.SetFormatFlags(Gdiplus::StringFormatFlagsNoWrap | Gdiplus::StringFormatFlagsNoClip | Gdiplus::StringFormatFlagsNoFitBlackBox);
+			string_format.SetTrimming(Gdiplus::StringTrimmingNone);
+
+			auto character_range = Gdiplus::CharacterRange{ 0, (int)text.size() };
+			string_format.SetMeasurableCharacterRanges(1, &character_range);
+
+			Gdiplus::Region region;
+			RECT tmp;
+			if (::GetClientRect(hwnd, &tmp)) {
+				Gdiplus::RectF rect_wnd{
+					0, 0,
+					(Gdiplus::REAL)tmp.right,
+					(Gdiplus::REAL)tmp.bottom
+				};
+				p_graphics_buffer->MeasureCharacterRanges(
+					::sjis_to_wide(text).c_str(),
+					-1,
+					&gdip_font,
+					rect_wnd,
+					&string_format,
+					1,
+					&region
+				);
+				Gdiplus::RectF rect_text;
+				region.GetBounds(&rect_text, p_graphics_buffer);
+
+				Gdiplus::SizeF size_rect, size_rect_text;
+				rect_wnd.GetSize(&size_rect);
+				rect_text.GetSize(&size_rect_text);
+
+				if (fit_size and size_rect.Width < size_rect_text.Width) {
+					Font new_font{
+						font.family_name,
+						font.height * (size_rect.Width / size_rect_text.Width),
+						font.style,
+						font.weight
+					};
+					draw_text(text, rect, new_font, anchor_pos, false, col_f);
+				}
+				else {
+					p_graphics_buffer->DrawString(
+						::sjis_to_wide(text).c_str(),
+						-1,
+						&gdip_font,
+						rect_wnd,
+						&string_format,
+						&brush
+					);
+				}
+			}
+		}
 	}
 }

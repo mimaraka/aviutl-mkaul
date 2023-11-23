@@ -16,82 +16,83 @@ namespace mkaul {
 		class Button : public Control {
 		public:
 			Button() :
-				hwnd_tooltip(NULL),
-				tool_info({ 0 }),
-				tooltip_label(),
-				hover_highlight(0.f),
-				hovered(false),
-				clicked(false)
+				hwnd_tooltip_(NULL),
+				tool_info_({ 0 }),
+				tooltip_label_(),
+				hover_highlight_(0.f),
+				hovered_(false),
+				clicked_(false)
 			{}
 
-			virtual bool create(
+			virtual HWND create(
 				HINSTANCE hinst,
 				HWND hwnd_parent_,
 				int id_,
 				const ColorF* p_col_bg_,
 				const ColorF* p_col_control_,
 				const WindowRectangle& rect,
-				const std::string& tooltip_label_ = "",
+				const std::string& tooltip_label = "",
 				RoundEdgeFlag round_edge_flag_ = RoundEdgeFlag::None,
 				float round_radius_ = 0.f,
-				float hover_highlight_ = 0.04f
+				float hover_highlight = 0.04f
 			);
 
 		protected:
-			static constexpr int HOVER_HIGHLIGHT = 10;
-
-			HWND                    hwnd_tooltip;
-			TOOLINFO	    		tool_info;
-			std::string				tooltip_label;
-			float					hover_highlight;
-			bool			    	hovered, clicked;
+			HWND                    hwnd_tooltip_;
+			TOOLINFO	    		tool_info_;
+			std::string				tooltip_label_;
+			float					hover_highlight_;
+			bool			    	hovered_, clicked_;
 
 			virtual LRESULT wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		};
 
 
 		// ボタン(ラベル)
-		class ButtonLabel : public Button {
+		class LabelButton : public Button {
+		protected:
+			std::string label_;
+			graphics::Font font_;
+			ColorF* p_col_label_;
+
+			virtual LRESULT wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
+
 		public:
 
-			ButtonLabel() :
-				label(),
-				p_col_label(nullptr)
+			LabelButton() :
+				label_(),
+				font_(),
+				p_col_label_(nullptr)
 			{}
 
 			// ボタンを作成
-			virtual bool create(
+			virtual HWND create(
 				HINSTANCE hinst,
 				HWND hwnd_parent_,
 				int id_,
-				const std::string& label_,
+				const std::string& label,
+				const graphics::Font font,
 				const ColorF* p_col_bg_,
 				const ColorF* p_col_control_,
 				const ColorF* p_col_label,
 				const WindowRectangle& rect,
-				const std::string& tooltip_label_ = "",
+				const std::string& tooltip_label = "",
 				RoundEdgeFlag round_edge_flag_ = RoundEdgeFlag::None,
 				float round_radius_ = 0.f,
-				float hover_highlight_ = 0.04f
+				float hover_highlight = 0.04f
 			);
-
-		protected:
-			std::string				label;
-			ColorF*				p_col_label;
-
-			virtual LRESULT wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		};
 
 
 		// ボタン(アイコン)
-		class ButtonIcon : public Button {
+		class IconButton : public Button {
 		public:
 			enum class SourceType {
 				File,
 				Resource
 			};
 
-			ButtonIcon() :
+			IconButton() :
 				icon(nullptr),
 				icon_src(),
 				src_type(SourceType::File),
@@ -99,7 +100,7 @@ namespace mkaul {
 			{}
 
 			// ボタンを作成(アイコン)
-			virtual bool create(
+			virtual HWND create(
 				HINSTANCE hinst,
 				HWND hwnd_parent_,
 				int id_,
@@ -108,10 +109,10 @@ namespace mkaul {
 				const ColorF* p_col_bg_,
 				const ColorF* p_col_control_,
 				const WindowRectangle& rect,
-				const std::string& tooltip_label_ = "",
+				const std::string& tooltip_label = "",
 				RoundEdgeFlag round_edge_flag_ = RoundEdgeFlag::None,
 				float round_radius_ = 0.f,
-				float hover_highlight_ = 0.04f
+				float hover_highlight = 0.04f
 			);
 
 		protected:

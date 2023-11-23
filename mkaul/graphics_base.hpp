@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include <Windows.h>
 #include "point.hpp"
 #include "size.hpp"
 #include "rectangle.hpp"
 #include "color.hpp"
 #include "util.hpp"
+#include <string>
+#include <filesystem>
+#include <Windows.h>
 
 
 
@@ -71,16 +73,23 @@ namespace mkaul {
 		// フォント
 		struct Font {
 			enum class FontStyle {
-
-			};
+				None
+			} style;
 
 			std::string family_name;
 			float height;
 			int weight;
 
-			Font() :
-				family_name(),
-				height(0.f)
+			Font(
+				const std::string& family_name_ = "メイリオ",
+				float height_ = 24.f,
+				FontStyle style_ = FontStyle::None,
+				int weight_ = 500
+			) :
+				style(style_),
+				family_name(family_name_),
+				height(height_),
+				weight(weight_)
 			{}
 		};
 
@@ -325,7 +334,7 @@ namespace mkaul {
 			virtual bool initialize_bitmap(
 				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
-				ColorF col_f = 0
+				const ColorF& col_f = 0
 			) = 0;
 
 			// ファイルからビットマップを作成
@@ -357,11 +366,24 @@ namespace mkaul {
 				float opacity = 1.f
 			) = 0;
 
-			// テキストを描画
-			/*virtual void draw_text(
-				const std::string& str,
-				const std::string& font
-			) = 0;*/
+			// テキストを描画(アンカーポイント指定)
+			virtual void draw_text(
+				const std::string& text,
+				const Point<float>& point,
+				const Font& font = Font{},
+				AnchorPosition anchor_pos = AnchorPosition::Center,
+				const ColorF& col_f = 0
+			) = 0;
+
+			// テキストを描画(矩形指定)
+			virtual void draw_text(
+				const std::string& text,
+				const Rectangle<float>& rect,
+				const Font& font = Font{},
+				AnchorPosition anchor_pos = AnchorPosition::Center,
+				bool fit_size = true,
+				const ColorF& col_f = 0
+			) = 0;
 		};
 	}
 }

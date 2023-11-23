@@ -11,16 +11,16 @@
 namespace mkaul {
 	namespace graphics {
 		// •`‰æŠÂ‹«‚Ì—pˆÓ
-		bool Manager::startup(GraphicApi api_)
+		bool Manager::startup(GraphicMethod method_)
 		{
 			bool result = false;
 
-			switch (api_) {
-			case GraphicApi::Gdiplus:
+			switch (method_) {
+			case GraphicMethod::Gdiplus:
 				result = GdiplusGraphics::startup();
 				break;
 
-			case GraphicApi::Directx:
+			case GraphicMethod::Directx:
 				result = DirectxGraphics::startup();
 				break;
 
@@ -29,7 +29,7 @@ namespace mkaul {
 			}
 
 			if (result)
-				api = api_;
+				method = method_;
 
 			return result;
 		}
@@ -38,12 +38,12 @@ namespace mkaul {
 		// •`‰æŠÂ‹«‚Ì”jŠü
 		bool Manager::shutdown()
 		{
-			switch (api) {
-			case GraphicApi::Gdiplus:
+			switch (method) {
+			case GraphicMethod::Gdiplus:
 				GdiplusGraphics::shutdown();
 				break;
 
-			case GraphicApi::Directx:
+			case GraphicMethod::Directx:
 				DirectxGraphics::shutdown();
 				break;
 
@@ -57,12 +57,12 @@ namespace mkaul {
 
 		bool Manager::create_graphics(Graphics** pp_graphics)
 		{
-			switch (api) {
-			case GraphicApi::Gdiplus:
+			switch (method) {
+			case GraphicMethod::Gdiplus:
 				*pp_graphics = new GdiplusGraphics;
 				break;
 
-			case GraphicApi::Directx:
+			case GraphicMethod::Directx:
 				*pp_graphics = new DirectxGraphics;
 				break;
 
@@ -76,12 +76,12 @@ namespace mkaul {
 
 		bool Manager::create_bitmap(Bitmap** pp_bitmap)
 		{
-			switch (api) {
-			case GraphicApi::Gdiplus:
+			switch (method) {
+			case GraphicMethod::Gdiplus:
 				*pp_bitmap = new GdiplusBitmap;
 				break;
 
-			case GraphicApi::Directx:
+			case GraphicMethod::Directx:
 				*pp_bitmap = new DirectxBitmap;
 				break;
 
@@ -95,12 +95,12 @@ namespace mkaul {
 
 		bool Manager::create_path(Path** pp_path)
 		{
-			switch (api) {
-			case GraphicApi::Gdiplus:
+			switch (method) {
+			case GraphicMethod::Gdiplus:
 				*pp_path = new GdiplusPath;
 				break;
 
-			case GraphicApi::Directx:
+			case GraphicMethod::Directx:
 				*pp_path = new DirectxPath;
 				break;
 
