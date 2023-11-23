@@ -1,9 +1,3 @@
-//----------------------------------------------------------------------------------
-//		MKAul (Graphics)
-//		VC++ 2022
-//		developed by mimaraka
-//----------------------------------------------------------------------------------
-
 #define NOMINMAX
 #include <strconv2/strconv2.h>
 #include "graphics_gdiplus.hpp"

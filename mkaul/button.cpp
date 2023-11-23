@@ -1,9 +1,3 @@
-//----------------------------------------------------------------------------------
-//		MKAul (Control)
-//		VC++ 2022
-//		developed by mimaraka
-//----------------------------------------------------------------------------------
-
 #pragma once
 
 #include "button.hpp"
@@ -33,7 +27,7 @@ namespace mkaul {
 				hinst,
 				hwnd_parent_,
 				id_,
-				TEXT("MKAUL_BUTTON"),
+				"MKAUL_BUTTON",
 				NULL,
 				NULL,
 				rect,

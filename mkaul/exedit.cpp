@@ -11,8 +11,7 @@ namespace mkaul {
 
 			for (int i = 0; i < si.filter_n; i++) {
 				auto tfp = (AviUtl::FilterPlugin*)fp->exfunc->get_filterp(i);
-				if (
-					tfp->dll_hinst == ::GetModuleHandleA("exedit.auf")) {
+				if (tfp->dll_hinst == ::GetModuleHandleA("exedit.auf")) {
 					fp_ = tfp;
 					auto exedit_base = (uint32_t)tfp->dll_hinst;
 
