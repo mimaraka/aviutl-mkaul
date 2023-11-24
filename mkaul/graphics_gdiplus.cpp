@@ -110,6 +110,7 @@ namespace mkaul {
 
 				if (p_bitmap_buffer_ && p_graphics_buffer_) {
 					p_graphics_buffer_->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+					p_graphics_buffer_->SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);
 					drawing_ = true;
 
 					return true;
@@ -190,8 +191,8 @@ namespace mkaul {
 
 				p_graphics_buffer_->DrawLine(
 					&pen,
-					Gdiplus::PointF{pt_from.x, pt_from.y},
-					Gdiplus::PointF{pt_to.x, pt_to.y}
+					pt_from.to<Gdiplus::PointF>(),
+					pt_to.to<Gdiplus::PointF>()
 				);
 			}
 		}
@@ -243,10 +244,10 @@ namespace mkaul {
 
 				p_graphics_buffer_->DrawBezier(
 					&pen,
-					Gdiplus::PointF{point_0.x, point_0.y},
-					Gdiplus::PointF{point_1.x, point_1.y},
-					Gdiplus::PointF{point_2.x, point_2.y},
-					Gdiplus::PointF{point_3.x, point_3.y}
+					point_0.to<Gdiplus::PointF>(),
+					point_1.to<Gdiplus::PointF>(),
+					point_2.to<Gdiplus::PointF>(),
+					point_3.to<Gdiplus::PointF>()
 				);
 			}
 		}
@@ -893,7 +894,7 @@ namespace mkaul {
 				::sjis_to_wide(text).c_str(),
 				-1,
 				&gdip_font,
-				Gdiplus::PointF{ point.x, point.y },
+				point.to<Gdiplus::PointF>(),
 				&brush
 			);
 		}

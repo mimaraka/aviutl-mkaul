@@ -18,8 +18,8 @@ namespace mkaul {
 			return (this->x == pt.x && this->y == pt.y);
 		}
 
-		// ‰ÁZ
-		inline auto operator + (const PtType auto& pt) const noexcept
+		// ‰ÁZ (lower)
+		inline auto operator + (const pt_lower auto& pt) const noexcept
 		{
 			return Point<T>(
 				this->x + (T)pt.x,
@@ -27,8 +27,17 @@ namespace mkaul {
 			);
 		}
 
-		// Œ¸Z
-		inline auto operator - (const PtType auto& pt) const noexcept
+		// ‰ÁZ (upper)
+		inline auto operator + (const pt_upper auto& pt) const noexcept
+		{
+			return Point<T>(
+				this->x + (T)pt.X,
+				this->y + (T)pt.Y
+			);
+		}
+
+		// Œ¸Z (lower)
+		inline auto operator - (const pt_lower auto& pt) const noexcept
 		{
 			return Point<T>(
 				this->x - (T)pt.x,
@@ -36,17 +45,40 @@ namespace mkaul {
 			);
 		}
 
-		// “àÏ
-		inline auto operator * (const PtType auto& pt) const noexcept
+		// Œ¸Z (upper)
+		inline auto operator - (const pt_upper auto& pt) const noexcept
+		{
+			return Point<T>(
+				this->x - (T)pt.X,
+				this->y - (T)pt.Y
+			);
+		}
+
+		// “àÏ (lower)
+		inline auto operator * (const pt_lower auto& pt) const noexcept
 		{
 			return this->x * (T)pt.x + this->y * (T)pt.y;
 		}
 
-		// ‘ã“ü
-		inline auto operator = (const PtType auto& pt) noexcept
+		// “àÏ
+		inline auto operator * (const pt_upper auto& pt) const noexcept
+		{
+			return this->x * (T)pt.X + this->y * (T)pt.Y;
+		}
+
+		// ‘ã“ü (lower)
+		inline auto operator = (const pt_lower auto& pt) noexcept
 		{
 			this->x = (T)pt.x;
 			this->y = (T)pt.y;
+			return *this;
+		}
+
+		// ‘ã“ü (upper)
+		inline auto operator = (const pt_upper auto& pt) noexcept
+		{
+			this->x = (T)pt.X;
+			this->y = (T)pt.Y;
 			return *this;
 		}
 
@@ -60,14 +92,23 @@ namespace mkaul {
 			y((T)pt.y)
 		{}
 
-		// ‘¼‚ÌŒ^‚É•ÏŠ·
-		template <PtType U>
+		// ‘¼‚ÌŒ^‚É•ÏŠ· (lower)
+		template <pt_lower U>
 		auto to() const noexcept
 		{
-			U pt = { 0 };
+			U pt;
 			pt.x = static_cast<decltype(pt.x)>(x);
 			pt.y = static_cast<decltype(pt.y)>(y);
+			return pt;
+		}
 
+		// ‘¼‚ÌŒ^‚É•ÏŠ· (upper)
+		template <pt_upper U>
+		auto to() const noexcept
+		{
+			U pt;
+			pt.X = static_cast<decltype(pt.X)>(x);
+			pt.Y = static_cast<decltype(pt.Y)>(y);
 			return pt;
 		}
 

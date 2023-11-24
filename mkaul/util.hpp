@@ -7,9 +7,16 @@
 
 namespace mkaul {
 	template <typename T>
-	concept PtType = requires (T pt) {
+	concept pt_lower = requires (T pt) {
 		pt.x; pt.y;
 	};
+
+
+	template <typename T>
+	concept pt_upper = requires (T pt) {
+		pt.X; pt.Y;
+	};
+
 
 	// ”ÍˆÍ“à”»’è
 	inline bool in_range(auto val, auto min, auto max, bool equal) noexcept
@@ -24,9 +31,16 @@ namespace mkaul {
 
 
 	// ‹——£‚ğZo
-	inline double distance(const PtType auto& pt1, const PtType auto& pt2) noexcept
+	inline double distance(const pt_lower auto& pt1, const pt_lower auto& pt2) noexcept
 	{
 		return std::sqrt(std::pow(pt2.x - pt1.x, 2) + std::pow(pt2.y - pt1.y, 2));
+	}
+
+
+	// ‹——£‚ğZo
+	inline double distance(const pt_upper auto& pt1, const pt_upper auto& pt2) noexcept
+	{
+		return std::sqrt(std::pow(pt2.X - pt1.X, 2) + std::pow(pt2.Y - pt1.Y, 2));
 	}
 
 

@@ -7,8 +7,13 @@
 
 namespace mkaul {
 	template <typename T>
-	concept SizeType = requires (T size) {
+	concept size_lower = requires (T size) {
 		size.width; size.height;
+	};
+
+	template <typename T>
+	concept size_upper = requires (T size) {
+		size.Width; size.Height;
 	};
 
 	// ÉTÉCÉY
@@ -16,12 +21,14 @@ namespace mkaul {
 	struct Size {
 		T width, height;
 
+		// ìôçÜ
 		inline auto operator == (const Size<T>& size) const noexcept
 		{
 			return (this->width == size.width && this->height == size.height);
 		}
 
-		inline auto operator + (const SizeType auto& size) const noexcept
+		// â¡éZ (lower)
+		inline auto operator + (const size_lower auto& size) const noexcept
 		{
 			return Size<T>(
 				this->width + (T)size.width,
@@ -29,7 +36,17 @@ namespace mkaul {
 			);
 		}
 
-		inline auto operator - (const SizeType auto& size) const noexcept
+		// â¡éZ (upper)
+		inline auto operator + (const size_upper auto& size) const noexcept
+		{
+			return Size<T>(
+				this->width + (T)size.Width,
+				this->height + (T)size.Height
+			);
+		}
+
+		// å∏éZ (lower)
+		inline auto operator - (const size_lower auto& size) const noexcept
 		{
 			return Size<T>(
 				this->width - (T)size.width,
@@ -37,23 +54,52 @@ namespace mkaul {
 			);
 		}
 
-		inline void operator = (const SizeType auto& size) noexcept
+		// å∏éZ (upper)
+		inline auto operator - (const size_upper auto& size) const noexcept
+		{
+			return Size<T>(
+				this->width - (T)size.Width,
+				this->height - (T)size.Height
+			);
+		}
+
+		// ë„ì¸ (lower)
+		inline void operator = (const size_lower auto& size) noexcept
 		{
 			this->width = (T)size.width;
 			this->height = (T)size.height;
+		}
+
+		// ë„ì¸ (upper)
+		inline void operator = (const size_upper auto& size) noexcept
+		{
+			this->width = (T)size.Width;
+			this->height = (T)size.Height;
 		}
 
 		inline Size(T width_ = 0, T height_ = 0) :
 			width(width_),
 			height(height_)
 		{}
-
-		template <SizeType U>
+		
+		// ëºÇÃå^Ç…ïœä∑ (lower)
+		template <size_lower U>
 		auto to() const noexcept
 		{
 			U size = { 0 };
 			size.width = static_cast<decltype(size.width)>(width);
 			size.height = static_cast<decltype(size.height)>(height);
+
+			return size;
+		}
+
+		// ëºÇÃå^Ç…ïœä∑ (upper)
+		template <size_upper U>
+		auto to() const noexcept
+		{
+			U size = { 0 };
+			size.Width = static_cast<decltype(size.Width)>(width);
+			size.Height = static_cast<decltype(size.Height)>(height);
 
 			return size;
 		}
