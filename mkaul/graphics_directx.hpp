@@ -18,18 +18,18 @@ namespace mkaul {
 		// グラフィック
 		class DirectxGraphics : public Graphics, protected DirectxBase {
 		private:
-			inline static ID2D1Factory* p_factory;
-			inline static IDWriteFactory* p_write_factory;
-			inline static IWICImagingFactory* p_imaging_factory;
-			ID2D1HwndRenderTarget* p_render_target;
-			ID2D1SolidColorBrush* p_brush;
-			PAINTSTRUCT ps;
+			inline static ID2D1Factory* p_factory_;
+			inline static IDWriteFactory* p_write_factory_;
+			inline static IWICImagingFactory* p_imaging_factory_;
+			ID2D1HwndRenderTarget* p_render_target_;
+			ID2D1SolidColorBrush* p_brush_;
+			PAINTSTRUCT paint_struct_;
 
 		public:
 			DirectxGraphics() :
-				p_render_target(nullptr),
-				p_brush(nullptr),
-				ps({ 0 })
+				p_render_target_(nullptr),
+				p_brush_(nullptr),
+				paint_struct_({ 0 })
 			{}
 
 			// 描画環境の用意
@@ -43,12 +43,12 @@ namespace mkaul {
 			);
 
 			// ファクトリー・ターゲット取得
-			static auto get_factory() { return p_factory; }
-			static auto get_write_factory() { return p_write_factory; }
-			static auto get_imaging_factory() { return p_imaging_factory; }
-			auto get_render_target() { return p_render_target; }
+			static auto get_factory() { return p_factory_; }
+			static auto get_write_factory() { return p_write_factory_; }
+			static auto get_imaging_factory() { return p_imaging_factory_; }
+			auto get_render_target() { return p_render_target_; }
 
-			bool init(HWND hwnd_) override;
+			bool init(HWND hwnd) override;
 			void exit() override;
 			bool begin_draw() override;
 			bool end_draw() override;
@@ -56,14 +56,14 @@ namespace mkaul {
 
 			// 背景を塗りつぶし
 			void fill_background(
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// 線を描画
 			void draw_line(
 				const Point<float>& point_from,
 				const Point<float>& point_to,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -71,7 +71,7 @@ namespace mkaul {
 			void draw_lines(
 				const Point<float>* p_points,
 				size_t n_points,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -80,14 +80,14 @@ namespace mkaul {
 				const Point<float>& point_1,
 				const Point<float>& point_2,
 				const Point<float>& point_3,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
 			void draw_beziers(
 				const Point<float>* points,
 				size_t n_points,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -96,7 +96,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -105,7 +105,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// 楕円を描画(線)(中心点指定)
@@ -113,14 +113,14 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
 			// 楕円を描画(線)(矩形指定)
 			void draw_ellipse(
 				const Rectangle<float>& rectangle,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -129,33 +129,33 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// 楕円を描画(塗り)(矩形指定)
 			void fill_ellipse(
 				const Rectangle<float>& rectangle,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// パスを描画(線)
 			void draw_path(
 				const Path* p_path,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
 			// パスを描画(塗り)
 			void fill_path(
 				const Path* p_path,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// 空のビットマップを作成
 			bool initialize_bitmap(
 				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// ファイルからビットマップを作成
@@ -193,7 +193,7 @@ namespace mkaul {
 				const Point<float>& point,
 				const Font& font = Font{},
 				AnchorPosition anchor_pos = AnchorPosition::Center,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// テキストを描画(矩形指定)
@@ -203,7 +203,7 @@ namespace mkaul {
 				const Font& font = Font{},
 				AnchorPosition anchor_pos = AnchorPosition::Center,
 				bool fit_size = true,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 		};
 	}

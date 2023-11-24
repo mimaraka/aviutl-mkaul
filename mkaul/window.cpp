@@ -5,6 +5,37 @@
 
 namespace mkaul {
 	namespace window {
+		// ウィンドウを移動
+		bool Window::move(const WindowRectangle& rect) const
+		{
+			return ::MoveWindow(
+				hwnd_,
+				std::min(rect.left, rect.right),
+				std::min(rect.top, rect.bottom),
+				std::abs(rect.right - rect.left),
+				std::abs(rect.bottom - rect.top),
+				TRUE
+			);
+		}
+
+		// 再描画
+		bool Window::redraw() const
+		{
+			if (hwnd_) {
+				std::vector<HWND> hwnd_list;
+				get_all_children(hwnd_, &hwnd_list);
+				// 自身を再描画
+				::InvalidateRect(hwnd_, NULL, FALSE);
+
+				// 下層のウィンドウを全て再描画
+				for (auto hw : hwnd_list)
+					::InvalidateRect(hw, NULL, FALSE);
+
+				return true;
+			}
+			else return false;
+		}
+
 		// 子ウィンドウを再帰的に検索
 		void get_all_children(HWND hwnd, std::vector<HWND>* p_vec_hwnd)
 		{
@@ -28,7 +59,7 @@ namespace mkaul {
 			HWND					hwnd_parent,
 			LPCTSTR					window_name,
 			LPCTSTR					class_name,
-			WNDPROC					wndproc_,
+			WNDPROC					wndproc,
 			LONG					window_style,
 			LONG					class_style,
 			const WindowRectangle&	rect,
@@ -42,7 +73,7 @@ namespace mkaul {
 				WNDCLASSEX ws;
 				ws.cbSize = sizeof(ws);
 				ws.style = CS_HREDRAW | CS_VREDRAW | class_style;
-				ws.lpfnWndProc = wndproc_;
+				ws.lpfnWndProc = wndproc;
 				ws.cbClsExtra = 0;
 				ws.cbWndExtra = 0;
 				ws.hInstance = hinst;
@@ -56,7 +87,7 @@ namespace mkaul {
 				if (!::RegisterClassExA(&ws)) return NULL;
 			}
 			
-			return hwnd = ::CreateWindowExA(
+			return hwnd_ = ::CreateWindowExA(
 				NULL,
 				class_name,
 				window_name,

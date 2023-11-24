@@ -9,14 +9,14 @@ namespace mkaul {
 		// ボタンを作成
 		HWND Button::create(
 			HINSTANCE hinst,
-			HWND hwnd_parent_,
-			int id_,
-			const ColorF* p_col_bg_,
-			const ColorF* p_col_control_,
+			HWND hwnd_parent,
+			int id,
+			const ColorF* p_color_bg,
+			const ColorF* p_color_control,
 			const WindowRectangle& rect,
 			const std::string& tooltip_label,
-			RoundEdgeFlag round_edge_flag_,
-			float round_radius_,
+			flag::RoundEdge round_edge,
+			float round_radius,
 			float hover_highlight
 		)
 		{
@@ -25,16 +25,16 @@ namespace mkaul {
 
 			return Control::create(
 				hinst,
-				hwnd_parent_,
-				id_,
+				hwnd_parent,
+				id,
 				"MKAUL_BUTTON",
 				NULL,
 				NULL,
 				rect,
-				p_col_bg_,
-				p_col_control_,
-				round_edge_flag_,
-				round_radius_,
+				p_color_bg,
+				p_color_control,
+				round_edge,
+				round_radius,
 				::LoadCursorA(NULL, IDC_HAND)
 			);
 		}
@@ -43,34 +43,34 @@ namespace mkaul {
 		// ボタンを作成(ラベル)
 		HWND LabelButton::create(
 			HINSTANCE hinst,
-			HWND hwnd_parent_,
-			int id_,
+			HWND hwnd_parent,
+			int id,
 			const std::string& label,
 			const graphics::Font font,
-			const ColorF* p_col_bg_,
-			const ColorF* p_col_control_,
-			const ColorF* p_col_label,
+			const ColorF* p_color_bg,
+			const ColorF* p_color_control,
+			const ColorF* p_color_label,
 			const WindowRectangle& rect,
 			const std::string& tooltip_label,
-			RoundEdgeFlag round_edge_flag_,
-			float round_radius_,
+			flag::RoundEdge round_edge,
+			float round_radius,
 			float hover_highlight
 		)
 		{
 			label_ = label;
 			font_ = font;
-			p_col_label_ = const_cast<ColorF*>(p_col_label);
+			p_color_label_ = const_cast<ColorF*>(p_color_label);
 
 			return Button::create(
 				hinst,
-				hwnd_parent_,
-				id_,
-				p_col_bg_,
-				p_col_control_,
+				hwnd_parent,
+				id,
+				p_color_bg,
+				p_color_control,
 				rect,
 				tooltip_label,
-				round_edge_flag_,
-				round_radius_,
+				round_edge,
+				round_radius,
 				hover_highlight
 			);
 		}
@@ -79,36 +79,36 @@ namespace mkaul {
 		// ボタンを作成(アイコン)
 		HWND IconButton::create(
 			HINSTANCE hinst,
-			HWND hwnd_parent_,
-			int id_,
-			const char* icon_src_,
-			SourceType src_type_,
-			const ColorF* p_col_bg_,
-			const ColorF* p_col_control_,
+			HWND hwnd_parent,
+			int id,
+			const char* icon_source,
+			SourceType source_type,
+			const ColorF* p_color_bg,
+			const ColorF* p_color_control,
 			const WindowRectangle& rect,
 			const std::string& tooltip_label,
-			RoundEdgeFlag round_edge_flag_,
-			float round_radius_,
+			flag::RoundEdge round_edge,
+			float round_radius,
 			float hover_highlight
 		)
 		{
-			src_type = src_type_;
+			source_type_ = source_type;
 
 			// ソースの種類で場合分け
-			switch (src_type_) {
+			switch (source_type) {
 			// ファイル
 			case SourceType::File:
-				icon_src = icon_src_;
+				icon_source_ = icon_source;
 				break;
 
 			// リソース
 			case SourceType::Resource:
 				// リソースが数値の場合
-				if (!HIWORD(icon_src_))
-					icon_resource_num = LOWORD(icon_src_);
+				if (!HIWORD(icon_source))
+					icon_resource_num_ = LOWORD(icon_source);
 				// リソースが文字列の場合
 				else
-					icon_src = icon_src_;
+					icon_source_ = icon_source;
 				break;
 
 			default:
@@ -117,28 +117,28 @@ namespace mkaul {
 
 			return Button::create(
 				hinst,
-				hwnd_parent_,
-				id_,
-				p_col_bg_,
-				p_col_control_,
+				hwnd_parent,
+				id,
+				p_color_bg,
+				p_color_control,
 				rect,
 				tooltip_label,
-				round_edge_flag_,
-				round_radius_,
+				round_edge,
+				round_radius,
 				hover_highlight
 			);
 		}
 
 
 		// ウィンドウプロシージャ
-		LRESULT Button::wndproc(HWND hwnd_, UINT message, WPARAM wparam, LPARAM lparam)
+		LRESULT Button::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		{
 			RECT rect_wnd;
-			::GetClientRect(hwnd_, &rect_wnd);
+			::GetClientRect(hwnd, &rect_wnd);
 
 			switch (message) {
 			case WM_CREATE:
-				p_graphics->init(hwnd_);
+				p_graphics_->init(hwnd);
 
 				if (!tooltip_label_.empty()) {
 					hwnd_tooltip_ = ::CreateWindowEx(
@@ -146,30 +146,30 @@ namespace mkaul {
 						NULL, TTS_ALWAYSTIP,
 						CW_USEDEFAULT, CW_USEDEFAULT,
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						hwnd_, NULL,
+						hwnd, NULL,
 						(HINSTANCE)::GetWindowLongA(hwnd, GWL_HINSTANCE),
 						NULL
 					);
 
 					tool_info_.cbSize = sizeof(TOOLINFO);
 					tool_info_.uFlags = TTF_SUBCLASS;
-					tool_info_.hwnd = hwnd_;
-					tool_info_.uId = id;
+					tool_info_.hwnd = hwnd;
+					tool_info_.uId = id_;
 					tool_info_.lpszText = (LPTSTR)tooltip_label_.c_str();
 					::SendMessage(hwnd_tooltip_, TTM_ADDTOOL, 0, (LPARAM)&tool_info_);
 				}
 
-				tme.cbSize = sizeof(tme);
-				tme.dwFlags = TME_LEAVE;
-				tme.hwndTrack = hwnd_;
+				tme_.cbSize = sizeof(tme_);
+				tme_.dwFlags = TME_LEAVE;
+				tme_.hwndTrack = hwnd;
 				break;
 
 			case WM_CLOSE:
-				p_graphics->exit();
+				p_graphics_->exit();
 				break;
 
 			case WM_SIZE:
-				p_graphics->resize();
+				p_graphics_->resize();
 
 				if (!tooltip_label_.empty()) {
 					tool_info_.rect = rect_wnd;
@@ -179,44 +179,44 @@ namespace mkaul {
 
 			case WM_PAINT:
 			{
-				ColorF col_f = *p_col_control;
+				ColorF color = *p_color_control_;
 
 				if (clicked_)
-					col_f.change_brightness(-hover_highlight_);
+					color.change_brightness(-hover_highlight_);
 				else if (hovered_)
-					col_f.change_brightness(hover_highlight_);
+					color.change_brightness(hover_highlight_);
 
-				p_graphics->begin_draw();
-				p_graphics->fill_background(col_f);
+				p_graphics_->begin_draw();
+				p_graphics_->fill_background(color);
 				draw_round_edge();
-				p_graphics->end_draw();
+				p_graphics_->end_draw();
 
 				break;
 			}
 
 			// マウスが動いたとき
 			case WM_MOUSEMOVE:
-				if (!((uint32_t)status & (uint32_t)Status::Disabled)) {
+				if ((bool)!(status_ & flag::Status::Disabled)) {
 					hovered_ = true;
 					redraw();
-					::TrackMouseEvent(&tme);
+					::TrackMouseEvent(&tme_);
 				}
 				break;
 
 			// 左クリックがされたとき
 			case WM_LBUTTONDOWN:
-				if (!((uint32_t)status & (uint32_t)Status::Disabled)) {
+				if ((bool)!(status_ & flag::Status::Disabled)) {
 					clicked_ = true;
 					redraw();
-					::TrackMouseEvent(&tme);
+					::TrackMouseEvent(&tme_);
 				}
 				break;
 
 			// 左クリックが終わったとき
 			case WM_LBUTTONUP:
-				if (!((uint32_t)status & (uint32_t)Status::Disabled) && clicked_) {
+				if ((bool)!(status_ & flag::Status::Disabled) && clicked_) {
 					clicked_ = false;
-					::SendMessage(hwnd_parent, WM_COMMAND, id, 0);
+					::SendMessage(hwnd_parent_, WM_COMMAND, id_, 0);
 					redraw();
 				}
 				break;
@@ -229,31 +229,31 @@ namespace mkaul {
 				break;
 
 			default:
-				return ::DefWindowProc(hwnd_, message, wparam, lparam);
+				return ::DefWindowProc(hwnd, message, wparam, lparam);
 			}
 
 			return 0;
 		}
 
 
-		LRESULT LabelButton::wndproc(HWND hwnd_, UINT message, WPARAM wparam, LPARAM lparam)
+		LRESULT LabelButton::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		{
 			RECT rect_wnd;
-			::GetClientRect(hwnd_, &rect_wnd);
+			::GetClientRect(hwnd, &rect_wnd);
 
 			switch (message) {
 			case WM_PAINT:
 			{
-				ColorF col_f = *p_col_control;
+				ColorF color = *p_color_control_;
 
 				if (clicked_)
-					col_f.change_brightness(-hover_highlight_);
+					color.change_brightness(-hover_highlight_);
 				else if (hovered_)
-					col_f.change_brightness(hover_highlight_);
+					color.change_brightness(hover_highlight_);
 
-				p_graphics->begin_draw();
-				p_graphics->fill_background(col_f);
-				p_graphics->draw_text(
+				p_graphics_->begin_draw();
+				p_graphics_->fill_background(color);
+				p_graphics_->draw_text(
 					label_,
 					Rectangle<float>{
 						0.f, 0.f,
@@ -263,16 +263,16 @@ namespace mkaul {
 					font_,
 					graphics::AnchorPosition::Center,
 					true,
-					*p_col_label_
+					*p_color_label_
 				);
 				draw_round_edge();
-				p_graphics->end_draw();
+				p_graphics_->end_draw();
 
 				break;
 			}
 			
 			default:
-				return Button::wndproc(hwnd_, message, wparam, lparam);
+				return Button::wndproc(hwnd, message, wparam, lparam);
 			}
 
 			return 0;

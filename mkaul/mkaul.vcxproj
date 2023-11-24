@@ -172,6 +172,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="button.hpp" />
     <ClInclude Include="color.hpp" />
     <ClInclude Include="control.hpp" />
+    <ClInclude Include="flag.hpp" />
     <ClInclude Include="font.hpp" />
     <ClInclude Include="gdiplus_common.hpp" />
     <ClInclude Include="graphics.hpp" />

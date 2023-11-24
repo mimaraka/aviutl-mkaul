@@ -19,11 +19,12 @@ namespace mkaul {
 
 		// ウィンドウクラス
 		class Window {
-		public:
-			HWND hwnd;
+		protected:
+			HWND hwnd_;
 
+		public:
 			Window() :
-				hwnd(NULL)
+				hwnd_(NULL)
 			{}
 
 			virtual HWND create(
@@ -31,7 +32,7 @@ namespace mkaul {
 				HWND					hwnd_parent,
 				LPCTSTR					window_name,
 				LPCTSTR					class_name,
-				WNDPROC					wndproc_,
+				WNDPROC					wndproc,
 				LONG					window_style,
 				LONG					class_style,
 				const WindowRectangle&	rect,
@@ -39,62 +40,12 @@ namespace mkaul {
 				LPVOID					lp_param = nullptr
 			);
 
+			HWND get_hwnd() { return hwnd_; }
 			bool move(const WindowRectangle& rect) const;
 			bool redraw() const;
-			bool close() const;
-			bool show() const;
-			bool hide() const;
+			bool close() const { return ::DestroyWindow(hwnd_); }
+			bool show() const { return ::ShowWindow(hwnd_, SW_SHOW); }
+			bool hide() const { return ::ShowWindow(hwnd_, SW_HIDE); }
 		};
-
-
-		// ウィンドウを移動
-		inline bool Window::move(const WindowRectangle& rect) const
-		{
-			return ::MoveWindow(
-				hwnd,
-				std::min(rect.left, rect.right),
-				std::min(rect.top, rect.bottom),
-				std::abs(rect.right - rect.left),
-				std::abs(rect.bottom - rect.top),
-				TRUE
-			);
-		}
-
-		// 再描画
-		inline bool Window::redraw() const
-		{
-			if (hwnd) {
-				std::vector<HWND> hwnd_list;
-				get_all_children(hwnd, &hwnd_list);
-				// 自身を再描画
-				::InvalidateRect(hwnd, NULL, FALSE);
-
-				// 下層のウィンドウを全て再描画
-				for (auto hw : hwnd_list)
-					::InvalidateRect(hw, NULL, FALSE);
-				
-				return true;
-			}
-			else return false;
-		}
-
-
-		// ウィンドウを表示
-		inline bool Window::show() const
-		{
-			return ::ShowWindow(hwnd, SW_SHOW);
-		}
-
-		// ウィンドウを非表示
-		inline bool Window::hide() const
-		{
-			return ::ShowWindow(hwnd, SW_HIDE);
-		}
-
-		// ウィンドウを閉じる
-		inline bool Window::close() const
-		{
-			return ::DestroyWindow(hwnd);
-		}
 	}
 }

@@ -13,14 +13,14 @@ namespace mkaul {
 		// グラフィックス
 		class GdiplusGraphics : public Graphics, protected GdiplusBase {
 		private:
-			inline static ULONG_PTR gdiplus_token = NULL;
-			Gdiplus::Graphics* p_graphics_buffer;
-			Gdiplus::Bitmap* p_bitmap_buffer;
+			inline static ULONG_PTR gdiplus_token_ = NULL;
+			Gdiplus::Graphics* p_graphics_buffer_;
+			Gdiplus::Bitmap* p_bitmap_buffer_;
 
 		public:
 			GdiplusGraphics() :
-				p_graphics_buffer(nullptr),
-				p_bitmap_buffer(nullptr)
+				p_graphics_buffer_(nullptr),
+				p_bitmap_buffer_(nullptr)
 			{}
 
 			static bool startup();
@@ -29,14 +29,14 @@ namespace mkaul {
 			// Strokeの情報をPenに反映
 			static void apply_pen_style(
 				Gdiplus::Pen* p_pen,
-				const ColorF& col_f,
+				const ColorF& color,
 				const Stroke& stroke
 			) noexcept;
 
 			// Brushに色を反映
 			static void apply_brush_color(
-				Gdiplus::SolidBrush* p_brush,
-				const ColorF& col_f
+				Gdiplus::SolidBrush* p_brush_,
+				const ColorF& color
 			) noexcept;
 
 			// インスタンス初期化
@@ -53,14 +53,14 @@ namespace mkaul {
 
 			// 背景を塗りつぶし
 			void fill_background(
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// 線を描画
 			void draw_line(
 				const Point<float>& point_from,
 				const Point<float>& point_to,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -68,7 +68,7 @@ namespace mkaul {
 			void draw_lines(
 				const Point<float>* points,
 				size_t n_points,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -78,7 +78,7 @@ namespace mkaul {
 				const Point<float>& point_1,
 				const Point<float>& point_2,
 				const Point<float>& point_3,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -86,7 +86,7 @@ namespace mkaul {
 			void draw_beziers(
 				const Point<float>* points,
 				size_t n_points,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -95,7 +95,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -104,7 +104,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// 楕円を描画(線)(中心点指定)
@@ -112,14 +112,14 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
 			// 楕円を描画(線)(矩形指定)
 			void draw_ellipse(
 				const Rectangle<float>& rectangle,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
@@ -128,33 +128,33 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// 楕円を描画(塗り)(矩形指定)
 			void fill_ellipse(
 				const Rectangle<float>& rectangle,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// パスを描画(線)
 			void draw_path(
 				const Path* p_path,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
 			// パスを描画(塗り)
 			void fill_path(
 				const Path* p_path,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// 空のビットマップを作成
 			bool initialize_bitmap(
 				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// ファイルからビットマップを作成
@@ -192,7 +192,7 @@ namespace mkaul {
 				const Point<float>& point,
 				const Font& font = Font{},
 				AnchorPosition anchor_pos = AnchorPosition::Center,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 
 			// テキストを描画(矩形指定)
@@ -202,7 +202,7 @@ namespace mkaul {
 				const Font& font = Font{},
 				AnchorPosition anchor_pos = AnchorPosition::Center,
 				bool fit_size = true,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) override;
 		};
 	}

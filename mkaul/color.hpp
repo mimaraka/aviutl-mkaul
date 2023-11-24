@@ -131,7 +131,7 @@ namespace mkaul {
 		}
 
 		ColorI8(COLORREF cr = (COLORREF)0l) noexcept;
-		ColorI8(const ColorF& col_f) noexcept;
+		ColorI8(const ColorF& color) noexcept;
 
 		void clamp() noexcept;
 		void invert() noexcept;
@@ -229,12 +229,12 @@ namespace mkaul {
 
 
 	// コンストラクタ(2)
-	inline ColorI8::ColorI8(const ColorF& col_f) noexcept
+	inline ColorI8::ColorI8(const ColorF& color) noexcept
 	{
-		r_ = (int)(col_f.get_r() * MAX);
-		g_ = (int)(col_f.get_g() * MAX);
-		b_ = (int)(col_f.get_b() * MAX);
-		a_ = (int)(col_f.get_a() * MAX);
+		r_ = (int)(color.get_r() * MAX);
+		g_ = (int)(color.get_g() * MAX);
+		b_ = (int)(color.get_b() * MAX);
+		a_ = (int)(color.get_a() * MAX);
 	}
 
 

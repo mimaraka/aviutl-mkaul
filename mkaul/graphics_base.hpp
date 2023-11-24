@@ -34,36 +34,37 @@ namespace mkaul {
 		// グラフィックス抽象クラス
 		class Graphics {
 		protected:
-			HWND hwnd;
-			bool drawing;
+			HWND hwnd_;
+			bool drawing_;
 
 		public:
 			Graphics():
-				hwnd(NULL),
-				drawing(false)
+				hwnd_(NULL),
+				drawing_(false)
 			{}
 
-			virtual bool init(HWND hwnd_) = 0;
+			virtual bool init(HWND hwnd) = 0;
 			virtual void exit() = 0;
 
 			virtual bool begin_draw() = 0;
 			virtual bool end_draw() = 0;
 
-			bool is_drawing() { return drawing; }
+			bool is_drawing() { return drawing_; }
+			HWND get_hwnd() { return hwnd_; }
 
 			// リサイズ
 			virtual bool resize() = 0;
 
 			// 背景を塗りつぶし
 			virtual void fill_background(
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) = 0;
 
 			// 線を描画
 			virtual void draw_line(
 				const Point<float>& point_from,
 				const Point<float>& point_to,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -71,7 +72,7 @@ namespace mkaul {
 			virtual void draw_lines(
 				const Point<float>* p_points,
 				size_t n_points,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -81,7 +82,7 @@ namespace mkaul {
 				const Point<float>& point_1,
 				const Point<float>& point_2,
 				const Point<float>& point_3,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -89,7 +90,7 @@ namespace mkaul {
 			virtual void draw_beziers(
 				const Point<float>* points,
 				size_t n_points,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -98,7 +99,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -107,7 +108,7 @@ namespace mkaul {
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) = 0;
 
 			// 楕円を描画(線)(中心点指定)
@@ -115,14 +116,14 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
 			// 楕円を描画(線)(矩形指定)
 			virtual void draw_ellipse(
 				const Rectangle<float>& rectangle,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
@@ -131,33 +132,33 @@ namespace mkaul {
 				const Point<float>& point,
 				float radius_x,
 				float radius_y,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) = 0;
 
 			// 楕円を描画(塗り)(矩形指定)
 			virtual void fill_ellipse(
 				const Rectangle<float>& rectangle,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) = 0;
 
 			// パスを描画(線)
 			virtual void draw_path(
 				const Path* p_path,
-				const ColorF& col_f = 0,
+				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
 			// パスを描画(塗り)
 			virtual void fill_path(
 				const Path* p_path,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) = 0;
 
 			// 空のビットマップを作成
 			virtual bool initialize_bitmap(
 				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) = 0;
 
 			// ファイルからビットマップを作成
@@ -195,7 +196,7 @@ namespace mkaul {
 				const Point<float>& point,
 				const Font& font = Font{},
 				AnchorPosition anchor_pos = AnchorPosition::Center,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) = 0;
 
 			// テキストを描画(矩形指定)
@@ -205,7 +206,7 @@ namespace mkaul {
 				const Font& font = Font{},
 				AnchorPosition anchor_pos = AnchorPosition::Center,
 				bool fit_size = true,
-				const ColorF& col_f = 0
+				const ColorF& color = 0
 			) = 0;
 		};
 	}

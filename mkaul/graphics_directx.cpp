@@ -12,7 +12,7 @@ namespace mkaul {
 			// ID2D1Factoryの作成
 			hr = ::D2D1CreateFactory(
 				D2D1_FACTORY_TYPE_MULTI_THREADED,
-				&p_factory
+				&p_factory_
 			);
 
 			if (SUCCEEDED(hr)) {
@@ -22,7 +22,7 @@ namespace mkaul {
 					NULL,
 					CLSCTX_INPROC_SERVER,
 					IID_IWICImagingFactory,
-					reinterpret_cast<void**>(&p_imaging_factory)
+					reinterpret_cast<void**>(&p_imaging_factory_)
 				);
 			}
 			if (SUCCEEDED(hr)) {
@@ -30,15 +30,15 @@ namespace mkaul {
 				hr = ::DWriteCreateFactory(
 					DWRITE_FACTORY_TYPE_SHARED,
 					__uuidof(IDWriteFactory),
-					reinterpret_cast<IUnknown**>(&p_write_factory)
+					reinterpret_cast<IUnknown**>(&p_write_factory_)
 				);
 
 				return true;
 			}
 
-			dx_release(&p_factory);
-			dx_release(&p_imaging_factory);
-			dx_release(&p_write_factory);
+			dx_release(&p_factory_);
+			dx_release(&p_imaging_factory_);
+			dx_release(&p_write_factory_);
 
 			return false;
 		}
@@ -47,9 +47,9 @@ namespace mkaul {
 		// 描画環境の破棄
 		void DirectxGraphics::shutdown()
 		{
-			dx_release(&p_imaging_factory);
-			dx_release(&p_write_factory);
-			dx_release(&p_factory);
+			dx_release(&p_imaging_factory_);
+			dx_release(&p_write_factory_);
+			dx_release(&p_factory_);
 		}
 
 
@@ -59,7 +59,7 @@ namespace mkaul {
 			ID2D1StrokeStyle** pp_stroke_style
 		)
 		{
-			if (p_factory) p_factory->CreateStrokeStyle(
+			if (p_factory_) p_factory_->CreateStrokeStyle(
 				D2D1::StrokeStyleProperties(
 					(D2D1_CAP_STYLE)stroke.start_cap,
 					(D2D1_CAP_STYLE)stroke.end_cap,
@@ -77,32 +77,32 @@ namespace mkaul {
 
 
 		// 初期化
-		bool DirectxGraphics::init(HWND hwnd_)
+		bool DirectxGraphics::init(HWND hwnd)
 		{
 			RECT rect;
 
-			if (::GetClientRect(hwnd_, &rect)) {
+			if (::GetClientRect(hwnd, &rect)) {
 				HRESULT hr = E_FAIL;
 				D2D1_SIZE_U pixel_size;
 
-				hwnd = hwnd_;
+				hwnd_ = hwnd;
 
 				pixel_size = {
 				(unsigned)(rect.right - rect.left),
 				(unsigned)(rect.bottom - rect.top)
 				};
 
-				if (p_factory && p_write_factory && p_imaging_factory) {
+				if (p_factory_ && p_write_factory_ && p_imaging_factory_) {
 					// HwndRenderTargetを作成
-					hr = p_factory->CreateHwndRenderTarget(
+					hr = p_factory_->CreateHwndRenderTarget(
 						D2D1::RenderTargetProperties(),
 						D2D1::HwndRenderTargetProperties(hwnd, pixel_size),
-						&p_render_target
+						&p_render_target_
 					);
 
-					if (SUCCEEDED(hr) && p_render_target) {
+					if (SUCCEEDED(hr) && p_render_target_) {
 						// ブラシを作成
-						if (!p_brush) p_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &p_brush);
+						if (!p_brush_) p_render_target_->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &p_brush_);
 
 						return true;
 					}
@@ -115,20 +115,20 @@ namespace mkaul {
 		// 終了
 		void DirectxGraphics::exit()
 		{
-			dx_release(&p_brush);
-			dx_release(&p_render_target);
+			dx_release(&p_brush_);
+			dx_release(&p_render_target_);
 		}
 
 
 		// 描画開始
 		bool DirectxGraphics::begin_draw()
 		{
-			if (!drawing) {
-				auto hdc = ::BeginPaint(hwnd, &ps);
+			if (!drawing_) {
+				auto hdc = ::BeginPaint(hwnd_, &paint_struct_);
 
 				if (hdc) {
-					p_render_target->BeginDraw();
-					drawing = true;
+					p_render_target_->BeginDraw();
+					drawing_ = true;
 
 					return true;
 				}
@@ -140,11 +140,11 @@ namespace mkaul {
 		// 描画終了
 		bool DirectxGraphics::end_draw()
 		{
-			if (drawing) {
-				auto hr = p_render_target->EndDraw();
-				::EndPaint(hwnd, &ps);
-				ps = { 0 };
-				drawing = false;
+			if (drawing_) {
+				auto hr = p_render_target_->EndDraw();
+				::EndPaint(hwnd_, &paint_struct_);
+				paint_struct_ = { 0 };
+				drawing_ = false;
 
 				return SUCCEEDED(hr);
 			}
@@ -157,14 +157,14 @@ namespace mkaul {
 		{
 			RECT rect;
 
-			if (::GetClientRect(hwnd, &rect)) {
+			if (::GetClientRect(hwnd_, &rect)) {
 				D2D1_SIZE_U pixel_size = {
 				(unsigned)(rect.right - rect.left),
 				(unsigned)(rect.bottom - rect.top)
 				};
 
-				if (p_render_target) {
-					auto hr = p_render_target->Resize(pixel_size);
+				if (p_render_target_) {
+					auto hr = p_render_target_->Resize(pixel_size);
 					return SUCCEEDED(hr);
 				}
 			}
@@ -174,23 +174,23 @@ namespace mkaul {
 
 		// 背景を塗りつぶし
 		void DirectxGraphics::fill_background(
-			const ColorF& col_f
+			const ColorF& color
 		)
 		{
-			if (drawing && p_render_target && p_brush) {
+			if (drawing_ && p_render_target_ && p_brush_) {
 				RECT rect;
 
-				if (::GetClientRect(hwnd, &rect)) {
-					p_brush->SetColor(col_f.d2d1_colorf());
+				if (::GetClientRect(hwnd_, &rect)) {
+					p_brush_->SetColor(color.d2d1_colorf());
 
-					p_render_target->FillRectangle(
+					p_render_target_->FillRectangle(
 						D2D1::RectF(
 							(float)rect.left,
 							(float)rect.top,
 							(float)rect.right,
 							(float)rect.bottom
 						),
-						p_brush
+						p_brush_
 					);
 				}
 			}
@@ -201,21 +201,21 @@ namespace mkaul {
 		void DirectxGraphics::draw_line(
 			const Point<float>& pt_from,
 			const Point<float>& pt_to,
-			const ColorF& col_f,
+			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing) {
+			if (drawing_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-				if (p_render_target && p_brush) {
-					p_brush->SetColor(col_f.d2d1_colorf());
+				if (p_render_target_ && p_brush_) {
+					p_brush_->SetColor(color.d2d1_colorf());
 
-					p_render_target->DrawLine(
+					p_render_target_->DrawLine(
 						pt_from.to<D2D1_POINT_2F>(),
 						pt_to.to<D2D1_POINT_2F>(),
-						p_brush,
+						p_brush_,
 						stroke.width,
 						stroke_style
 					);
@@ -229,11 +229,11 @@ namespace mkaul {
 		void DirectxGraphics::draw_lines(
 			const Point<float>* pts,
 			size_t n_pts,
-			const ColorF& col_f,
+			const ColorF& color,
 			const Stroke& stroke 
 		)
 		{
-			if (drawing) {
+			if (drawing_) {
 				ID2D1GeometrySink* sink = nullptr;
 				ID2D1PathGeometry* path_lines = nullptr;
 				ID2D1StrokeStyle* stroke_style = nullptr;
@@ -246,7 +246,7 @@ namespace mkaul {
 				for (size_t i = 0; i < n_lines; i++)
 					d2d1_pts[i] = pts[i + 1].to<D2D1_POINT_2F>();
 
-				hr = p_factory->CreatePathGeometry(&path_lines);
+				hr = p_factory_->CreatePathGeometry(&path_lines);
 
 				if (SUCCEEDED(hr))
 					hr = path_lines->Open(&sink);
@@ -262,12 +262,12 @@ namespace mkaul {
 					hr = sink->Close();
 				}
 
-				if (SUCCEEDED(hr) && p_brush) {
-					p_brush->SetColor(col_f.d2d1_colorf());
+				if (SUCCEEDED(hr) && p_brush_) {
+					p_brush_->SetColor(color.d2d1_colorf());
 
-					if (p_render_target) p_render_target->DrawGeometry(
+					if (p_render_target_) p_render_target_->DrawGeometry(
 						path_lines,
-						p_brush,
+						p_brush_,
 						stroke.width,
 						stroke_style
 					);
@@ -287,18 +287,18 @@ namespace mkaul {
 			const Point<float>& pt_1,
 			const Point<float>& pt_2,
 			const Point<float>& pt_3,
-			const ColorF& col_f,
+			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing) {
+			if (drawing_) {
 				ID2D1GeometrySink* sink = nullptr;
 				ID2D1PathGeometry* path_bezier = nullptr;
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				HRESULT hr = E_FAIL;
 				stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-				hr = p_factory->CreatePathGeometry(&path_bezier);
+				hr = p_factory_->CreatePathGeometry(&path_bezier);
 
 				if (SUCCEEDED(hr))
 					hr = path_bezier->Open(&sink);
@@ -319,11 +319,11 @@ namespace mkaul {
 					hr = sink->Close();
 				}
 				if (SUCCEEDED(hr)) {
-					p_brush->SetColor(col_f.d2d1_colorf());
+					p_brush_->SetColor(color.d2d1_colorf());
 
-					if (p_render_target) p_render_target->DrawGeometry(
+					if (p_render_target_) p_render_target_->DrawGeometry(
 						path_bezier,
-						p_brush,
+						p_brush_,
 						stroke.width,
 						stroke_style
 					);
@@ -340,11 +340,11 @@ namespace mkaul {
 		void DirectxGraphics::draw_beziers(
 			const Point<float>* pts,
 			size_t n_pts,
-			const ColorF& col_f,
+			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing) {
+			if (drawing_) {
 				ID2D1GeometrySink* sink = nullptr;
 				ID2D1PathGeometry* path_bezier = nullptr;
 				ID2D1StrokeStyle* stroke_style = nullptr;
@@ -362,7 +362,7 @@ namespace mkaul {
 					);
 				}
 
-				hr = p_factory->CreatePathGeometry(&path_bezier);
+				hr = p_factory_->CreatePathGeometry(&path_bezier);
 
 				if (SUCCEEDED(hr))
 					path_bezier->Open(&sink);
@@ -382,12 +382,12 @@ namespace mkaul {
 					hr = sink->Close();
 				}
 
-				if (SUCCEEDED(hr) && p_render_target && p_brush) {
-					p_brush->SetColor(col_f.d2d1_colorf());
+				if (SUCCEEDED(hr) && p_render_target_ && p_brush_) {
+					p_brush_->SetColor(color.d2d1_colorf());
 
-					p_render_target->DrawGeometry(
+					p_render_target_->DrawGeometry(
 						path_bezier,
-						p_brush,
+						p_brush_,
 						stroke.width,
 						stroke_style
 					);
@@ -406,14 +406,14 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			float round_radius_x,
 			float round_radius_y,
-			const ColorF& col_f,
+			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing && p_render_target && p_brush) {
+			if (drawing_ && p_render_target_ && p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				stroke_to_d2d_strokestyle(stroke, &stroke_style);
-				p_brush->SetColor(col_f.d2d1_colorf());
+				p_brush_->SetColor(color.d2d1_colorf());
 
 				const D2D1_RECT_F rect_f = D2D1::RectF(
 					rect.left,
@@ -430,18 +430,18 @@ namespace mkaul {
 						round_radius_y
 					);
 
-					p_render_target->DrawRoundedRectangle(
+					p_render_target_->DrawRoundedRectangle(
 						rounded_rect,
-						p_brush,
+						p_brush_,
 						stroke.width,
 						stroke_style
 					);
 				}
 				// 矩形を描画
 				else {
-					p_render_target->DrawRectangle(
+					p_render_target_->DrawRectangle(
 						rect_f,
-						p_brush,
+						p_brush_,
 						stroke.width,
 						stroke_style
 					);
@@ -457,11 +457,11 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			float round_radius_x,
 			float round_radius_y,
-			const ColorF& col_f
+			const ColorF& color
 		)
 		{
-			if (drawing && p_render_target && p_brush) {
-				p_brush->SetColor(col_f.d2d1_colorf());
+			if (drawing_ && p_render_target_ && p_brush_) {
+				p_brush_->SetColor(color.d2d1_colorf());
 
 				const D2D1_RECT_F rect_f = D2D1::RectF(
 					rect.left,
@@ -478,16 +478,16 @@ namespace mkaul {
 						round_radius_y
 					);
 
-					p_render_target->FillRoundedRectangle(
+					p_render_target_->FillRoundedRectangle(
 						rounded_rect,
-						p_brush
+						p_brush_
 					);
 				}
 				// 矩形を描画
 				else {
-					p_render_target->FillRectangle(
+					p_render_target_->FillRectangle(
 						rect_f,
-						p_brush
+						p_brush_
 					);
 				}
 			}
@@ -499,23 +499,23 @@ namespace mkaul {
 			const Point<float>& pt,
 			float radius_x,
 			float radius_y,
-			const ColorF& col_f,
+			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing && p_render_target && p_brush) {
+			if (drawing_ && p_render_target_ && p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-				p_brush->SetColor(col_f.d2d1_colorf());
+				p_brush_->SetColor(color.d2d1_colorf());
 
-				p_render_target->DrawEllipse(
+				p_render_target_->DrawEllipse(
 					D2D1::Ellipse(
 						pt.to<D2D1_POINT_2F>(),
 						radius_x,
 						radius_y
 					),
-					p_brush,
+					p_brush_,
 					stroke.width,
 					stroke_style
 				);
@@ -528,17 +528,17 @@ namespace mkaul {
 		// 楕円を描画(線)(矩形指定)
 		void DirectxGraphics::draw_ellipse(
 			const Rectangle<float>& rect,
-			const ColorF& col_f,
+			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing && p_render_target && p_brush) {
+			if (drawing_ && p_render_target_ && p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-				p_brush->SetColor(col_f.d2d1_colorf());
+				p_brush_->SetColor(color.d2d1_colorf());
 
-				p_render_target->DrawEllipse(
+				p_render_target_->DrawEllipse(
 					D2D1::Ellipse(
 						D2D1::Point2F(
 							(rect.left + rect.right) * 0.5f,
@@ -547,7 +547,7 @@ namespace mkaul {
 						(rect.right - rect.left) * 0.5f,
 						(rect.bottom - rect.top) * 0.5f
 					),
-					p_brush,
+					p_brush_,
 					stroke.width,
 					stroke_style
 				);
@@ -562,19 +562,19 @@ namespace mkaul {
 			const Point<float>& pt,
 			float radius_x,
 			float radius_y,
-			const ColorF& col_f
+			const ColorF& color
 		)
 		{
-			if (drawing && p_render_target && p_brush) {
-				p_brush->SetColor(col_f.d2d1_colorf());
+			if (drawing_ && p_render_target_ && p_brush_) {
+				p_brush_->SetColor(color.d2d1_colorf());
 
-				p_render_target->FillEllipse(
+				p_render_target_->FillEllipse(
 					D2D1::Ellipse(
 						pt.to<D2D1_POINT_2F>(),
 						radius_x,
 						radius_y
 					),
-					p_brush
+					p_brush_
 				);
 			}
 		}
@@ -583,13 +583,13 @@ namespace mkaul {
 		// 楕円を描画(塗り)(矩形指定)
 		void DirectxGraphics::fill_ellipse(
 			const Rectangle<float>& rect,
-			const ColorF& col_f
+			const ColorF& color
 		)
 		{
-			if (drawing && p_render_target && p_brush) {
-				p_brush->SetColor(col_f.d2d1_colorf());
+			if (drawing_ && p_render_target_ && p_brush_) {
+				p_brush_->SetColor(color.d2d1_colorf());
 
-				p_render_target->FillEllipse(
+				p_render_target_->FillEllipse(
 					D2D1::Ellipse(
 						D2D1::Point2F(
 							(rect.left + rect.right) * 0.5f,
@@ -598,7 +598,7 @@ namespace mkaul {
 						(rect.right - rect.left) * 0.5f,
 						(rect.bottom - rect.top) * 0.5f
 					),
-					p_brush
+					p_brush_
 				);
 			}
 		}
@@ -607,19 +607,19 @@ namespace mkaul {
 		// パスを描画(線)
 		void DirectxGraphics::draw_path(
 			const Path* p_path,
-			const ColorF& col_f,
+			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing && p_render_target && p_brush) {
+			if (drawing_ && p_render_target_ && p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				stroke_to_d2d_strokestyle(stroke, &stroke_style);
 
-				p_brush->SetColor(col_f.d2d1_colorf());
+				p_brush_->SetColor(color.d2d1_colorf());
 
-				p_render_target->DrawGeometry(
+				p_render_target_->DrawGeometry(
 					p_path->get_data<ID2D1PathGeometry*>(0),
-					p_brush,
+					p_brush_,
 					stroke.width,
 					stroke_style
 				);
@@ -630,15 +630,15 @@ namespace mkaul {
 		// パスを描画(塗り)
 		void DirectxGraphics::fill_path(
 			const Path* p_path,
-			const ColorF& col_f
+			const ColorF& color
 		)
 		{
-			if (drawing && p_render_target && p_brush) {
-				p_brush->SetColor(col_f.d2d1_colorf());
+			if (drawing_ && p_render_target_ && p_brush_) {
+				p_brush_->SetColor(color.d2d1_colorf());
 
-				p_render_target->FillGeometry(
+				p_render_target_->FillGeometry(
 					p_path->get_data<ID2D1PathGeometry*>(0),
-					p_brush
+					p_brush_
 				);
 			}
 		}
@@ -648,13 +648,13 @@ namespace mkaul {
 		bool DirectxGraphics::initialize_bitmap(
 			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
-			const ColorF& col_f
+			const ColorF& color
 		)
 		{
-			if (p_render_target) {
+			if (p_render_target_) {
 				ID2D1Bitmap* p_d2d1_bitmap = nullptr;
 
-				HRESULT hr = p_render_target->CreateBitmap(
+				HRESULT hr = p_render_target_->CreateBitmap(
 					D2D1::SizeU(size.width, size.height),
 					D2D1::BitmapProperties(),
 					&p_d2d1_bitmap
@@ -684,7 +684,7 @@ namespace mkaul {
 			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
 
 			// デコーダを生成
-			hr = p_imaging_factory->CreateDecoderFromFilename(
+			hr = p_imaging_factory_->CreateDecoderFromFilename(
 				path.c_str(),
 				NULL,
 				GENERIC_READ,
@@ -698,7 +698,7 @@ namespace mkaul {
 			}
 			if (SUCCEEDED(hr)) {
 				// フォーマットコンバータを生成
-				hr = p_imaging_factory->CreateFormatConverter(&p_converter);
+				hr = p_imaging_factory_->CreateFormatConverter(&p_converter);
 			}
 			if (SUCCEEDED(hr)) {
 				// フォーマットコンバータ初期化
@@ -713,7 +713,7 @@ namespace mkaul {
 			}
 			if (SUCCEEDED(hr)) {
 				// ビットマップ作成
-				hr = p_render_target->CreateBitmapFromWicBitmap(
+				hr = p_render_target_->CreateBitmapFromWicBitmap(
 					p_converter,
 					NULL,
 					&p_d2d1_bitmap
@@ -794,7 +794,7 @@ namespace mkaul {
 			// リソースのサイズが存在する場合
 			if (res_data_size)
 				// ストリームを作成
-				hr = p_imaging_factory->CreateStream(&p_stream);
+				hr = p_imaging_factory_->CreateStream(&p_stream);
 
 			// ストリームの作成に成功した場合
 			if (SUCCEEDED(hr)) {
@@ -807,7 +807,7 @@ namespace mkaul {
 			// ストリームの初期化に成功した場合
 			if (SUCCEEDED(hr)) {
 				// ストリームからデコーダを作成
-				hr = p_imaging_factory->CreateDecoderFromStream(
+				hr = p_imaging_factory_->CreateDecoderFromStream(
 					p_stream,
 					NULL,
 					WICDecodeMetadataCacheOnLoad,
@@ -822,7 +822,7 @@ namespace mkaul {
 			// フレームの取得に成功した場合
 			if (SUCCEEDED(hr))
 				// フォーマットコンバータを作成
-				hr = p_imaging_factory->CreateFormatConverter(&p_converter);
+				hr = p_imaging_factory_->CreateFormatConverter(&p_converter);
 			
 			// フォーマットコンバータの作成に成功した場合
 			if (SUCCEEDED(hr)) {
@@ -839,9 +839,9 @@ namespace mkaul {
 
 			// フォーマットコンバータの初期化に成功した場合
 			if (SUCCEEDED(hr)) {
-				if (p_render_target) {
+				if (p_render_target_) {
 					// ビットマップを作成
-					hr = p_render_target->CreateBitmapFromWicBitmap(
+					hr = p_render_target_->CreateBitmapFromWicBitmap(
 						p_converter,
 						NULL,
 						&p_d2d1_bitmap
@@ -877,7 +877,7 @@ namespace mkaul {
 			float opacity
 		)
 		{
-			if (drawing) {
+			if (drawing_) {
 				auto p_d2d1_bitmap = p_bitmap->get_data<ID2D1Bitmap*>();
 				D2D1_RECT_F rect_f;
 
@@ -969,7 +969,7 @@ namespace mkaul {
 						break;
 					}
 
-					if (p_render_target) p_render_target->DrawBitmap(
+					if (p_render_target_) p_render_target_->DrawBitmap(
 						p_d2d1_bitmap,
 						rect_f,
 						opacity
@@ -988,7 +988,7 @@ namespace mkaul {
 		{
 			auto p_d2d1_bitmap = p_bitmap->get_data<ID2D1Bitmap*>();
 
-			if (drawing && p_d2d1_bitmap && p_render_target) p_render_target->DrawBitmap(
+			if (drawing_ && p_d2d1_bitmap && p_render_target_) p_render_target_->DrawBitmap(
 				p_d2d1_bitmap,
 				D2D1::RectF(
 					rect.left,
@@ -1007,7 +1007,7 @@ namespace mkaul {
 			const Point<float>& point,
 			const Font& font,
 			AnchorPosition anchor_pos,
-			const ColorF& col_f
+			const ColorF& color
 		)
 		{
 			
@@ -1020,7 +1020,7 @@ namespace mkaul {
 			const Font& font,
 			AnchorPosition anchor_pos,
 			bool fit_size,
-			const ColorF& col_f
+			const ColorF& color
 		)
 		{
 
