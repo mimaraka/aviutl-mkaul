@@ -18,7 +18,7 @@ namespace mkaul {
 	public:
 		bool operator == (const Color& col) const noexcept
 		{
-			return this->r_ == col.get_r() && this->g_ == col.get_g() && this->b_ == col.get_b() && this->a_ == col.get_a();
+			return this->r_ == col.get_r() and this->g_ == col.get_g() and this->b_ == col.get_b() and this->a_ == col.get_a();
 		}
 
 		Color operator + (const Color& col) const noexcept
@@ -141,7 +141,7 @@ namespace mkaul {
 	};
 
 
-	// コンストラクタ(1)
+	// 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ(1)
 	inline ColorF::ColorF(COLORREF cr) noexcept
 	{
 		r_ = GetRValue(cr) / (float)MAX;
@@ -151,7 +151,7 @@ namespace mkaul {
 	}
 
 
-	// コンストラクタ(2)
+	// 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ(2)
 	inline ColorF::ColorF(const ColorI8& col_i8) noexcept
 	{
 		r_ = col_i8.get_r() / (float)MAX;
@@ -161,7 +161,7 @@ namespace mkaul {
 	}
 
 
-	// コンストラクタ(3)
+	// 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ(3)
 	inline ColorF::ColorF(int r, int g, int b, int a) noexcept
 	{
 		r_ = r / (float)MAX;
@@ -218,7 +218,7 @@ namespace mkaul {
 
 
 
-	// コンストラクタ(1)
+	// 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ(1)
 	inline ColorI8::ColorI8(COLORREF cr) noexcept
 	{
 		r_ = GetRValue(cr);
@@ -228,7 +228,7 @@ namespace mkaul {
 	}
 
 
-	// コンストラクタ(2)
+	// 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ(2)
 	inline ColorI8::ColorI8(const ColorF& color) noexcept
 	{
 		r_ = (int)(color.get_r() * MAX);
