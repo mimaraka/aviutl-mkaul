@@ -4,30 +4,30 @@
 
 
 namespace mkaul {
-	namespace window {
-		// ƒEƒBƒ“ƒhƒE‚ğˆÚ“®
-		bool Window::move(const WindowRectangle& rect) const
+	namespace ui {
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç§»å‹•
+		bool Window::move(const WindowRectangle& rect) const noexcept
 		{
 			return ::MoveWindow(
 				hwnd_,
 				std::min(rect.left, rect.right),
 				std::min(rect.top, rect.bottom),
-				std::abs(rect.right - rect.left),
-				std::abs(rect.bottom - rect.top),
+				rect.get_width(),
+				rect.get_height(),
 				TRUE
 			);
 		}
 
-		// Ä•`‰æ
+		// å†æç”»
 		bool Window::redraw() const
 		{
 			if (hwnd_) {
 				std::vector<HWND> hwnd_list;
 				get_all_children(hwnd_, &hwnd_list);
-				// ©g‚ğÄ•`‰æ
+				// è‡ªèº«ã‚’å†æç”»
 				::InvalidateRect(hwnd_, NULL, FALSE);
 
-				// ‰º‘w‚ÌƒEƒBƒ“ƒhƒE‚ğ‘S‚ÄÄ•`‰æ
+				// ä¸‹å±¤ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å…¨ã¦å†æç”»
 				for (auto hw : hwnd_list)
 					::InvalidateRect(hw, NULL, FALSE);
 
@@ -36,24 +36,24 @@ namespace mkaul {
 			else return false;
 		}
 
-		// qƒEƒBƒ“ƒhƒE‚ğÄ‹A“I‚ÉŒŸõ
+		// å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å†å¸°çš„ã«æ¤œç´¢
 		void get_all_children(HWND hwnd, std::vector<HWND>* p_vec_hwnd)
 		{
 			HWND hwnd_child = ::GetWindow(hwnd, GW_CHILD);
-			// ‰‰ñƒ‹[ƒv‚ÍqƒEƒBƒ“ƒhƒE‚ª‘¶İ‚·‚é‚©‚ğ”»’è(qƒEƒBƒ“ƒhƒE‚ª‘¶İ‚µ‚È‚©‚Á‚½‚ç‚»‚Ì‚Ü‚ÜI—¹)
-			// 2‰ñ–ÚˆÈ~‚Ìƒ‹[ƒv‚ÍŒZ’íƒEƒBƒ“ƒhƒE‚ª‘¶İ‚·‚éŒÀ‚è‘±‚­
+			// åˆå›ãƒ«ãƒ¼ãƒ—ã¯å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã™ã‚‹ã‹ã‚’åˆ¤å®š(å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã—ãªã‹ã£ãŸã‚‰ãã®ã¾ã¾çµ‚äº†)
+			// 2å›ç›®ä»¥é™ã®ãƒ«ãƒ¼ãƒ—ã¯å…„å¼Ÿã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã™ã‚‹é™ã‚Šç¶šã
 			while (hwnd_child) {
-				// Ä‹AŒÄ‚Ño‚µ
+				// å†å¸°å‘¼ã³å‡ºã—
 				get_all_children(hwnd_child, p_vec_hwnd);
-				// Ä‹AŒÄ‚Ño‚µ‚ªI‚í‚Á‚½‚ç(=‚»‚êˆÈãqƒEƒBƒ“ƒhƒE‚ªŒ©‚Â‚©‚ç‚È‚­‚È‚Á‚½‚ç)
-				// ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğƒŠƒXƒg‚É’Ç‰Á
+				// å†å¸°å‘¼ã³å‡ºã—ãŒçµ‚ã‚ã£ãŸã‚‰(=ãã‚Œä»¥ä¸Šå­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒè¦‹ã¤ã‹ã‚‰ãªããªã£ãŸã‚‰)
+				// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ã‚’ãƒªã‚¹ãƒˆã«è¿½åŠ 
 				p_vec_hwnd->emplace_back(hwnd_child);
-				// ŒZ’íƒEƒBƒ“ƒhƒE‚ğŒŸõ
+				// å…„å¼Ÿã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æ¤œç´¢
 				hwnd_child = ::GetWindow(hwnd_child, GW_HWNDNEXT);
 			}
 		}
 
-		// ƒEƒBƒ“ƒhƒE‚ğì¬
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆ
 		HWND Window::create(
 			HINSTANCE				hinst,
 			HWND					hwnd_parent,
@@ -68,7 +68,7 @@ namespace mkaul {
 		)
 		{
 			WNDCLASSEX tmp;
-			// “¯–¼ƒNƒ‰ƒX‚ª‘¶İ‚µ‚È‚¢ê‡‚Íì¬
+			// åŒåã‚¯ãƒ©ã‚¹ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯ä½œæˆ
 			if (!::GetClassInfoExA(hinst, class_name, &tmp)) {
 				WNDCLASSEX ws;
 				ws.cbSize = sizeof(ws);
@@ -94,8 +94,8 @@ namespace mkaul {
 				WS_VISIBLE | WS_CLIPCHILDREN | window_style,
 				rect.left,
 				rect.top,
-				rect.right - rect.left,
-				rect.bottom - rect.top,
+				rect.get_width(),
+				rect.get_height(),
 				hwnd_parent,
 				NULL,
 				hinst,

@@ -2,23 +2,24 @@
 
 #define NOMINMAX
 #include <vector>
-#include <Windows.h>
-#include <commctrl.h>
 #include "rectangle.hpp"
 #include "util.hpp"
+#include "ui_component.hpp"
+#include <Windows.h>
+#include <commctrl.h>
 
 #pragma comment(lib, "comctl32.lib")
 
 
 
 namespace mkaul {
-	namespace window {
-		// 子ウィンドウを再帰的に検索
+	namespace ui {
+		// 蟄舌え繧｣繝ｳ繝峨え繧貞�榊ｸｰ逧�縺ｫ讀懃ｴ｢
 		void get_all_children(HWND hwnd, std::vector<HWND>* hwnd_list);
 
 
-		// ウィンドウクラス
-		class Window {
+		// 繧ｦ繧｣繝ｳ繝峨え繧ｯ繝ｩ繧ｹ
+		class Window : public Component {
 		protected:
 			HWND hwnd_;
 
@@ -41,7 +42,7 @@ namespace mkaul {
 			);
 
 			HWND get_hwnd() { return hwnd_; }
-			bool move(const WindowRectangle& rect) const;
+			bool move(const WindowRectangle& rect) const noexcept override;
 			bool redraw() const;
 			bool close() const { return ::DestroyWindow(hwnd_); }
 			bool show() const { return ::ShowWindow(hwnd_, SW_SHOW); }

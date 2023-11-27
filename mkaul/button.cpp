@@ -5,8 +5,8 @@
 
 
 namespace mkaul {
-	namespace window {
-		// ƒ{ƒ^ƒ“‚ğì¬
+	namespace ui {
+		// ãƒœã‚¿ãƒ³ã‚’ä½œæˆ
 		HWND Button::create(
 			HINSTANCE hinst,
 			HWND hwnd_parent,
@@ -40,7 +40,7 @@ namespace mkaul {
 		}
 
 
-		// ƒ{ƒ^ƒ“‚ğì¬(ƒ‰ƒxƒ‹)
+		// ãƒœã‚¿ãƒ³ã‚’ä½œæˆ(ãƒ©ãƒ™ãƒ«)
 		HWND LabelButton::create(
 			HINSTANCE hinst,
 			HWND hwnd_parent,
@@ -76,7 +76,7 @@ namespace mkaul {
 		}
 
 
-		// ƒ{ƒ^ƒ“‚ğì¬(ƒAƒCƒRƒ“)
+		// ãƒœã‚¿ãƒ³ã‚’ä½œæˆ(ã‚¢ã‚¤ã‚³ãƒ³)
 		HWND IconButton::create(
 			HINSTANCE hinst,
 			HWND hwnd_parent,
@@ -94,19 +94,19 @@ namespace mkaul {
 		{
 			source_type_ = source_type;
 
-			// ƒ\[ƒX‚Ìí—Ş‚Åê‡•ª‚¯
+			// ã‚½ãƒ¼ã‚¹ã®ç¨®é¡ã§å ´åˆåˆ†ã‘
 			switch (source_type) {
-			// ƒtƒ@ƒCƒ‹
+			// ãƒ•ã‚¡ã‚¤ãƒ«
 			case SourceType::File:
 				icon_source_ = icon_source;
 				break;
 
-			// ƒŠƒ\[ƒX
+			// ãƒªã‚½ãƒ¼ã‚¹
 			case SourceType::Resource:
-				// ƒŠƒ\[ƒX‚ª”’l‚Ìê‡
+				// ãƒªã‚½ãƒ¼ã‚¹ãŒæ•°å€¤ã®å ´åˆ
 				if (!HIWORD(icon_source))
 					icon_resource_num_ = LOWORD(icon_source);
-				// ƒŠƒ\[ƒX‚ª•¶š—ñ‚Ìê‡
+				// ãƒªã‚½ãƒ¼ã‚¹ãŒæ–‡å­—åˆ—ã®å ´åˆ
 				else
 					icon_source_ = icon_source;
 				break;
@@ -130,7 +130,14 @@ namespace mkaul {
 		}
 
 
-		// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+		void LabelButton::set_label(const std::string& label) noexcept
+		{
+			label_ = label;
+			redraw();
+		}
+
+
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 		LRESULT Button::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		{
 			RECT rect_wnd;
@@ -194,7 +201,7 @@ namespace mkaul {
 				break;
 			}
 
-			// ƒ}ƒEƒX‚ª“®‚¢‚½‚Æ‚«
+			// ãƒã‚¦ã‚¹ãŒå‹•ã„ãŸã¨ã
 			case WM_MOUSEMOVE:
 				if ((bool)!(status_ & flag::Status::Disabled)) {
 					hovered_ = true;
@@ -203,7 +210,7 @@ namespace mkaul {
 				}
 				break;
 
-			// ¶ƒNƒŠƒbƒN‚ª‚³‚ê‚½‚Æ‚«
+			// å·¦ã‚¯ãƒªãƒƒã‚¯ãŒã•ã‚ŒãŸã¨ã
 			case WM_LBUTTONDOWN:
 				if ((bool)!(status_ & flag::Status::Disabled)) {
 					clicked_ = true;
@@ -212,16 +219,16 @@ namespace mkaul {
 				}
 				break;
 
-			// ¶ƒNƒŠƒbƒN‚ªI‚í‚Á‚½‚Æ‚«
+			// å·¦ã‚¯ãƒªãƒƒã‚¯ãŒçµ‚ã‚ã£ãŸã¨ã
 			case WM_LBUTTONUP:
-				if ((bool)!(status_ & flag::Status::Disabled) && clicked_) {
+				if ((bool)!(status_ & flag::Status::Disabled) and clicked_) {
 					clicked_ = false;
 					::SendMessage(hwnd_parent_, WM_COMMAND, id_, 0);
 					redraw();
 				}
 				break;
 
-			// ƒ}ƒEƒX‚ªƒEƒBƒ“ƒhƒE‚©‚ç—£‚ê‚½‚Æ‚«
+			// ãƒã‚¦ã‚¹ãŒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‹ã‚‰é›¢ã‚ŒãŸã¨ã
 			case WM_MOUSELEAVE:
 				clicked_ = false;
 				hovered_ = false;
@@ -261,7 +268,7 @@ namespace mkaul {
 						(float)rect_wnd.bottom
 					},
 					font_,
-					graphics::AnchorPosition::Center,
+					graphics::AnchorPosition{},
 					true,
 					*p_color_label_
 				);

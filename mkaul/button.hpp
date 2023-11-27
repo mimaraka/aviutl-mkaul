@@ -5,8 +5,8 @@
 
 
 namespace mkaul {
-	namespace window {
-		// ƒ{ƒ^ƒ“
+	namespace ui {
+		// ãƒœã‚¿ãƒ³
 		class Button : public Control {
 		protected:
 			HWND                    hwnd_tooltip_;
@@ -37,12 +37,12 @@ namespace mkaul {
 				const std::string& tooltip_label = "",
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
-				float hover_highlight = 0.04f
+				float hover_highlight = 0.05f
 			);
 		};
 
 
-		// ƒ{ƒ^ƒ“(ƒ‰ƒxƒ‹)
+		// ãƒœã‚¿ãƒ³(ãƒ©ãƒ™ãƒ«)
 		class LabelButton : public Button {
 		protected:
 			std::string label_;
@@ -59,7 +59,7 @@ namespace mkaul {
 				p_color_label_(nullptr)
 			{}
 
-			// ƒ{ƒ^ƒ“‚ðì¬
+			// ãƒœã‚¿ãƒ³ã‚’ä½œæˆ
 			virtual HWND create(
 				HINSTANCE hinst,
 				HWND hwnd_parent_,
@@ -73,12 +73,15 @@ namespace mkaul {
 				const std::string& tooltip_label = "",
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
-				float hover_highlight = 0.04f
+				float hover_highlight = 0.05f
 			);
+
+			auto get_label() const noexcept { return label_; }
+			void set_label(const std::string& label) noexcept;
 		};
 
 
-		// ƒ{ƒ^ƒ“(ƒAƒCƒRƒ“)
+		// ãƒœã‚¿ãƒ³(ã‚¢ã‚¤ã‚³ãƒ³)
 		class IconButton : public Button {
 		public:
 			enum class SourceType {
@@ -102,7 +105,7 @@ namespace mkaul {
 				icon_resource_num_(0)
 			{}
 
-			// ƒ{ƒ^ƒ“‚ðì¬(ƒAƒCƒRƒ“)
+			// ãƒœã‚¿ãƒ³ã‚’ä½œæˆ(ã‚¢ã‚¤ã‚³ãƒ³)
 			virtual HWND create(
 				HINSTANCE hinst,
 				HWND hwnd_parent,
@@ -115,7 +118,7 @@ namespace mkaul {
 				const std::string& tooltip_label = "",
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
-				float hover_highlight = 0.04f
+				float hover_highlight = 0.05f
 			);
 		};
 	}

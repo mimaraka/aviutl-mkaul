@@ -3,8 +3,8 @@
 
 
 namespace mkaul {
-	namespace window {
-		// ƒRƒ“ƒgƒ[ƒ‹‚ğì¬
+	namespace ui {
+		// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’ä½œæˆ
 		HWND Control::create(
 			HINSTANCE				hinst,
 			HWND					hwnd_parent,
@@ -27,7 +27,7 @@ namespace mkaul {
 			p_color_bg_ = const_cast<ColorF*>(p_color_bg);
 			p_color_control_ = const_cast<ColorF*>(p_color_control);
 
-			// •`‰æƒIƒuƒWƒFƒNƒg‚ğì¬
+			// æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆ
 			if (!graphics::Manager::create_graphics(&p_graphics_)) return NULL;
 
 			return Window::create(
@@ -45,18 +45,18 @@ namespace mkaul {
 		}
 
 
-		// Ã“IƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+		// é™çš„ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 		LRESULT CALLBACK Control::wndproc_static(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		{
-			// ©g‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒ|ƒCƒ“ƒ^‚ğƒEƒBƒ“ƒhƒE‚Éİ’è‚µ‚½ƒ†[ƒU[ƒf[ƒ^‚©‚çæ“¾
-			// (Ã“Iƒƒ“ƒoŠÖ”“à‚Å‚Íthisƒ|ƒCƒ“ƒ^‚¨‚æ‚Ñ”ñÃ“Iƒƒ“ƒo‚ªg—p‚Å‚«‚È‚¢‚½‚ß)
+			// è‡ªèº«ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«è¨­å®šã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰å–å¾—
+			// (é™çš„ãƒ¡ãƒ³ãƒé–¢æ•°å†…ã§ã¯thisãƒã‚¤ãƒ³ã‚¿ãŠã‚ˆã³éé™çš„ãƒ¡ãƒ³ãƒãŒä½¿ç”¨ã§ããªã„ãŸã‚)
 			Control* app = (Control*)::GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
-			// ƒEƒBƒ“ƒhƒE‚ª‚Ü‚¾ì¬‚³‚ê‚Ä‚¢‚È‚¢ê‡
+			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒã¾ã ä½œæˆã•ã‚Œã¦ã„ãªã„å ´åˆ
 			if (!app) {
-				// ‚±‚±‚ÅƒEƒBƒ“ƒhƒE‚ªì¬‚³‚ê‚éê‡
+				// ã“ã“ã§ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒä½œæˆã•ã‚Œã‚‹å ´åˆ
 				if (message == WM_CREATE) {
-					// lParam‚ÉŠi”[‚³‚ê‚Ä‚¢‚éLPCREATESTRUCT‚©‚çƒ†[ƒU[ƒf[ƒ^‚ÉƒAƒNƒZƒX‚Å‚«‚é‚½‚ß‚»‚±‚©‚çæ“¾
+					// lParamã«æ ¼ç´ã•ã‚Œã¦ã„ã‚‹LPCREATESTRUCTã‹ã‚‰ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ãƒ¼ã‚¿ã«ã‚¢ã‚¯ã‚»ã‚¹ã§ãã‚‹ãŸã‚ãã“ã‹ã‚‰å–å¾—
 					app = (Control*)((LPCREATESTRUCT)lparam)->lpCreateParams;
 
 					if (app) {
@@ -66,14 +66,14 @@ namespace mkaul {
 				}
 				return ::DefWindowProc(hwnd, message, wparam, lparam);
 			}
-			// ƒEƒBƒ“ƒhƒE‚ª‘¶İ‚·‚éê‡
+			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 			else
-				// ƒƒ“ƒoŠÖ”‚ÌƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ‚ğQÆ
+				// ãƒ¡ãƒ³ãƒé–¢æ•°ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‚ç…§
 				return app->wndproc(hwnd, message, wparam, lparam);
 		}
 
 
-		// ƒXƒe[ƒ^ƒX‚ğİ’è
+		// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¨­å®š
 		void Control::set_status(flag::Status status)
 		{
 			status_ = status;
@@ -81,7 +81,7 @@ namespace mkaul {
 		}
 
 
-		// ƒXƒe[ƒ^ƒX‚ğ’Ç‰Á
+		// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¿½åŠ 
 		void Control::add_status(flag::Status status)
 		{
 			status_ |= status;
@@ -89,15 +89,15 @@ namespace mkaul {
 		}
 
 
-		// ƒ‰ƒEƒ“ƒhƒGƒbƒW‚ğ•`‰æ
+		// ãƒ©ã‚¦ãƒ³ãƒ‰ã‚¨ãƒƒã‚¸ã‚’æç”»
 		void Control::draw_round_edge()
 		{
-			// •`‰æƒIƒuƒWƒFƒNƒg‚ª‘¶İ‚µA•`‰æ’†‚Å‚ ‚éê‡
-			if (p_graphics_ && p_graphics_->is_drawing()) {
+			// æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒå­˜åœ¨ã—ã€æç”»ä¸­ã§ã‚ã‚‹å ´åˆ
+			if (p_graphics_ and p_graphics_->is_drawing()) {
 				RECT rect;
 
 				if (::GetClientRect(hwnd_, &rect)) {
-					// n“_‚Ì”z—ñ
+					// å§‹ç‚¹ã®é…åˆ—
 					Point<float> pts[] = {
 						Point(0.f, 0.f),
 						Point((float)rect.right, 0.f),
@@ -111,7 +111,7 @@ namespace mkaul {
 					float angle = -90.f;
 
 					for (int i = 0; i < 4; i++) {
-						// Šp‚ğŠÛ‚­‚·‚éƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚éê‡
+						// è§’ã‚’ä¸¸ãã™ã‚‹ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ã‚‹å ´åˆ
 						if ((uint32_t)round_edge_ & 1 << i) {
 							graphics::Path* path;
 							graphics::Manager::create_path(&path);
@@ -131,7 +131,7 @@ namespace mkaul {
 							path->release();
 						}
 
-						// 90d‰ñ“]
+						// 90då›è»¢
 						angle += 90.f;
 						pt.rotate(90.);
 					}

@@ -8,13 +8,13 @@
 
 namespace mkaul {
 	namespace flag {
-		// ÉXÉeÅ[É^ÉX
+		// „Çπ„ÉÜ„Éº„Çø„Çπ
 		enum class Status : uint32_t {
 			Null = 0u,
 			Disabled = 1u << 0
 		};
 
-		// Ç«ÇÃäpÇä€Ç≠Ç∑ÇÈÇ©ÇÃÉtÉâÉO
+		// „Å©„ÅÆËßí„Çí‰∏∏„Åè„Åô„Çã„Åã„ÅÆ„Éï„É©„Ç∞
 		enum class RoundEdge : uint32_t {
 			None = 0u,
 			LeftTop = 1u << 0,
@@ -25,22 +25,22 @@ namespace mkaul {
 		};
 	}
 
-	namespace window {
+	namespace ui {
 		//---------------------------------------------------------------------
-		//		ÉRÉìÉgÉçÅ[Éã(íäè€ÉNÉâÉX)
+		//		„Ç≥„É≥„Éà„É≠„Éº„É´(ÊäΩË±°„ÇØ„É©„Çπ)
 		//---------------------------------------------------------------------
 		class Control : public Window {
 		protected:
-			// êF
+			// Ëâ≤
 			ColorF*					p_color_bg_;
 			ColorF*					p_color_control_;
-			// ÉXÉeÅ[É^ÉX
+			// „Çπ„ÉÜ„Éº„Çø„Çπ
 			flag::Status			status_;
 			TRACKMOUSEEVENT			tme_;
 			HWND					hwnd_parent_;
 			graphics::Graphics*		p_graphics_;
 			flag::RoundEdge			round_edge_;
-			// ÉRÉìÉgÉçÅ[ÉãID
+			// „Ç≥„É≥„Éà„É≠„Éº„É´ID
 			int						id_;
 			float					round_radius_;
 
@@ -48,7 +48,7 @@ namespace mkaul {
 			virtual LRESULT			wndproc(HWND hwnd_, UINT message, WPARAM wparam, LPARAM lparam) = 0;
 
 		public:
-			// ÉRÉìÉXÉgÉâÉNÉ^
+			// „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
 			Control() :
 				hwnd_parent_(NULL),
 				id_(0),
@@ -61,11 +61,11 @@ namespace mkaul {
 				p_graphics_(nullptr)
 			{}
 
-			// ÉfÉXÉgÉâÉNÉ^
+			// „Éá„Çπ„Éà„É©„ÇØ„Çø
 			~Control()
 			{}
 
-			// ÉRÉìÉgÉçÅ[ÉãÇçÏê¨
+			// „Ç≥„É≥„Éà„É≠„Éº„É´„Çí‰ΩúÊàê
 			virtual HWND create(
 				HINSTANCE				hinst,
 				HWND					hwnd_parent,
@@ -80,11 +80,13 @@ namespace mkaul {
 				float					round_radius = 0.f,
 				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW)
 			);
-			// ÉXÉeÅ[É^ÉXÇê›íË
+			auto get_id() const noexcept { return id_; }
+			auto get_status() const noexcept { return status_; }
+			// „Çπ„ÉÜ„Éº„Çø„Çπ„ÇíË®≠ÂÆö
 			void set_status(flag::Status status);
-			// ÉXÉeÅ[É^ÉXÇí«â¡
+			// „Çπ„ÉÜ„Éº„Çø„Çπ„ÇíËøΩÂä†
 			void add_status(flag::Status status);
-			// ÉâÉEÉìÉhÉGÉbÉWÇï`âÊ
+			// „É©„Ç¶„É≥„Éâ„Ç®„ÉÉ„Ç∏„ÇíÊèèÁîª
 			void draw_round_edge();
 		};
 	}
