@@ -1,23 +1,24 @@
 #include "graphics_directx.hpp"
+#include <strconv2/strconv2.h>
 
 
 
 namespace mkaul {
 	namespace graphics {
-		// •`‰æŠÂ‹«‚Ì—pˆÓ
+		// æç”»ç’°å¢ƒã®ç”¨æ„
 		bool DirectxGraphics::startup()
 		{
-			HRESULT hr;
+			HRESULT hresult;
 
-			// ID2D1Factory‚Ìì¬
-			hr = ::D2D1CreateFactory(
+			// ID2D1Factoryã®ä½œæˆ
+			hresult = ::D2D1CreateFactory(
 				D2D1_FACTORY_TYPE_MULTI_THREADED,
 				&p_factory_
 			);
 
-			if (SUCCEEDED(hr)) {
-				// IWICImagingFactory‚Ìì¬
-				hr = ::CoCreateInstance(
+			if (SUCCEEDED(hresult)) {
+				// IWICImagingFactoryã®ä½œæˆ
+				hresult = ::CoCreateInstance(
 					CLSID_WICImagingFactory,
 					NULL,
 					CLSCTX_INPROC_SERVER,
@@ -25,9 +26,9 @@ namespace mkaul {
 					reinterpret_cast<void**>(&p_imaging_factory_)
 				);
 			}
-			if (SUCCEEDED(hr)) {
-				// IDWriteFactory‚Ìì¬
-				hr = ::DWriteCreateFactory(
+			if (SUCCEEDED(hresult)) {
+				// IDWriteFactoryã®ä½œæˆ
+				hresult = ::DWriteCreateFactory(
 					DWRITE_FACTORY_TYPE_SHARED,
 					__uuidof(IDWriteFactory),
 					reinterpret_cast<IUnknown**>(&p_write_factory_)
@@ -44,7 +45,7 @@ namespace mkaul {
 		}
 
 
-		// •`‰æŠÂ‹«‚Ì”jŠü
+		// æç”»ç’°å¢ƒã®ç ´æ£„
 		void DirectxGraphics::shutdown()
 		{
 			dx_release(&p_imaging_factory_);
@@ -54,11 +55,12 @@ namespace mkaul {
 
 
 		// Stroke -> ID2D1StrokeStyle*
-		void DirectxGraphics::stroke_to_d2d_strokestyle(
+		void DirectxGraphics::apply_stroke_style(
 			const Stroke& stroke,
-			ID2D1StrokeStyle** pp_stroke_style
-		)
+			_Out_ ID2D1StrokeStyle** pp_stroke_style
+		) noexcept
 		{
+			*pp_stroke_style = nullptr;
 			if (p_factory_) p_factory_->CreateStrokeStyle(
 				D2D1::StrokeStyleProperties(
 					(D2D1_CAP_STYLE)stroke.start_cap,
@@ -76,13 +78,96 @@ namespace mkaul {
 		}
 
 
-		// ‰Šú‰»
+		bool DirectxGraphics::apply_text_layout(
+			const std::string& text,
+			const Font& font,
+			const D2D1_SIZE_F& target_size,
+			const AnchorPosition& anchor_pos,
+			_Out_ IDWriteTextLayout** pp_text_layout
+		) noexcept
+		{
+			HRESULT hresult = S_OK;
+			IDWriteTextFormat* p_text_format = nullptr;
+			DWRITE_FONT_STYLE font_style = DWRITE_FONT_STYLE_NORMAL;
+			DWRITE_TEXT_ALIGNMENT text_alignment;
+			DWRITE_PARAGRAPH_ALIGNMENT paragraph_alignment;
+			*pp_text_layout = nullptr;
+
+			if (static_cast<bool>(font.style & flag::FontStyle::Italic)) {
+				font_style = DWRITE_FONT_STYLE_ITALIC;
+			}
+			hresult = p_write_factory_->CreateTextFormat(
+				::sjis_to_wide(font.family_name).c_str(),
+				NULL,
+				(DWRITE_FONT_WEIGHT)font.weight,
+				font_style,
+				DWRITE_FONT_STRETCH_NORMAL,
+				font.height,
+				L"",
+				&p_text_format
+			);
+			if (SUCCEEDED(hresult)) {
+				hresult = p_write_factory_->CreateTextLayout(
+					::sjis_to_wide(text).c_str(),
+					(uint32_t)text.size(),
+					p_text_format,
+					target_size.width,
+					target_size.height,
+					pp_text_layout
+				);
+				dx_release(&p_text_format);
+			}
+			if (SUCCEEDED(hresult)) {
+				// ä¸‹ç·š
+				if (static_cast<bool>(font.style & flag::FontStyle::UnderLine)) {
+					(*pp_text_layout)->SetUnderline(TRUE, { 0, (uint32_t)text.size() });
+				}
+
+				// ã‚¢ãƒ³ã‚«ãƒ¼ä½ç½® (æ°´å¹³æ–¹å‘)
+				switch (anchor_pos.horizontal) {
+				case AnchorPosition::Horizontal::Left:
+					text_alignment = DWRITE_TEXT_ALIGNMENT_LEADING;
+					break;
+
+				case AnchorPosition::Horizontal::Right:
+					text_alignment = DWRITE_TEXT_ALIGNMENT_TRAILING;
+					break;
+
+				default:
+					text_alignment = DWRITE_TEXT_ALIGNMENT_CENTER;
+				}
+
+				// ã‚¢ãƒ³ã‚«ãƒ¼ä½ç½® (å‚ç›´æ–¹å‘)
+				switch (anchor_pos.vertical) {
+				case AnchorPosition::Vertical::Top:
+					paragraph_alignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+					break;
+
+				case AnchorPosition::Vertical::Bottom:
+					paragraph_alignment = DWRITE_PARAGRAPH_ALIGNMENT_FAR;
+					break;
+
+				default:
+					paragraph_alignment = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+				}
+
+				(*pp_text_layout)->SetTextAlignment(text_alignment);
+				(*pp_text_layout)->SetParagraphAlignment(paragraph_alignment);
+				// TODO: Wrapã‚’ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’ä»˜ã‘ã‚‹
+				(*pp_text_layout)->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+				return true;
+			}
+			return false;
+		}
+
+
+		// åˆæœŸåŒ–
 		bool DirectxGraphics::init(HWND hwnd)
 		{
 			RECT rect;
 
 			if (::GetClientRect(hwnd, &rect)) {
-				HRESULT hr = E_FAIL;
+				HRESULT hresult = E_FAIL;
 				D2D1_SIZE_U pixel_size;
 
 				hwnd_ = hwnd;
@@ -92,16 +177,16 @@ namespace mkaul {
 				(unsigned)(rect.bottom - rect.top)
 				};
 
-				if (p_factory_ && p_write_factory_ && p_imaging_factory_) {
-					// HwndRenderTarget‚ğì¬
-					hr = p_factory_->CreateHwndRenderTarget(
+				if (p_factory_ and p_write_factory_ and p_imaging_factory_) {
+					// HwndRenderTargetã‚’ä½œæˆ
+					hresult = p_factory_->CreateHwndRenderTarget(
 						D2D1::RenderTargetProperties(),
 						D2D1::HwndRenderTargetProperties(hwnd, pixel_size),
 						&p_render_target_
 					);
 
-					if (SUCCEEDED(hr) && p_render_target_) {
-						// ƒuƒ‰ƒV‚ğì¬
+					if (SUCCEEDED(hresult) and p_render_target_) {
+						// ãƒ–ãƒ©ã‚·ã‚’ä½œæˆ
 						if (!p_brush_) p_render_target_->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &p_brush_);
 
 						return true;
@@ -112,7 +197,7 @@ namespace mkaul {
 		}
 
 
-		// I—¹
+		// çµ‚äº†
 		void DirectxGraphics::exit()
 		{
 			dx_release(&p_brush_);
@@ -120,7 +205,7 @@ namespace mkaul {
 		}
 
 
-		// •`‰æŠJn
+		// æç”»é–‹å§‹
 		bool DirectxGraphics::begin_draw()
 		{
 			if (!drawing_) {
@@ -137,22 +222,22 @@ namespace mkaul {
 		}
 
 
-		// •`‰æI—¹
+		// æç”»çµ‚äº†
 		bool DirectxGraphics::end_draw()
 		{
 			if (drawing_) {
-				auto hr = p_render_target_->EndDraw();
+				auto hresult = p_render_target_->EndDraw();
 				::EndPaint(hwnd_, &paint_struct_);
 				paint_struct_ = { 0 };
 				drawing_ = false;
 
-				return SUCCEEDED(hr);
+				return SUCCEEDED(hresult);
 			}
 			return false;
 		}
 
 
-		// ƒŠƒTƒCƒY
+		// ãƒªã‚µã‚¤ã‚º
 		bool DirectxGraphics::resize()
 		{
 			RECT rect;
@@ -164,20 +249,20 @@ namespace mkaul {
 				};
 
 				if (p_render_target_) {
-					auto hr = p_render_target_->Resize(pixel_size);
-					return SUCCEEDED(hr);
+					auto hresult = p_render_target_->Resize(pixel_size);
+					return SUCCEEDED(hresult);
 				}
 			}
 			return false;
 		}
 
 
-		// ”wŒi‚ğ“h‚è‚Â‚Ô‚µ
+		// èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã—
 		void DirectxGraphics::fill_background(
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_render_target_ && p_brush_) {
+			if (drawing_ and p_render_target_ and p_brush_) {
 				RECT rect;
 
 				if (::GetClientRect(hwnd_, &rect)) {
@@ -197,7 +282,7 @@ namespace mkaul {
 		}
 
 
-		// ü‚ğ•`‰æ
+		// ç·šã‚’æç”»
 		void DirectxGraphics::draw_line(
 			const Point<float>& pt_from,
 			const Point<float>& pt_to,
@@ -207,9 +292,9 @@ namespace mkaul {
 		{
 			if (drawing_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
-				stroke_to_d2d_strokestyle(stroke, &stroke_style);
+				apply_stroke_style(stroke, &stroke_style);
 
-				if (p_render_target_ && p_brush_) {
+				if (p_render_target_ and p_brush_) {
 					p_brush_->SetColor(color.d2d1_colorf());
 
 					p_render_target_->DrawLine(
@@ -225,7 +310,7 @@ namespace mkaul {
 		}
 
 
-		// ü‚ğ•`‰æ(•¡”)
+		// ç·šã‚’æç”»(è¤‡æ•°)
 		void DirectxGraphics::draw_lines(
 			const Point<float>* pts,
 			size_t n_pts,
@@ -237,8 +322,8 @@ namespace mkaul {
 				ID2D1GeometrySink* sink = nullptr;
 				ID2D1PathGeometry* path_lines = nullptr;
 				ID2D1StrokeStyle* stroke_style = nullptr;
-				HRESULT hr = E_FAIL;
-				stroke_to_d2d_strokestyle(stroke, &stroke_style);
+				HRESULT hresult = E_FAIL;
+				apply_stroke_style(stroke, &stroke_style);
 
 				size_t n_lines = n_pts - 1;
 				auto d2d1_pts = new D2D1_POINT_2F[n_lines];
@@ -246,12 +331,12 @@ namespace mkaul {
 				for (size_t i = 0; i < n_lines; i++)
 					d2d1_pts[i] = pts[i + 1].to<D2D1_POINT_2F>();
 
-				hr = p_factory_->CreatePathGeometry(&path_lines);
+				hresult = p_factory_->CreatePathGeometry(&path_lines);
 
-				if (SUCCEEDED(hr))
-					hr = path_lines->Open(&sink);
+				if (SUCCEEDED(hresult))
+					hresult = path_lines->Open(&sink);
 
-				if (SUCCEEDED(hr)) {
+				if (SUCCEEDED(hresult)) {
 					sink->BeginFigure(
 						pts[0].to<D2D1_POINT_2F>(),
 						D2D1_FIGURE_BEGIN_HOLLOW
@@ -259,10 +344,10 @@ namespace mkaul {
 					sink->AddLines(d2d1_pts, n_lines);
 					sink->EndFigure(D2D1_FIGURE_END_OPEN);
 
-					hr = sink->Close();
+					hresult = sink->Close();
 				}
 
-				if (SUCCEEDED(hr) && p_brush_) {
+				if (SUCCEEDED(hresult) and p_brush_) {
 					p_brush_->SetColor(color.d2d1_colorf());
 
 					if (p_render_target_) p_render_target_->DrawGeometry(
@@ -281,7 +366,7 @@ namespace mkaul {
 		}
 
 
-		// ƒxƒWƒF‹Èü‚ğ•`‰æ
+		// ãƒ™ã‚¸ã‚§æ›²ç·šã‚’æç”»
 		void DirectxGraphics::draw_bezier(
 			const Point<float>& pt_0,
 			const Point<float>& pt_1,
@@ -295,15 +380,15 @@ namespace mkaul {
 				ID2D1GeometrySink* sink = nullptr;
 				ID2D1PathGeometry* path_bezier = nullptr;
 				ID2D1StrokeStyle* stroke_style = nullptr;
-				HRESULT hr = E_FAIL;
-				stroke_to_d2d_strokestyle(stroke, &stroke_style);
+				HRESULT hresult = E_FAIL;
+				apply_stroke_style(stroke, &stroke_style);
 
-				hr = p_factory_->CreatePathGeometry(&path_bezier);
+				hresult = p_factory_->CreatePathGeometry(&path_bezier);
 
-				if (SUCCEEDED(hr))
-					hr = path_bezier->Open(&sink);
+				if (SUCCEEDED(hresult))
+					hresult = path_bezier->Open(&sink);
 
-				if (SUCCEEDED(hr)) {
+				if (SUCCEEDED(hresult)) {
 					sink->BeginFigure(
 						pt_0.to<D2D1_POINT_2F>(),
 						D2D1_FIGURE_BEGIN_HOLLOW
@@ -316,9 +401,9 @@ namespace mkaul {
 					));
 
 					sink->EndFigure(D2D1_FIGURE_END_OPEN);
-					hr = sink->Close();
+					hresult = sink->Close();
 				}
-				if (SUCCEEDED(hr)) {
+				if (SUCCEEDED(hresult)) {
 					p_brush_->SetColor(color.d2d1_colorf());
 
 					if (p_render_target_) p_render_target_->DrawGeometry(
@@ -336,7 +421,7 @@ namespace mkaul {
 		}
 
 
-		// ƒxƒWƒF‹Èü‚ğ•`‰æ(•¡”)
+		// ãƒ™ã‚¸ã‚§æ›²ç·šã‚’æç”»(è¤‡æ•°)
 		void DirectxGraphics::draw_beziers(
 			const Point<float>* pts,
 			size_t n_pts,
@@ -348,8 +433,8 @@ namespace mkaul {
 				ID2D1GeometrySink* sink = nullptr;
 				ID2D1PathGeometry* path_bezier = nullptr;
 				ID2D1StrokeStyle* stroke_style = nullptr;
-				HRESULT hr = E_FAIL;
-				stroke_to_d2d_strokestyle(stroke, &stroke_style);
+				HRESULT hresult = E_FAIL;
+				apply_stroke_style(stroke, &stroke_style);
 
 				size_t bezier_count = (n_pts - 1) / 3;
 				auto bezier_segments = new D2D1_BEZIER_SEGMENT[bezier_count];
@@ -362,12 +447,12 @@ namespace mkaul {
 					);
 				}
 
-				hr = p_factory_->CreatePathGeometry(&path_bezier);
+				hresult = p_factory_->CreatePathGeometry(&path_bezier);
 
-				if (SUCCEEDED(hr))
+				if (SUCCEEDED(hresult))
 					path_bezier->Open(&sink);
 
-				if (SUCCEEDED(hr)) {
+				if (SUCCEEDED(hresult)) {
 					sink->BeginFigure(
 						pts[0].to<D2D1_POINT_2F>(),
 						D2D1_FIGURE_BEGIN_HOLLOW
@@ -379,10 +464,10 @@ namespace mkaul {
 					);
 
 					sink->EndFigure(D2D1_FIGURE_END_OPEN);
-					hr = sink->Close();
+					hresult = sink->Close();
 				}
 
-				if (SUCCEEDED(hr) && p_render_target_ && p_brush_) {
+				if (SUCCEEDED(hresult) and p_render_target_ and p_brush_) {
 					p_brush_->SetColor(color.d2d1_colorf());
 
 					p_render_target_->DrawGeometry(
@@ -401,7 +486,7 @@ namespace mkaul {
 		}
 
 
-		// ‹éŒ`‚ğ•`‰æ(ü)
+		// çŸ©å½¢ã‚’æç”»(ç·š)
 		void DirectxGraphics::draw_rectangle(
 			const Rectangle<float>& rect,
 			float round_radius_x,
@@ -410,9 +495,9 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_render_target_ && p_brush_) {
+			if (drawing_ and p_render_target_ and p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
-				stroke_to_d2d_strokestyle(stroke, &stroke_style);
+				apply_stroke_style(stroke, &stroke_style);
 				p_brush_->SetColor(color.d2d1_colorf());
 
 				const D2D1_RECT_F rect_f = D2D1::RectF(
@@ -422,8 +507,8 @@ namespace mkaul {
 					rect.bottom
 				);
 
-				// ŠpŠÛ‹éŒ`‚ğ•`‰æ
-				if (0 < round_radius_x || 0 < round_radius_y) {
+				// è§’ä¸¸çŸ©å½¢ã‚’æç”»
+				if (0 < round_radius_x or 0 < round_radius_y) {
 					D2D1_ROUNDED_RECT rounded_rect = D2D1::RoundedRect(
 						rect_f,
 						round_radius_x,
@@ -437,7 +522,7 @@ namespace mkaul {
 						stroke_style
 					);
 				}
-				// ‹éŒ`‚ğ•`‰æ
+				// çŸ©å½¢ã‚’æç”»
 				else {
 					p_render_target_->DrawRectangle(
 						rect_f,
@@ -452,7 +537,7 @@ namespace mkaul {
 		}
 
 
-		// ‹éŒ`‚ğ•`‰æ(“h‚è)
+		// çŸ©å½¢ã‚’æç”»(å¡—ã‚Š)
 		void DirectxGraphics::fill_rectangle(
 			const Rectangle<float>& rect,
 			float round_radius_x,
@@ -460,7 +545,7 @@ namespace mkaul {
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_render_target_ && p_brush_) {
+			if (drawing_ and p_render_target_ and p_brush_) {
 				p_brush_->SetColor(color.d2d1_colorf());
 
 				const D2D1_RECT_F rect_f = D2D1::RectF(
@@ -470,8 +555,8 @@ namespace mkaul {
 					rect.bottom
 				);
 
-				// ŠpŠÛ‹éŒ`‚ğ•`‰æ
-				if (0 < round_radius_x || 0 < round_radius_y) {
+				// è§’ä¸¸çŸ©å½¢ã‚’æç”»
+				if (0 < round_radius_x or 0 < round_radius_y) {
 					D2D1_ROUNDED_RECT rounded_rect = D2D1::RoundedRect(
 						rect_f,
 						round_radius_x,
@@ -483,7 +568,7 @@ namespace mkaul {
 						p_brush_
 					);
 				}
-				// ‹éŒ`‚ğ•`‰æ
+				// çŸ©å½¢ã‚’æç”»
 				else {
 					p_render_target_->FillRectangle(
 						rect_f,
@@ -494,7 +579,7 @@ namespace mkaul {
 		}
 
 
-		// ‘È‰~‚ğ•`‰æ(ü)(’†S“_w’è)
+		// æ¥•å††ã‚’æç”»(ç·š)(ä¸­å¿ƒç‚¹æŒ‡å®š)
 		void DirectxGraphics::draw_ellipse(
 			const Point<float>& pt,
 			float radius_x,
@@ -503,9 +588,9 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_render_target_ && p_brush_) {
+			if (drawing_ and p_render_target_ and p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
-				stroke_to_d2d_strokestyle(stroke, &stroke_style);
+				apply_stroke_style(stroke, &stroke_style);
 
 				p_brush_->SetColor(color.d2d1_colorf());
 
@@ -525,16 +610,16 @@ namespace mkaul {
 		}
 
 
-		// ‘È‰~‚ğ•`‰æ(ü)(‹éŒ`w’è)
+		// æ¥•å††ã‚’æç”»(ç·š)(çŸ©å½¢æŒ‡å®š)
 		void DirectxGraphics::draw_ellipse(
 			const Rectangle<float>& rect,
 			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_render_target_ && p_brush_) {
+			if (drawing_ and p_render_target_ and p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
-				stroke_to_d2d_strokestyle(stroke, &stroke_style);
+				apply_stroke_style(stroke, &stroke_style);
 
 				p_brush_->SetColor(color.d2d1_colorf());
 
@@ -544,8 +629,8 @@ namespace mkaul {
 							(rect.left + rect.right) * 0.5f,
 							(rect.top + rect.bottom) * 0.5f
 						),
-						(rect.right - rect.left) * 0.5f,
-						(rect.bottom - rect.top) * 0.5f
+						rect.get_width() * 0.5f,
+						rect.get_height() * 0.5f
 					),
 					p_brush_,
 					stroke.width,
@@ -557,7 +642,7 @@ namespace mkaul {
 		}
 
 
-		// ‘È‰~‚ğ•`‰æ(“h‚è)(’†S“_w’è)
+		// æ¥•å††ã‚’æç”»(å¡—ã‚Š)(ä¸­å¿ƒç‚¹æŒ‡å®š)
 		void DirectxGraphics::fill_ellipse(
 			const Point<float>& pt,
 			float radius_x,
@@ -565,7 +650,7 @@ namespace mkaul {
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_render_target_ && p_brush_) {
+			if (drawing_ and p_render_target_ and p_brush_) {
 				p_brush_->SetColor(color.d2d1_colorf());
 
 				p_render_target_->FillEllipse(
@@ -580,13 +665,13 @@ namespace mkaul {
 		}
 
 
-		// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
+		// æ¥•å††ã‚’æç”»(å¡—ã‚Š)(çŸ©å½¢æŒ‡å®š)
 		void DirectxGraphics::fill_ellipse(
 			const Rectangle<float>& rect,
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_render_target_ && p_brush_) {
+			if (drawing_ and p_render_target_ and p_brush_) {
 				p_brush_->SetColor(color.d2d1_colorf());
 
 				p_render_target_->FillEllipse(
@@ -595,8 +680,8 @@ namespace mkaul {
 							(rect.left + rect.right) * 0.5f,
 							(rect.top + rect.bottom) * 0.5f
 						),
-						(rect.right - rect.left) * 0.5f,
-						(rect.bottom - rect.top) * 0.5f
+						rect.get_width() * 0.5f,
+						rect.get_height() * 0.5f
 					),
 					p_brush_
 				);
@@ -604,16 +689,16 @@ namespace mkaul {
 		}
 
 
-		// ƒpƒX‚ğ•`‰æ(ü)
+		// ãƒ‘ã‚¹ã‚’æç”»(ç·š)
 		void DirectxGraphics::draw_path(
 			const Path* p_path,
 			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_render_target_ && p_brush_) {
+			if (drawing_ and p_render_target_ and p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
-				stroke_to_d2d_strokestyle(stroke, &stroke_style);
+				apply_stroke_style(stroke, &stroke_style);
 
 				p_brush_->SetColor(color.d2d1_colorf());
 
@@ -627,13 +712,13 @@ namespace mkaul {
 		}
 
 
-		// ƒpƒX‚ğ•`‰æ(“h‚è)
+		// ãƒ‘ã‚¹ã‚’æç”»(å¡—ã‚Š)
 		void DirectxGraphics::fill_path(
 			const Path* p_path,
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_render_target_ && p_brush_) {
+			if (drawing_ and p_render_target_ and p_brush_) {
 				p_brush_->SetColor(color.d2d1_colorf());
 
 				p_render_target_->FillGeometry(
@@ -644,23 +729,23 @@ namespace mkaul {
 		}
 
 
-		// ‹ó‚Ìƒrƒbƒgƒ}ƒbƒv‚ğì¬
+		// ç©ºã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 		bool DirectxGraphics::initialize_bitmap(
-			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
+			_Out_ Bitmap* p_bitmap,
 			const ColorF& color
 		)
 		{
 			if (p_render_target_) {
 				ID2D1Bitmap* p_d2d1_bitmap = nullptr;
 
-				HRESULT hr = p_render_target_->CreateBitmap(
+				HRESULT hresult = p_render_target_->CreateBitmap(
 					D2D1::SizeU(size.width, size.height),
 					D2D1::BitmapProperties(),
 					&p_d2d1_bitmap
 				);
 
-				if (SUCCEEDED(hr)) {
+				if (SUCCEEDED(hresult)) {
 					p_bitmap->set_data(p_d2d1_bitmap);
 					return true;
 				}
@@ -671,20 +756,20 @@ namespace mkaul {
 		}
 
 
-		// ƒtƒ@ƒCƒ‹‚©‚çƒrƒbƒgƒ}ƒbƒv‚ğì¬
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 		bool DirectxGraphics::load_bitmap_from_filename(
-			Bitmap* p_bitmap,
-			const std::filesystem::path& path
+			const std::filesystem::path& path,
+			_Out_ Bitmap* p_bitmap
 		)
 		{
 			IWICBitmapDecoder* p_decoder = nullptr;
 			IWICBitmapFrameDecode* p_source = nullptr;
 			IWICFormatConverter* p_converter = nullptr;
-			HRESULT hr = E_FAIL;
+			HRESULT hresult = E_FAIL;
 			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
 
-			// ƒfƒR[ƒ_‚ğ¶¬
-			hr = p_imaging_factory_->CreateDecoderFromFilename(
+			// ãƒ‡ã‚³ãƒ¼ãƒ€ã‚’ç”Ÿæˆ
+			hresult = p_imaging_factory_->CreateDecoderFromFilename(
 				path.c_str(),
 				NULL,
 				GENERIC_READ,
@@ -692,17 +777,17 @@ namespace mkaul {
 				&p_decoder
 			);
 
-			if (SUCCEEDED(hr)) {
-				// ƒrƒbƒgƒ}ƒbƒv‚ÌƒtƒŒ[ƒ€‚ğæ“¾
-				hr = p_decoder->GetFrame(0, &p_source);
+			if (SUCCEEDED(hresult)) {
+				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’å–å¾—
+				hresult = p_decoder->GetFrame(0, &p_source);
 			}
-			if (SUCCEEDED(hr)) {
-				// ƒtƒH[ƒ}ƒbƒgƒRƒ“ƒo[ƒ^‚ğ¶¬
-				hr = p_imaging_factory_->CreateFormatConverter(&p_converter);
+			if (SUCCEEDED(hresult)) {
+				// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚³ãƒ³ãƒãƒ¼ã‚¿ã‚’ç”Ÿæˆ
+				hresult = p_imaging_factory_->CreateFormatConverter(&p_converter);
 			}
-			if (SUCCEEDED(hr)) {
-				// ƒtƒH[ƒ}ƒbƒgƒRƒ“ƒo[ƒ^‰Šú‰»
-				hr = p_converter->Initialize(
+			if (SUCCEEDED(hresult)) {
+				// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚³ãƒ³ãƒãƒ¼ã‚¿åˆæœŸåŒ–
+				hresult = p_converter->Initialize(
 					p_source,
 					GUID_WICPixelFormat32bppPBGRA,
 					WICBitmapDitherTypeNone,
@@ -711,16 +796,16 @@ namespace mkaul {
 					WICBitmapPaletteTypeMedianCut
 				);
 			}
-			if (SUCCEEDED(hr)) {
-				// ƒrƒbƒgƒ}ƒbƒvì¬
-				hr = p_render_target_->CreateBitmapFromWicBitmap(
+			if (SUCCEEDED(hresult)) {
+				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ä½œæˆ
+				hresult = p_render_target_->CreateBitmapFromWicBitmap(
 					p_converter,
 					NULL,
 					&p_d2d1_bitmap
 				);
 			}
 
-			if (SUCCEEDED(hr))
+			if (SUCCEEDED(hresult))
 				p_bitmap->set_data(p_d2d1_bitmap);
 			else
 				dx_release(&p_d2d1_bitmap);
@@ -729,105 +814,105 @@ namespace mkaul {
 			dx_release(&p_source);
 			dx_release(&p_decoder);
 
-			return SUCCEEDED(hr);
+			return SUCCEEDED(hresult);
 		}
 
 
-		// ƒŠƒ\[ƒX‚©‚çƒrƒbƒgƒ}ƒbƒv‚ğì¬
+		// ãƒªã‚½ãƒ¼ã‚¹ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 		bool DirectxGraphics::load_bitmap_from_resource(
-			Bitmap* p_bitmap,
 			HINSTANCE hinst,
 			const char* res_name,
+			_Out_ Bitmap* p_bitmap,
 			const char* res_type
 		)
 		{
-			// ƒrƒbƒgƒ}ƒbƒvƒfƒR[ƒ_
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒ‡ã‚³ãƒ¼ãƒ€
 			IWICBitmapDecoder* p_decoder = nullptr;
-			// ƒrƒbƒgƒ}ƒbƒv‚ÌƒtƒŒ[ƒ€
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ãƒ•ãƒ¬ãƒ¼ãƒ 
 			IWICBitmapFrameDecode* p_source = nullptr;
-			// ƒXƒgƒŠ[ƒ€
+			// ã‚¹ãƒˆãƒªãƒ¼ãƒ 
 			IWICStream* p_stream = nullptr;
-			// ƒRƒ“ƒo[ƒ^
+			// ã‚³ãƒ³ãƒãƒ¼ã‚¿
 			IWICFormatConverter* p_converter = nullptr;
 
 			//IWICBitmapScaler* p_scaler = nullptr;
 
-			// ƒŠƒ\[ƒX‚Ìƒnƒ“ƒhƒ‹
+			// ãƒªã‚½ãƒ¼ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«
 			HRSRC img_res_handle = nullptr;
-			// ƒŠƒ\[ƒXƒf[ƒ^‚Ìƒnƒ“ƒhƒ‹
+			// ãƒªã‚½ãƒ¼ã‚¹ãƒ‡ãƒ¼ã‚¿ã®ãƒãƒ³ãƒ‰ãƒ«
 			HGLOBAL img_res_data_handle = nullptr;
-			// ƒŠƒ\[ƒXƒf[ƒ^
+			// ãƒªã‚½ãƒ¼ã‚¹ãƒ‡ãƒ¼ã‚¿
 			void* p_res_data = nullptr;
-			// ƒŠƒ\[ƒXƒf[ƒ^‚ÌƒTƒCƒY
+			// ãƒªã‚½ãƒ¼ã‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
 			DWORD res_data_size = 0;
-			HRESULT hr = S_OK;
+			HRESULT hresult = S_OK;
 
-			// ƒrƒbƒgƒ}ƒbƒv(Direct2D)‚Ìƒ|ƒCƒ“ƒ^
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—(Direct2D)ã®ãƒã‚¤ãƒ³ã‚¿
 			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
 
-			// ƒŠƒ\[ƒX‚ğ’T‚·
+			// ãƒªã‚½ãƒ¼ã‚¹ã‚’æ¢ã™
 			img_res_handle = ::FindResourceA(
 				hinst,
 				res_name,
 				res_type
 			);
 
-			// ƒŠƒ\[ƒX‚ª‘¶İ‚·‚éê‡
+			// ãƒªã‚½ãƒ¼ã‚¹ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 			if (img_res_handle) {
-				// ƒŠƒ\[ƒX‚Ìƒnƒ“ƒhƒ‹‚ğæ“¾
+				// ãƒªã‚½ãƒ¼ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 				img_res_data_handle = ::LoadResource(
 					hinst,
 					img_res_handle
 				);
 			}
-			// ƒŠƒ\[ƒX‚Ìƒnƒ“ƒhƒ‹‚ª‘¶İ‚·‚éê‡
+			// ãƒªã‚½ãƒ¼ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 			if (img_res_data_handle)
-				// ƒŠƒ\[ƒX‚ğƒƒbƒN(ƒŠƒ\[ƒX‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾)
-					// ÀÛ‚É‚Íƒƒ‚ƒŠ‚ğƒƒbƒN‚µ‚È‚¢‚ç‚µ‚¢
+				// ãƒªã‚½ãƒ¼ã‚¹ã‚’ãƒ­ãƒƒã‚¯(ãƒªã‚½ãƒ¼ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—)
+					// å®Ÿéš›ã«ã¯ãƒ¡ãƒ¢ãƒªã‚’ãƒ­ãƒƒã‚¯ã—ãªã„ã‚‰ã—ã„
 				p_res_data = ::LockResource(img_res_data_handle);
 
-			// ƒŠƒ\[ƒX‚Ìƒ|ƒCƒ“ƒ^‚ª‘¶İ‚·‚éê‡
+			// ãƒªã‚½ãƒ¼ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 			if (p_res_data)
-				// ƒŠƒ\[ƒX‚ÌƒTƒCƒY‚ğæ“¾
+				// ãƒªã‚½ãƒ¼ã‚¹ã®ã‚µã‚¤ã‚ºã‚’å–å¾—
 				res_data_size = ::SizeofResource(hinst, img_res_handle);
 
-			// ƒŠƒ\[ƒX‚ÌƒTƒCƒY‚ª‘¶İ‚·‚éê‡
+			// ãƒªã‚½ãƒ¼ã‚¹ã®ã‚µã‚¤ã‚ºãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 			if (res_data_size)
-				// ƒXƒgƒŠ[ƒ€‚ğì¬
-				hr = p_imaging_factory_->CreateStream(&p_stream);
+				// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ä½œæˆ
+				hresult = p_imaging_factory_->CreateStream(&p_stream);
 
-			// ƒXƒgƒŠ[ƒ€‚Ìì¬‚É¬Œ÷‚µ‚½ê‡
-			if (SUCCEEDED(hr)) {
-				// ƒXƒgƒŠ[ƒ€‚ğƒƒ‚ƒŠ‚Ìƒf[ƒ^‚Å‰Šú‰»
-				hr = p_stream->InitializeFromMemory(
+			// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ä½œæˆã«æˆåŠŸã—ãŸå ´åˆ
+			if (SUCCEEDED(hresult)) {
+				// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ãƒ¡ãƒ¢ãƒªã®ãƒ‡ãƒ¼ã‚¿ã§åˆæœŸåŒ–
+				hresult = p_stream->InitializeFromMemory(
 					reinterpret_cast<BYTE*>(p_res_data),
 					res_data_size
 				);
 			}
-			// ƒXƒgƒŠ[ƒ€‚Ì‰Šú‰»‚É¬Œ÷‚µ‚½ê‡
-			if (SUCCEEDED(hr)) {
-				// ƒXƒgƒŠ[ƒ€‚©‚çƒfƒR[ƒ_‚ğì¬
-				hr = p_imaging_factory_->CreateDecoderFromStream(
+			// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®åˆæœŸåŒ–ã«æˆåŠŸã—ãŸå ´åˆ
+			if (SUCCEEDED(hresult)) {
+				// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‹ã‚‰ãƒ‡ã‚³ãƒ¼ãƒ€ã‚’ä½œæˆ
+				hresult = p_imaging_factory_->CreateDecoderFromStream(
 					p_stream,
 					NULL,
 					WICDecodeMetadataCacheOnLoad,
 					&p_decoder
 				);
 			}
-			// ƒfƒR[ƒ_‚Ìì¬‚É¬Œ÷‚µ‚½ê‡
-			if (SUCCEEDED(hr))
-				// ƒrƒbƒgƒ}ƒbƒv‚ÌƒtƒŒ[ƒ€‚ğæ“¾
-				hr = p_decoder->GetFrame(0, &p_source);
-			
-			// ƒtƒŒ[ƒ€‚Ìæ“¾‚É¬Œ÷‚µ‚½ê‡
-			if (SUCCEEDED(hr))
-				// ƒtƒH[ƒ}ƒbƒgƒRƒ“ƒo[ƒ^‚ğì¬
-				hr = p_imaging_factory_->CreateFormatConverter(&p_converter);
-			
-			// ƒtƒH[ƒ}ƒbƒgƒRƒ“ƒo[ƒ^‚Ìì¬‚É¬Œ÷‚µ‚½ê‡
-			if (SUCCEEDED(hr)) {
-				// ƒtƒH[ƒ}ƒbƒgƒRƒ“ƒo[ƒ^‚Ì‰Šú‰»
-				hr = p_converter->Initialize(
+			// ãƒ‡ã‚³ãƒ¼ãƒ€ã®ä½œæˆã«æˆåŠŸã—ãŸå ´åˆ
+			if (SUCCEEDED(hresult)) {
+				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’å–å¾—
+				hresult = p_decoder->GetFrame(0, &p_source);
+			}
+			// ãƒ•ãƒ¬ãƒ¼ãƒ ã®å–å¾—ã«æˆåŠŸã—ãŸå ´åˆ
+			if (SUCCEEDED(hresult)) {
+				// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚³ãƒ³ãƒãƒ¼ã‚¿ã‚’ä½œæˆ
+				hresult = p_imaging_factory_->CreateFormatConverter(&p_converter);
+			}
+			// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚³ãƒ³ãƒãƒ¼ã‚¿ã®ä½œæˆã«æˆåŠŸã—ãŸå ´åˆ
+			if (SUCCEEDED(hresult)) {
+				// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚³ãƒ³ãƒãƒ¼ã‚¿ã®åˆæœŸåŒ–
+				hresult = p_converter->Initialize(
 					p_source,
 					GUID_WICPixelFormat32bppPBGRA,
 					WICBitmapDitherTypeNone,
@@ -837,149 +922,105 @@ namespace mkaul {
 				);
 			}
 
-			// ƒtƒH[ƒ}ƒbƒgƒRƒ“ƒo[ƒ^‚Ì‰Šú‰»‚É¬Œ÷‚µ‚½ê‡
-			if (SUCCEEDED(hr)) {
+			// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚³ãƒ³ãƒãƒ¼ã‚¿ã®åˆæœŸåŒ–ã«æˆåŠŸã—ãŸå ´åˆ
+			if (SUCCEEDED(hresult)) {
 				if (p_render_target_) {
-					// ƒrƒbƒgƒ}ƒbƒv‚ğì¬
-					hr = p_render_target_->CreateBitmapFromWicBitmap(
+					// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
+					hresult = p_render_target_->CreateBitmapFromWicBitmap(
 						p_converter,
 						NULL,
 						&p_d2d1_bitmap
 					);
 				}
-				else hr = E_FAIL;
+				else {
+					hresult = E_FAIL;
+				}
 			}
 
-			// ƒrƒbƒgƒ}ƒbƒv‚Ìì¬‚É¬Œ÷‚µ‚½ê‡
-			if (SUCCEEDED(hr))
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ä½œæˆã«æˆåŠŸã—ãŸå ´åˆ
+			if (SUCCEEDED(hresult)) {
 				p_bitmap->set_data(p_d2d1_bitmap);
-			// ƒrƒbƒgƒ}ƒbƒv‚Ìì¬‚É¸”s‚µ‚½ê‡
-			else
-				// ƒrƒbƒgƒ}ƒbƒv‚ğŠJ•ú
+			}
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ä½œæˆã«å¤±æ•—ã—ãŸå ´åˆ
+			else {
+				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’é–‹æ”¾
 				dx_release(&p_d2d1_bitmap);
+			}
 
-			// ƒRƒ“ƒo[ƒ^EƒtƒŒ[ƒ€EƒfƒR[ƒ_EƒXƒgƒŠ[ƒ€‚ğŠJ•ú
+			// ã‚³ãƒ³ãƒãƒ¼ã‚¿ãƒ»ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ»ãƒ‡ã‚³ãƒ¼ãƒ€ãƒ»ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹æ”¾
 			dx_release(&p_converter);
 			dx_release(&p_source);
 			dx_release(&p_decoder);
 			dx_release(&p_stream);
 
-			return SUCCEEDED(hr);
+			return SUCCEEDED(hresult);
 		}
 
 
 
-		// ƒrƒbƒgƒ}ƒbƒv‚ğ•`‰æ(ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒgw’è)
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’æç”»(ã‚¢ãƒ³ã‚«ãƒ¼ãƒã‚¤ãƒ³ãƒˆæŒ‡å®š)
 		void DirectxGraphics::draw_bitmap(
 			const Bitmap* p_bitmap,
 			const Point<float>& point,
-			AnchorPosition anchor_pos,
+			const AnchorPosition& anchor_pos,
 			float opacity
 		)
 		{
 			if (drawing_) {
 				auto p_d2d1_bitmap = p_bitmap->get_data<ID2D1Bitmap*>();
 				D2D1_RECT_F rect_f;
+				float left, top, right, bottom;
 
 				if (p_d2d1_bitmap) {
 					auto size_u = p_d2d1_bitmap->GetPixelSize();
 
-					// ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒg‚ÌˆÊ’u
-					switch (anchor_pos) {
-					case AnchorPosition::Center:
+					// ã‚¢ãƒ³ã‚«ãƒ¼ä½ç½® (æ°´å¹³æ–¹å‘)
+					switch (anchor_pos.horizontal) {
+					case AnchorPosition::Horizontal::Left:
+						left = point.x;
+						right = point.x + size_u.width;
+						break;
+
+					case AnchorPosition::Horizontal::Right:
+						left = point.x - size_u.width;
+						right = point.x;
+						break;
+
 					default:
-						rect_f = D2D1::RectF(
-							point.x - size_u.width * 0.5f,
-							point.y - size_u.height * 0.5f,
-							point.x + size_u.width * 0.5f,
-							point.y + size_u.height * 0.5f
-						);
-						break;
-
-					case AnchorPosition::Left:
-						rect_f = D2D1::RectF(
-							point.x,
-							point.y - size_u.height * 0.5f,
-							point.x + size_u.width,
-							point.y + size_u.height * 0.5f
-						);
-						break;
-
-					case AnchorPosition::Top:
-						rect_f = D2D1::RectF(
-							point.x - size_u.width * 0.5f,
-							point.y,
-							point.x + size_u.width * 0.5f,
-							point.y + size_u.height
-						);
-						break;
-
-					case AnchorPosition::Right:
-						rect_f = D2D1::RectF(
-							point.x - size_u.width,
-							point.y - size_u.height * 0.5f,
-							point.x,
-							point.y + size_u.height * 0.5f
-						);
-						break;
-
-					case AnchorPosition::Bottom:
-						rect_f = D2D1::RectF(
-							point.x - size_u.width * 0.5f,
-							point.y - size_u.height,
-							point.x + size_u.width * 0.5f,
-							point.y
-						);
-						break;
-
-					case AnchorPosition::LeftTop:
-						rect_f = D2D1::RectF(
-							point.x,
-							point.y,
-							point.x + size_u.width,
-							point.y + size_u.height
-						);
-						break;
-
-					case AnchorPosition::RightTop:
-						rect_f = D2D1::RectF(
-							point.x - size_u.width,
-							point.y,
-							point.x,
-							point.y + size_u.height
-						);
-						break;
-
-					case AnchorPosition::LeftBottom:
-						rect_f = D2D1::RectF(
-							point.x,
-							point.y - size_u.height,
-							point.x + size_u.width,
-							point.y
-						);
-						break;
-
-					case AnchorPosition::RightBottom:
-						rect_f = D2D1::RectF(
-							point.x - size_u.width,
-							point.y - size_u.height,
-							point.x,
-							point.y
-						);
-						break;
+						left = point.x - size_u.width * 0.5f;
+						right = point.x + size_u.width * 0.5f;
 					}
 
-					if (p_render_target_) p_render_target_->DrawBitmap(
-						p_d2d1_bitmap,
-						rect_f,
-						opacity
-					);
+					// ã‚¢ãƒ³ã‚«ãƒ¼ä½ç½® (å‚ç›´æ–¹å‘)
+					switch (anchor_pos.vertical) {
+					case AnchorPosition::Vertical::Top:
+						top = point.y;
+						bottom = point.y + size_u.height;
+						break;
+
+					case AnchorPosition::Vertical::Bottom:
+						top = point.y - size_u.height;
+						bottom = point.y;
+						break;
+
+					default:
+						top = point.y - size_u.height * 0.5f;
+						bottom = point.y + size_u.height * 0.5f;
+					}
+
+					if (p_render_target_) {
+						p_render_target_->DrawBitmap(
+							p_d2d1_bitmap,
+							D2D1::RectF(left, top, right, bottom),
+							opacity
+						);
+					}
 				}
 			}
 		}
 
 
-		// ƒrƒbƒgƒ}ƒbƒv‚ğ•`‰æ(‹éŒ`w’è)
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’æç”»(çŸ©å½¢æŒ‡å®š)
 		void DirectxGraphics::draw_bitmap(
 			const Bitmap* p_bitmap,
 			const Rectangle<float>& rect,
@@ -988,42 +1029,79 @@ namespace mkaul {
 		{
 			auto p_d2d1_bitmap = p_bitmap->get_data<ID2D1Bitmap*>();
 
-			if (drawing_ && p_d2d1_bitmap && p_render_target_) p_render_target_->DrawBitmap(
-				p_d2d1_bitmap,
-				D2D1::RectF(
-					rect.left,
-					rect.top,
-					rect.right,
-					rect.bottom
-				),
-				opacity
-			);
+			if (drawing_ and p_d2d1_bitmap and p_render_target_) {
+				p_render_target_->DrawBitmap(
+					p_d2d1_bitmap,
+					D2D1::RectF(
+						rect.left,
+						rect.top,
+						rect.right,
+						rect.bottom
+					),
+					opacity
+				);
+			}
 		}
 
 
-		// ƒeƒLƒXƒg‚ğ•`‰æ(ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒgw’è)
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»(ã‚¢ãƒ³ã‚«ãƒ¼ãƒã‚¤ãƒ³ãƒˆæŒ‡å®š)
 		void DirectxGraphics::draw_text(
 			const std::string& text,
 			const Point<float>& point,
 			const Font& font,
-			AnchorPosition anchor_pos,
+			const AnchorPosition& anchor_pos,
 			const ColorF& color
 		)
 		{
 			
 		}
 
-		// ƒeƒLƒXƒg‚ğ•`‰æ(‹éŒ`w’è)
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»(çŸ©å½¢æŒ‡å®š)
 		void DirectxGraphics::draw_text(
 			const std::string& text,
 			const Rectangle<float>& rect,
 			const Font& font,
-			AnchorPosition anchor_pos,
+			const AnchorPosition& anchor_pos,
 			bool fit_size,
 			const ColorF& color
 		)
 		{
+			HRESULT hresult = S_OK;
+			IDWriteTextLayout* p_text_layout = nullptr;
+			D2D1_SIZE_F target_size = p_render_target_->GetSize();
 
+			if (drawing_ and apply_text_layout(
+				text,
+				font,
+				D2D1::SizeF(
+					rect.get_width(),
+					rect.get_height()
+				),
+				anchor_pos,
+				&p_text_layout
+			)) {
+				DWRITE_TEXT_METRICS text_metrics;
+				hresult = p_text_layout->GetMetrics(&text_metrics);
+
+				if (SUCCEEDED(hresult)) {
+					if (fit_size and target_size.width < text_metrics.width) {
+						auto new_font = Font{
+							font.height * target_size.width / text_metrics.width,
+							font.family_name, font.style, font.weight
+						};
+						draw_text(text, rect, new_font, anchor_pos, false, color);
+					}
+					else if (p_render_target_ and p_brush_) {
+						p_brush_->SetColor(color.d2d1_colorf());
+						p_render_target_->DrawTextLayout(
+							D2D1::Point2F(0, 0),
+							p_text_layout,
+							p_brush_
+						);
+					}
+				}
+			}
+			dx_release(&p_text_layout);
 		}
 	}
 }

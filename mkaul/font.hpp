@@ -1,32 +1,35 @@
 #pragma once
 
+#include "flag.hpp"
 #include <string>
 
 
 
 namespace mkaul {
+	namespace flag {
+		enum class FontStyle : uint32_t {
+			Regular = 0u,
+			Italic = 1u << 0,
+			UnderLine = 1u << 1
+		};
+	}
 	namespace graphics {
-		// ƒtƒHƒ“ƒg
+		// ãƒ•ã‚©ãƒ³ãƒˆ
 		struct Font {
-			enum class FontStyle : uint32_t {
-				Regular = 0u,
-				Italic = 1u << 0,
-				UnderLine = 1u << 1
-			} style;
-
 			std::string family_name;
+			flag::FontStyle style;
 			float height;
 			int weight;
 
 			Font(
-				const std::string& family_name_ = "Meiryo",
 				float height_ = 24.f,
-				FontStyle style_ = FontStyle::Regular,
+				const std::string& family_name_ = "Meiryo",
+				flag::FontStyle style_ = flag::FontStyle::Regular,
 				int weight_ = 500
 			) :
-				style(style_),
-				family_name(family_name_),
 				height(height_),
+				family_name(family_name_),
+				style(style_),
 				weight(weight_)
 			{}
 		};

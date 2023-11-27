@@ -6,7 +6,7 @@
 
 namespace mkaul {
 	namespace graphics {
-		// •`‰æŠÂ‹«‚Ì—pˆÓ
+		// æç”»ç’°å¢ƒã®ç”¨æ„
 		bool GdiplusGraphics::startup()
 		{
 			Gdiplus::GdiplusStartupInput gsi;
@@ -23,15 +23,19 @@ namespace mkaul {
 		}
 
 
-		// •`‰æŠÂ‹«‚Ì”jŠü
+		// æç”»ç’°å¢ƒã®ç ´æ£„
 		void GdiplusGraphics::shutdown()
 		{
 			Gdiplus::GdiplusShutdown(gdiplus_token_);
 		}
 
 
-		// Stroke‚Ìî•ñ‚ğPen‚É”½‰f
-		void GdiplusGraphics::apply_pen_style(Gdiplus::Pen* p_pen, const ColorF& color, const Stroke& stroke) noexcept
+		// Strokeã®æƒ…å ±ã‚’Penã«åæ˜ 
+		void GdiplusGraphics::apply_pen_style(
+			const ColorF& color,
+			const Stroke& stroke,
+			_Out_ Gdiplus::Pen* p_pen
+		) noexcept
 		{
 			ColorI8 col_i8{ color };
 			p_pen->SetColor(
@@ -59,8 +63,11 @@ namespace mkaul {
 		}
 
 
-		// Brush‚ÌF‚ğ”½‰f
-		void GdiplusGraphics::apply_brush_color(Gdiplus::SolidBrush* p_brush_, const ColorF& color) noexcept
+		// Brushã®è‰²ã‚’åæ˜ 
+		void GdiplusGraphics::apply_brush_color(
+			const ColorF& color,
+			_Out_ Gdiplus::SolidBrush* p_brush_
+		) noexcept
 		{
 			ColorI8 col_i8{ color };
 
@@ -75,7 +82,7 @@ namespace mkaul {
 		}
 
 
-		// ‰Šú‰»(ƒCƒ“ƒXƒ^ƒ“ƒX–ˆ)
+		// åˆæœŸåŒ–(ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹æ¯)
 		bool GdiplusGraphics::init(HWND hwnd)
 		{
 			if (::IsWindow(hwnd)) {
@@ -86,7 +93,7 @@ namespace mkaul {
 		}
 
 
-		// I—¹(ƒCƒ“ƒXƒ^ƒ“ƒX–ˆ)
+		// çµ‚äº†(ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹æ¯)
 		void GdiplusGraphics::exit()
 		{
 			gdip_release(&p_graphics_buffer_);
@@ -94,7 +101,7 @@ namespace mkaul {
 		}
 
 
-		// •`‰æŠJn
+		// æç”»é–‹å§‹
 		bool GdiplusGraphics::begin_draw()
 		{
 			if (!drawing_) {
@@ -108,7 +115,7 @@ namespace mkaul {
 					p_graphics_buffer_ = new Gdiplus::Graphics{ p_bitmap_buffer_ };
 				}
 
-				if (p_bitmap_buffer_ && p_graphics_buffer_) {
+				if (p_bitmap_buffer_ and p_graphics_buffer_) {
 					p_graphics_buffer_->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 					p_graphics_buffer_->SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);
 					drawing_ = true;
@@ -124,13 +131,13 @@ namespace mkaul {
 		}
 
 
-		// •`‰æI—¹(&ƒoƒbƒtƒ@‘—M)
+		// æç”»çµ‚äº†(&ãƒãƒƒãƒ•ã‚¡é€ä¿¡)
 		bool GdiplusGraphics::end_draw()
 		{
 			bool result = false;
 
 			if (drawing_) {
-				if (p_graphics_buffer_ && p_bitmap_buffer_) {
+				if (p_graphics_buffer_ and p_bitmap_buffer_) {
 					PAINTSTRUCT ps;
 					HDC hdc = ::BeginPaint(hwnd_, &ps);
 					Gdiplus::Graphics p_graphics{hdc};
@@ -150,19 +157,19 @@ namespace mkaul {
 		}
 
 
-		// ”wŒi‚ğ“h‚è‚Â‚Ô‚µ
+		// èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã—
 		void GdiplusGraphics::fill_background(
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 				RECT rect;
 
-				apply_brush_color(&brush, color);
+				apply_brush_color(color, &brush);
 
 				if (::GetClientRect(hwnd_, &rect)) {
-					// ‹«ŠE•t‹ß‚ªØ‚ê‚é‚Ì‚ÅL‚ß‚É‚Æ‚é
+					// å¢ƒç•Œä»˜è¿‘ãŒåˆ‡ã‚Œã‚‹ã®ã§åºƒã‚ã«ã¨ã‚‹
 					p_graphics_buffer_->FillRectangle(
 						&brush,
 						Gdiplus::Rect{
@@ -177,7 +184,7 @@ namespace mkaul {
 		}
 
 
-		// ü‚ğ•`‰æ
+		// ç·šã‚’æç”»
 		void GdiplusGraphics::draw_line(
 			const Point<float>& pt_from,
 			const Point<float>& pt_to,
@@ -185,9 +192,9 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(&pen, color, stroke);
+				apply_pen_style(color, stroke, &pen);
 
 				p_graphics_buffer_->DrawLine(
 					&pen,
@@ -198,7 +205,7 @@ namespace mkaul {
 		}
 
 
-		// ü‚ğ•`‰æ(•¡”)
+		// ç·šã‚’æç”»(è¤‡æ•°)
 		void GdiplusGraphics::draw_lines(
 			const Point<float>* points,
 			size_t n_points,
@@ -206,9 +213,9 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(&pen, color, stroke);
+				apply_pen_style(color, stroke, &pen);
 
 				auto gdiplus_points = new Gdiplus::PointF[n_points];
 
@@ -228,7 +235,7 @@ namespace mkaul {
 		}
 
 
-		// ƒxƒWƒF‹Èü‚ğ•`‰æ
+		// ãƒ™ã‚¸ã‚§æ›²ç·šã‚’æç”»
 		void GdiplusGraphics::draw_bezier(
 			const Point<float>& point_0,
 			const Point<float>& point_1,
@@ -238,9 +245,9 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(&pen, color, stroke);
+				apply_pen_style(color, stroke, &pen);
 
 				p_graphics_buffer_->DrawBezier(
 					&pen,
@@ -253,7 +260,7 @@ namespace mkaul {
 		}
 
 
-		// ƒxƒWƒF‹Èü‚ğ•`‰æ(•¡”)
+		// ãƒ™ã‚¸ã‚§æ›²ç·šã‚’æç”»(è¤‡æ•°)
 		void GdiplusGraphics::draw_beziers(
 			const Point<float>* points,
 			size_t n_points,
@@ -261,9 +268,9 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(&pen, color, stroke);
+				apply_pen_style(color, stroke, &pen);
 
 				auto gdip_points = new Gdiplus::PointF[n_points];
 
@@ -283,7 +290,7 @@ namespace mkaul {
 		}
 
 
-		// ‹éŒ`‚ğ•`‰æ(ü)
+		// çŸ©å½¢ã‚’æç”»(ç·š)
 		void GdiplusGraphics::draw_rectangle(
 			const Rectangle<float>& rect,
 			float round_radius_x,
@@ -292,20 +299,20 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(&pen, color, stroke);
+				apply_pen_style(color, stroke, &pen);
 				
-				// ŠpŠÛ‹éŒ`‚ğ•`‰æ
-				if (0 < round_radius_x || 0 < round_radius_y) {
+				// è§’ä¸¸çŸ©å½¢ã‚’æç”»
+				if (0 < round_radius_x or 0 < round_radius_y) {
 					float angle = 180.f;
 					Gdiplus::GraphicsPath path;
 
-					// ”¼Œa‚ÌƒŠƒ~ƒbƒg
-					round_radius_x = std::min(round_radius_x, std::abs(rect.right - rect.left) * 0.5f);
-					round_radius_y = std::min(round_radius_y, std::abs(rect.bottom - rect.top) * 0.5f);
+					// åŠå¾„ã®ãƒªãƒŸãƒƒãƒˆ
+					round_radius_x = std::min(round_radius_x, rect.get_width() * 0.5f);
+					round_radius_y = std::min(round_radius_y, rect.get_height() * 0.5f);
 
-					// ¶ã
+					// å·¦ä¸Š
 					path.AddArc(
 						Gdiplus::RectF{
 							std::min(rect.left, rect.right),
@@ -317,7 +324,7 @@ namespace mkaul {
 						90.f
 					);
 
-					// ‰Eã
+					// å³ä¸Š
 					angle += 90.f;
 					path.AddArc(
 						Gdiplus::RectF{
@@ -330,7 +337,7 @@ namespace mkaul {
 						90.f
 					);
 
-					// ‰E‰º
+					// å³ä¸‹
 					angle += 90.f;
 					path.AddArc(
 						Gdiplus::RectF{
@@ -343,7 +350,7 @@ namespace mkaul {
 						90.f
 					);
 
-					// ¶‰º
+					// å·¦ä¸‹
 					angle += 90.f;
 					path.AddArc(
 						Gdiplus::RectF{
@@ -359,15 +366,15 @@ namespace mkaul {
 					path.CloseAllFigures();
 					p_graphics_buffer_->DrawPath(&pen, &path);
 				}
-				// ‹éŒ`‚ğ•`‰æ
+				// çŸ©å½¢ã‚’æç”»
 				else {
 					p_graphics_buffer_->DrawRectangle(
 						&pen,
 						Gdiplus::RectF{
 							rect.left,
 							rect.top,
-							rect.right - rect.left,
-							rect.bottom - rect.top
+							rect.get_width(),
+							rect.get_height()
 						}
 					);
 				}
@@ -375,7 +382,7 @@ namespace mkaul {
 		}
 
 
-		// ‹éŒ`‚ğ•`‰æ(“h‚è)
+		// çŸ©å½¢ã‚’æç”»(å¡—ã‚Š)
 		void GdiplusGraphics::fill_rectangle(
 			const Rectangle<float>& rect,
 			float round_radius_x,
@@ -383,21 +390,21 @@ namespace mkaul {
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 
-				apply_brush_color(&brush, color);
+				apply_brush_color(color, &brush);
 				
-				// ŠpŠÛ‹éŒ`‚ğ•`‰æ
-				if (0 < round_radius_x || 0 < round_radius_y) {
+				// è§’ä¸¸çŸ©å½¢ã‚’æç”»
+				if (0 < round_radius_x or 0 < round_radius_y) {
 					float angle = 180.f;
 					Gdiplus::GraphicsPath path;
 
-					// ”¼Œa‚ÌƒŠƒ~ƒbƒg
-					round_radius_x = std::min(round_radius_x, std::abs(rect.right - rect.left) * 0.5f);
-					round_radius_y = std::min(round_radius_y, std::abs(rect.bottom - rect.top) * 0.5f);
+					// åŠå¾„ã®ãƒªãƒŸãƒƒãƒˆ
+					round_radius_x = std::min(round_radius_x, rect.get_width() * 0.5f);
+					round_radius_y = std::min(round_radius_y, rect.get_height() * 0.5f);
 
-					// ¶ã
+					// å·¦ä¸Š
 					path.AddArc(
 						Gdiplus::RectF{
 							std::min(rect.left, rect.right),
@@ -409,7 +416,7 @@ namespace mkaul {
 						90.f
 					);
 
-					// ‰Eã
+					// å³ä¸Š
 					angle += 90.f;
 					path.AddArc(
 						Gdiplus::RectF{
@@ -422,7 +429,7 @@ namespace mkaul {
 						90.f
 					);
 
-					// ‰E‰º
+					// å³ä¸‹
 					angle += 90.f;
 					path.AddArc(
 						Gdiplus::RectF{
@@ -435,7 +442,7 @@ namespace mkaul {
 						90.f
 					);
 
-					// ¶‰º
+					// å·¦ä¸‹
 					angle += 90.f;
 					path.AddArc(
 						Gdiplus::RectF{
@@ -451,15 +458,15 @@ namespace mkaul {
 					path.CloseAllFigures();
 					p_graphics_buffer_->FillPath(&brush, &path);
 				}
-				// ‹éŒ`‚ğ•`‰æ
+				// çŸ©å½¢ã‚’æç”»
 				else {
 					p_graphics_buffer_->FillRectangle(
 						&brush,
 						Gdiplus::RectF{
 							rect.left,
 							rect.top,
-							rect.right - rect.left,
-							rect.bottom - rect.top
+							rect.get_width(),
+							rect.get_height()
 						}
 					);
 				}
@@ -467,7 +474,7 @@ namespace mkaul {
 		}
 
 
-		// ‘È‰~‚ğ•`‰æ(ü)(’†S“_w’è)
+		// æ¥•å††ã‚’æç”»(ç·š)(ä¸­å¿ƒç‚¹æŒ‡å®š)
 		void GdiplusGraphics::draw_ellipse(
 			const Point<float>& point,
 			float radius_x,
@@ -476,9 +483,9 @@ namespace mkaul {
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(&pen, color, stroke);
+				apply_pen_style(color, stroke, &pen);
 
 				Gdiplus::RectF rect_f{
 					point.x - radius_x,
@@ -492,16 +499,16 @@ namespace mkaul {
 		}
 
 
-		// ‘È‰~‚ğ•`‰æ(ü)(‹éŒ`w’è)
+		// æ¥•å††ã‚’æç”»(ç·š)(çŸ©å½¢æŒ‡å®š)
 		void GdiplusGraphics::draw_ellipse(
 			const Rectangle<float>& rectangle,
 			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(&pen, color, stroke);
+				apply_pen_style(color, stroke, &pen);
 
 				Gdiplus::RectF rect_f{
 					rectangle.left,
@@ -515,7 +522,7 @@ namespace mkaul {
 		}
 
 
-		// ‘È‰~‚ğ•`‰æ(“h‚è)(’†S“_w’è)
+		// æ¥•å††ã‚’æç”»(å¡—ã‚Š)(ä¸­å¿ƒç‚¹æŒ‡å®š)
 		void GdiplusGraphics::fill_ellipse(
 			const Point<float>& point,
 			float radius_x,
@@ -523,9 +530,9 @@ namespace mkaul {
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
-				apply_brush_color(&brush, color);
+				apply_brush_color(color, &brush);
 
 				Gdiplus::RectF rect_f{
 					point.x - radius_x,
@@ -539,15 +546,15 @@ namespace mkaul {
 		}
 
 
-		// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
+		// æ¥•å††ã‚’æç”»(å¡—ã‚Š)(çŸ©å½¢æŒ‡å®š)
 		void GdiplusGraphics::fill_ellipse(
 			const Rectangle<float>& rectangle,
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
-				apply_brush_color(&brush, color);
+				apply_brush_color(color, &brush);
 
 				Gdiplus::RectF rect_f{
 					rectangle.left,
@@ -561,16 +568,16 @@ namespace mkaul {
 		}
 
 
-		// ƒpƒX‚ğ•`‰æ(ü)
+		// ãƒ‘ã‚¹ã‚’æç”»(ç·š)
 		void GdiplusGraphics::draw_path(
 			const Path* p_path,
 			const ColorF& color,
 			const Stroke& stroke
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(&pen, color, stroke);
+				apply_pen_style(color, stroke, &pen);
 
 				p_graphics_buffer_->DrawPath(
 					&pen,
@@ -580,15 +587,15 @@ namespace mkaul {
 		}
 
 
-		// ƒpƒX‚ğ•`‰æ(“h‚è)
+		// ãƒ‘ã‚¹ã‚’æç”»(å¡—ã‚Š)
 		void GdiplusGraphics::fill_path(
 			const Path* p_path,
 			const ColorF& color
 		)
 		{
-			if (drawing_ && p_graphics_buffer_) {
+			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
-				apply_brush_color(&brush, color);
+				apply_brush_color(color, &brush);
 
 				p_graphics_buffer_->FillPath(
 					&brush,
@@ -598,16 +605,16 @@ namespace mkaul {
 		}
 
 
-		// ‹ó‚Ìƒrƒbƒgƒ}ƒbƒv‚ğì¬
+		// ç©ºã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 		bool GdiplusGraphics::initialize_bitmap(
-			Bitmap* p_bitmap,
 			const Size<unsigned>& size,
+			_Out_ Bitmap* p_bitmap,
 			const ColorF& color
 		)
 		{
 			auto p_gdip_bitmap = new Gdiplus::Bitmap{ (INT)size.width, (INT)size.height };
 
-			if (p_gdip_bitmap && p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
+			if (p_gdip_bitmap and p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
 				p_bitmap->set_data(p_gdip_bitmap);
 				return true;
 			}
@@ -615,16 +622,16 @@ namespace mkaul {
 		}
 
 
-		// ƒtƒ@ƒCƒ‹‚©‚çƒrƒbƒgƒ}ƒbƒv‚ğì¬
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 		bool GdiplusGraphics::load_bitmap_from_filename(
-			Bitmap* p_bitmap,
-			const std::filesystem::path& path
+			const std::filesystem::path& path,
+			_Out_ Bitmap* p_bitmap
 		)
 		{
 			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
 			p_gdip_bitmap = new Gdiplus::Bitmap{ path.c_str() };
 
-			if (p_gdip_bitmap && p_gdip_bitmap->GetWidth() != 0 && p_gdip_bitmap->GetHeight() != 0) {
+			if (p_gdip_bitmap and p_gdip_bitmap->GetWidth() != 0 and p_gdip_bitmap->GetHeight() != 0) {
 				p_bitmap->set_data(p_gdip_bitmap);
 				return true;
 			}
@@ -632,30 +639,30 @@ namespace mkaul {
 		}
 
 
-		// ƒŠƒ\[ƒX‚©‚çƒrƒbƒgƒ}ƒbƒv‚ğì¬
+		// ãƒªã‚½ãƒ¼ã‚¹ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 		bool GdiplusGraphics::load_bitmap_from_resource(
-			Bitmap* p_bitmap,
 			HINSTANCE hinst,
 			const char* res_name,
+			_Out_ Bitmap* p_bitmap,
 			const char* res_type
 		)
 		{
 			wchar_t* wc = nullptr;
-			// ƒrƒbƒgƒ}ƒbƒv(GDI+)‚Ìƒ|ƒCƒ“ƒ^
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—(GDI+)ã®ãƒã‚¤ãƒ³ã‚¿
 			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
 
-			// ƒŠƒ\[ƒXƒ^ƒCƒv‚ªBITMAP‚Ì‚Æ‚«
+			// ãƒªã‚½ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ—ãŒBITMAPã®ã¨ã
 			if (res_type == RT_BITMAP) {
-				// ƒŠƒ\[ƒX¯•Êq‚ª•¶š—ñ‚Ìê‡
+				// ãƒªã‚½ãƒ¼ã‚¹è­˜åˆ¥å­ãŒæ–‡å­—åˆ—ã®å ´åˆ
 				if (HIWORD(res_name)) {
-					// const char* ‚©‚ç wchar_t* ‚É•ÏŠ·
+					// const char* ã‹ã‚‰ wchar_t* ã«å¤‰æ›
 					size_t size_resource = strlen(res_name) + 1;
 					wc = new wchar_t[size_resource];
 
 					size_t size;
 					::mbstowcs_s(&size, wc, size_resource, res_name, size_resource);
 				}
-				// ƒŠƒ\[ƒX¯•Êq‚ª”’l‚Ìê‡
+				// ãƒªã‚½ãƒ¼ã‚¹è­˜åˆ¥å­ãŒæ•°å€¤ã®å ´åˆ
 				else
 					wc = reinterpret_cast<wchar_t*>(const_cast<char*>(res_name));
 
@@ -663,79 +670,79 @@ namespace mkaul {
 
 				if (HIWORD(res_name)) delete[] wc;
 			}
-			// ‚»‚êˆÓŠO‚Ì‚Æ‚«
+			// ãã‚Œæ„å¤–ã®ã¨ã
 			else {
-				// ƒŠƒ\[ƒX‚Ìƒnƒ“ƒhƒ‹
+				// ãƒªã‚½ãƒ¼ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«
 				HRSRC res_handle = nullptr;
-				// ƒŠƒ\[ƒX‚ÌƒTƒCƒY
+				// ãƒªã‚½ãƒ¼ã‚¹ã®ã‚µã‚¤ã‚º
 				DWORD res_size = 0;
-				// ƒŠƒ\[ƒXƒf[ƒ^‚Ìƒnƒ“ƒhƒ‹
+				// ãƒªã‚½ãƒ¼ã‚¹ãƒ‡ãƒ¼ã‚¿ã®ãƒãƒ³ãƒ‰ãƒ«
 				HGLOBAL res_data_handle = nullptr;
-				// ƒŠƒ\[ƒXƒf[ƒ^
+				// ãƒªã‚½ãƒ¼ã‚¹ãƒ‡ãƒ¼ã‚¿
 				void* res_data = nullptr;
-				// ƒƒ‚ƒŠŠm•Û—pƒŠƒ\[ƒXƒnƒ“ƒhƒ‹
+				// ãƒ¡ãƒ¢ãƒªç¢ºä¿ç”¨ãƒªã‚½ãƒ¼ã‚¹ãƒãƒ³ãƒ‰ãƒ«
 				HGLOBAL res_buf_handle = nullptr;
-				// Šm•Û‚·‚éƒƒ‚ƒŠ‚Ìƒ|ƒCƒ“ƒ^(‚±‚±‚ÉƒŠƒ\[ƒXƒf[ƒ^‚ğ”z’u‚·‚é)
+				// ç¢ºä¿ã™ã‚‹ãƒ¡ãƒ¢ãƒªã®ãƒã‚¤ãƒ³ã‚¿(ã“ã“ã«ãƒªã‚½ãƒ¼ã‚¹ãƒ‡ãƒ¼ã‚¿ã‚’é…ç½®ã™ã‚‹)
 				void* res_buf_data = nullptr;
-				// ƒXƒgƒŠ[ƒ€‚Ìƒ|ƒCƒ“ƒ^
+				// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ãƒã‚¤ãƒ³ã‚¿
 				IStream* p_stream = nullptr;
 
-				// ƒŠƒ\[ƒX‚ğ’T‚·
+				// ãƒªã‚½ãƒ¼ã‚¹ã‚’æ¢ã™
 				res_handle = ::FindResource(hinst, res_name, res_type);
 
-				// ƒŠƒ\[ƒX‚ªŒ©‚Â‚©‚Á‚½ê‡
+				// ãƒªã‚½ãƒ¼ã‚¹ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆ
 				if (res_handle)
-					// ƒŠƒ\[ƒX‚ÌƒTƒCƒY‚ğæ“¾
+					// ãƒªã‚½ãƒ¼ã‚¹ã®ã‚µã‚¤ã‚ºã‚’å–å¾—
 					res_size = ::SizeofResource(hinst, res_handle);
 
-				// ‚±‚±ƒEƒCƒ‹ƒXŒëŒŸ’mƒ|ƒCƒ“ƒg
-				// ƒŠƒ\[ƒX‚ÌƒTƒCƒY‚ª‘¶İ‚·‚éê‡
+				// ã“ã“ã‚¦ã‚¤ãƒ«ã‚¹èª¤æ¤œçŸ¥ãƒã‚¤ãƒ³ãƒˆ
+				// ãƒªã‚½ãƒ¼ã‚¹ã®ã‚µã‚¤ã‚ºãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 				if (res_size)
-					// ƒŠƒ\[ƒX‚Ìƒnƒ“ƒhƒ‹‚ğæ“¾
+					// ãƒªã‚½ãƒ¼ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 					res_data_handle = ::LoadResource(hinst, res_handle);
 
-				// ƒŠƒ\[ƒX‚Ìƒnƒ“ƒhƒ‹‚ª‘¶İ‚·‚éê‡
+				// ãƒªã‚½ãƒ¼ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 				if (res_data_handle)
-					// ƒŠƒ\[ƒX‚ğƒƒbƒN(ƒŠƒ\[ƒX‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾)
-					// ÀÛ‚É‚Íƒƒ‚ƒŠ‚ğƒƒbƒN‚µ‚È‚¢‚ç‚µ‚¢
+					// ãƒªã‚½ãƒ¼ã‚¹ã‚’ãƒ­ãƒƒã‚¯(ãƒªã‚½ãƒ¼ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—)
+					// å®Ÿéš›ã«ã¯ãƒ¡ãƒ¢ãƒªã‚’ãƒ­ãƒƒã‚¯ã—ãªã„ã‚‰ã—ã„
 					res_data = ::LockResource(res_data_handle);
 
-				// ƒŠƒ\[ƒX‚Ìƒ|ƒCƒ“ƒ^‚ª‘¶İ‚·‚éê‡
+				// ãƒªã‚½ãƒ¼ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 				if (res_data)
-					// ƒƒ‚ƒŠ‚ÌŠm•Û
+					// ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿
 					res_buf_handle = ::GlobalAlloc(GMEM_MOVEABLE, res_size);
 
-				// ƒƒ‚ƒŠ‚ªŠm•Û‚Å‚«‚½ê‡
+				// ãƒ¡ãƒ¢ãƒªãŒç¢ºä¿ã§ããŸå ´åˆ
 				if (res_buf_handle)
-					// ƒƒ‚ƒŠ‚ÌƒƒbƒN
+					// ãƒ¡ãƒ¢ãƒªã®ãƒ­ãƒƒã‚¯
 					res_buf_data = ::GlobalLock(res_buf_handle);
 
-				// ƒƒ‚ƒŠ‚ªƒƒbƒN‚Å‚«‚½ê‡
+				// ãƒ¡ãƒ¢ãƒªãŒãƒ­ãƒƒã‚¯ã§ããŸå ´åˆ
 				if (res_buf_data) {
-					// ƒƒbƒN‚µ‚½ƒƒ‚ƒŠ—Ìˆæ‚ÉƒŠƒ\[ƒX‚Ìƒf[ƒ^‚ğƒRƒs[
+					// ãƒ­ãƒƒã‚¯ã—ãŸãƒ¡ãƒ¢ãƒªé ˜åŸŸã«ãƒªã‚½ãƒ¼ã‚¹ã®ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
 					::CopyMemory(res_buf_data, res_data, res_size);
-					// ƒƒ‚ƒŠ‚©‚çƒXƒgƒŠ[ƒ€‚ğì¬
-					auto hr = ::CreateStreamOnHGlobal(res_buf_handle, FALSE, &p_stream);
+					// ãƒ¡ãƒ¢ãƒªã‹ã‚‰ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ä½œæˆ
+					auto hresult = ::CreateStreamOnHGlobal(res_buf_handle, FALSE, &p_stream);
 
-					// ƒXƒgƒŠ[ƒ€‚Ìì¬‚É¬Œ÷‚µ‚½ê‡
-					if (SUCCEEDED(hr)) {
-						// ƒXƒgƒŠ[ƒ€‚©‚çƒrƒbƒgƒ}ƒbƒv‚ğì¬
+					// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ä½œæˆã«æˆåŠŸã—ãŸå ´åˆ
+					if (SUCCEEDED(hresult)) {
+						// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 						p_gdip_bitmap = Gdiplus::Bitmap::FromStream(p_stream);
 
-						// ƒXƒgƒŠ[ƒ€‚ğŠJ•ú
+						// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹æ”¾
 						if (p_stream) p_stream->Release();
 					}
 				}
 
-				// ƒƒ‚ƒŠ‚Ì‰ğœEŠJ•ú
+				// ãƒ¡ãƒ¢ãƒªã®è§£é™¤ãƒ»é–‹æ”¾
 				if (res_buf_handle) {
 					::GlobalUnlock(res_buf_handle);
 					::GlobalFree(res_buf_handle);
 				}
 			}
 
-			// ƒrƒbƒgƒ}ƒbƒv‚Ìì¬‚É¬Œ÷‚µ‚½ê‡
-			if (p_gdip_bitmap && p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ä½œæˆã«æˆåŠŸã—ãŸå ´åˆ
+			if (p_gdip_bitmap and p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
 				p_bitmap->set_data(p_gdip_bitmap);
 				return true;
 			}
@@ -743,112 +750,55 @@ namespace mkaul {
 		}
 
 
-		// ƒrƒbƒgƒ}ƒbƒv‚ğ•`‰æ(ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒgw’è)
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’æç”»(ã‚¢ãƒ³ã‚«ãƒ¼ãƒã‚¤ãƒ³ãƒˆæŒ‡å®š)
 		void GdiplusGraphics::draw_bitmap(
 			const Bitmap* bitmap,
 			const Point<float>& point,
-			AnchorPosition anchor_pos,
+			const AnchorPosition& anchor_pos,
 			float opacity
 		)
 		{
 			auto p_gdip_bitmap = bitmap->get_data<Gdiplus::Bitmap*>();
-			Gdiplus::RectF rect_f;
-			int width = p_gdip_bitmap->GetWidth();
-			int height = p_gdip_bitmap->GetHeight();
+			float width = static_cast<float>(p_gdip_bitmap->GetWidth());
+			float height = static_cast<float>(p_gdip_bitmap->GetHeight());
+			float x, y;
 
-			// ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒg‚ÌˆÊ’u
-			switch (anchor_pos) {
-			case AnchorPosition::Center:
+			// ã‚¢ãƒ³ã‚«ãƒ¼ä½ç½® (æ°´å¹³æ–¹å‘)
+			switch (anchor_pos.horizontal) {
+			case AnchorPosition::Horizontal::Left:
+				x = point.x;
+				break;
+
+			case AnchorPosition::Horizontal::Right:
+				x = point.x - width;
+				break;
+
 			default:
-				rect_f = Gdiplus::RectF{
-					point.x - width * 0.5f,
-					point.y - height * 0.5f,
-					(Gdiplus::REAL)width,
-					(Gdiplus::REAL)height
-				};
-				break;
-
-			case AnchorPosition::Left:
-				rect_f = Gdiplus::RectF{
-					point.x,
-					point.y - height * 0.5f,
-					(Gdiplus::REAL)width,
-					(Gdiplus::REAL)height
-				};
-				break;
-
-			case AnchorPosition::Top:
-				rect_f = Gdiplus::RectF{
-					point.x - width * 0.5f,
-					point.y,
-					(Gdiplus::REAL)width,
-					(Gdiplus::REAL)height
-				};
-				break;
-
-			case AnchorPosition::Right:
-				rect_f = Gdiplus::RectF{
-					point.x - width,
-					point.y - height * 0.5f,
-					(Gdiplus::REAL)width,
-					(Gdiplus::REAL)height
-				};
-				break;
-
-			case AnchorPosition::Bottom:
-				rect_f = Gdiplus::RectF(
-					point.x - width * 0.5f,
-					point.y - height,
-					(Gdiplus::REAL)width,
-					(Gdiplus::REAL)height
-				);
-				break;
-
-			case AnchorPosition::LeftTop:
-				rect_f = Gdiplus::RectF{
-					point.x,
-					point.y,
-					(Gdiplus::REAL)width,
-					(Gdiplus::REAL)height
-				};
-				break;
-
-			case AnchorPosition::RightTop:
-				rect_f = Gdiplus::RectF{
-					point.x - width,
-					point.y,
-					(Gdiplus::REAL)width,
-					(Gdiplus::REAL)height
-				};
-				break;
-
-			case AnchorPosition::LeftBottom:
-				rect_f = Gdiplus::RectF{
-					point.x,
-					point.y - height,
-					(Gdiplus::REAL)width,
-					(Gdiplus::REAL)height
-				};
-				break;
-
-			case AnchorPosition::RightBottom:
-				rect_f = Gdiplus::RectF{
-					point.x - width,
-					point.y - height,
-					(Gdiplus::REAL)width,
-					(Gdiplus::REAL)height
-				};
-				break;
+				x = point.x - width * 0.5f;
 			}
 
+			// ã‚¢ãƒ³ã‚«ãƒ¼ä½ç½® (å‚ç›´æ–¹å‘)
+			switch (anchor_pos.vertical) {
+			case AnchorPosition::Vertical::Top:
+				y = point.y;
+				break;
+
+			case AnchorPosition::Vertical::Bottom:
+				y = point.y - height;
+				break;
+
+			default:
+				y = point.y - height * 0.5f;
+			}
+	
 			p_graphics_buffer_->DrawImage(
 				p_gdip_bitmap,
-				rect_f
+				Gdiplus::RectF{ x, y, width, height }
 			);
 		}
 
 
-		// ƒrƒbƒgƒ}ƒbƒv‚ğ•`‰æ(‹éŒ`w’è)
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’æç”»(çŸ©å½¢æŒ‡å®š)
 		void GdiplusGraphics::draw_bitmap(
 			const Bitmap* bitmap,
 			const Rectangle<float>& rect,
@@ -867,17 +817,17 @@ namespace mkaul {
 		}
 
 
-		// ƒeƒLƒXƒg‚ğ•`‰æ(ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒgw’è)
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»(ã‚¢ãƒ³ã‚«ãƒ¼ãƒã‚¤ãƒ³ãƒˆæŒ‡å®š)
 		void GdiplusGraphics::draw_text(
 			const std::string& text,
 			const Point<float>& point,
 			const Font& font,
-			AnchorPosition anchor_pos,
+			const AnchorPosition& anchor_pos,
 			const ColorF& color
 		)
 		{
 			Gdiplus::SolidBrush brush{ Gdiplus::Color{0} };
-			apply_brush_color(&brush, color);
+			apply_brush_color(color, &brush);
 
 			Gdiplus::Font gdip_font{
 				::sjis_to_wide(font.family_name).c_str(),
@@ -900,18 +850,18 @@ namespace mkaul {
 		}
 
 
-		// ƒeƒLƒXƒg‚ğ•`‰æ(‹éŒ`w’è)
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»(çŸ©å½¢æŒ‡å®š)
 		void GdiplusGraphics::draw_text(
 			const std::string& text,
 			const Rectangle<float>& rect,
 			const Font& font,
-			AnchorPosition anchor_pos,
+			const AnchorPosition& anchor_pos,
 			bool fit_size,
 			const ColorF& color
 		)
 		{
 			Gdiplus::SolidBrush brush{ Gdiplus::Color{0} };
-			apply_brush_color(&brush, color);
+			apply_brush_color(color, &brush);
 
 			Gdiplus::Font gdip_font{
 				::sjis_to_wide(font.family_name).c_str(),
@@ -955,8 +905,8 @@ namespace mkaul {
 
 				if (fit_size and size_rect.Width < size_rect_text.Width) {
 					Font new_font{
+						font.height* (size_rect.Width / size_rect_text.Width),
 						font.family_name,
-						font.height * (size_rect.Width / size_rect_text.Width),
 						font.style,
 						font.weight
 					};

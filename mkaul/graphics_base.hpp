@@ -4,6 +4,7 @@
 #include "font.hpp"
 #include "bitmap_base.hpp"
 #include "path_base.hpp"
+#include "anchor_position.hpp"
 #include "point.hpp"
 #include "size.hpp"
 #include "rectangle.hpp"
@@ -17,21 +18,7 @@
 
 namespace mkaul {
 	namespace graphics {
-		// ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒg‚ÌˆÊ’u
-		enum class AnchorPosition {
-			Center,
-			Left,
-			Top,
-			Right,
-			Bottom,
-			LeftTop,
-			RightTop,
-			LeftBottom,
-			RightBottom
-		};
-
-
-		// ƒOƒ‰ƒtƒBƒbƒNƒX’ŠÛƒNƒ‰ƒX
+		// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹æŠ½è±¡ã‚¯ãƒ©ã‚¹
 		class Graphics {
 		protected:
 			HWND hwnd_;
@@ -52,15 +39,15 @@ namespace mkaul {
 			bool is_drawing() { return drawing_; }
 			HWND get_hwnd() { return hwnd_; }
 
-			// ƒŠƒTƒCƒY
+			// ãƒªã‚µã‚¤ã‚º
 			virtual bool resize() = 0;
 
-			// ”wŒi‚ğ“h‚è‚Â‚Ô‚µ
+			// èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã—
 			virtual void fill_background(
 				const ColorF& color = 0
 			) = 0;
 
-			// ü‚ğ•`‰æ
+			// ç·šã‚’æç”»
 			virtual void draw_line(
 				const Point<float>& point_from,
 				const Point<float>& point_to,
@@ -68,7 +55,7 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) = 0;
 
-			// ü‚ğ•`‰æ(•¡”)
+			// ç·šã‚’æç”»(è¤‡æ•°)
 			virtual void draw_lines(
 				const Point<float>* p_points,
 				size_t n_points,
@@ -76,7 +63,7 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) = 0;
 
-			// ƒxƒWƒF‹Èü‚ğ•`‰æ
+			// ãƒ™ã‚¸ã‚§æ›²ç·šã‚’æç”»
 			virtual void draw_bezier(
 				const Point<float>& point_0,
 				const Point<float>& point_1,
@@ -86,7 +73,7 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) = 0;
 
-			// ƒxƒWƒF‹Èü‚ğ•`‰æ(•¡”)
+			// ãƒ™ã‚¸ã‚§æ›²ç·šã‚’æç”»(è¤‡æ•°)
 			virtual void draw_beziers(
 				const Point<float>* points,
 				size_t n_points,
@@ -94,7 +81,7 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) = 0;
 
-			// ‹éŒ`‚ğ•`‰æ(ü)
+			// çŸ©å½¢ã‚’æç”»(ç·š)
 			virtual void draw_rectangle(
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
@@ -103,7 +90,7 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) = 0;
 
-			// ‹éŒ`‚ğ•`‰æ(“h‚è)
+			// çŸ©å½¢ã‚’æç”»(å¡—ã‚Š)
 			virtual void fill_rectangle(
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
@@ -111,7 +98,7 @@ namespace mkaul {
 				const ColorF& color = 0
 			) = 0;
 
-			// ‘È‰~‚ğ•`‰æ(ü)(’†S“_w’è)
+			// æ¥•å††ã‚’æç”»(ç·š)(ä¸­å¿ƒç‚¹æŒ‡å®š)
 			virtual void draw_ellipse(
 				const Point<float>& point,
 				float radius_x,
@@ -120,14 +107,14 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) = 0;
 
-			// ‘È‰~‚ğ•`‰æ(ü)(‹éŒ`w’è)
+			// æ¥•å††ã‚’æç”»(ç·š)(çŸ©å½¢æŒ‡å®š)
 			virtual void draw_ellipse(
 				const Rectangle<float>& rectangle,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
-			// ‘È‰~‚ğ•`‰æ(“h‚è)(’†S“_w’è)
+			// æ¥•å††ã‚’æç”»(å¡—ã‚Š)(ä¸­å¿ƒç‚¹æŒ‡å®š)
 			virtual void fill_ellipse(
 				const Point<float>& point,
 				float radius_x,
@@ -135,76 +122,76 @@ namespace mkaul {
 				const ColorF& color = 0
 			) = 0;
 
-			// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
+			// æ¥•å††ã‚’æç”»(å¡—ã‚Š)(çŸ©å½¢æŒ‡å®š)
 			virtual void fill_ellipse(
 				const Rectangle<float>& rectangle,
 				const ColorF& color = 0
 			) = 0;
 
-			// ƒpƒX‚ğ•`‰æ(ü)
+			// ãƒ‘ã‚¹ã‚’æç”»(ç·š)
 			virtual void draw_path(
 				const Path* p_path,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) = 0;
 
-			// ƒpƒX‚ğ•`‰æ(“h‚è)
+			// ãƒ‘ã‚¹ã‚’æç”»(å¡—ã‚Š)
 			virtual void fill_path(
 				const Path* p_path,
 				const ColorF& color = 0
 			) = 0;
 
-			// ‹ó‚Ìƒrƒbƒgƒ}ƒbƒv‚ğì¬
+			// ç©ºã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 			virtual bool initialize_bitmap(
-				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
+				_Out_ Bitmap* p_bitmap,
 				const ColorF& color = 0
 			) = 0;
 
-			// ƒtƒ@ƒCƒ‹‚©‚çƒrƒbƒgƒ}ƒbƒv‚ğì¬
+			// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 			virtual bool load_bitmap_from_filename(
-				Bitmap* p_bitmap,
-				const std::filesystem::path& path
+				const std::filesystem::path& path,
+				_Out_ Bitmap* p_bitmap
 			) = 0;
 
-			// ƒŠƒ\[ƒX‚©‚çƒrƒbƒgƒ}ƒbƒv‚ğì¬
+			// ãƒªã‚½ãƒ¼ã‚¹ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 			virtual bool load_bitmap_from_resource(
-				Bitmap* p_bitmap,
 				HINSTANCE hinst,
 				const char* res_name,
+				_Out_ Bitmap* p_bitmap,
 				const char* res_type = RT_BITMAP
 			) = 0;
 
-			// ƒrƒbƒgƒ}ƒbƒv‚ğ•`‰æ(ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒgw’è)
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’æç”»(ã‚¢ãƒ³ã‚«ãƒ¼ãƒã‚¤ãƒ³ãƒˆæŒ‡å®š)
 			virtual void draw_bitmap(
 				const Bitmap* p_bitmap,
 				const Point<float>& point,
-				AnchorPosition anchor_pos,
+				const AnchorPosition& anchor_pos = AnchorPosition{},
 				float opacity = 1.f
 			) = 0;
 
-			// ƒrƒbƒgƒ}ƒbƒv‚ğ•`‰æ(‹éŒ`w’è)
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’æç”»(çŸ©å½¢æŒ‡å®š)
 			virtual void draw_bitmap(
 				const Bitmap* p_bitmap,
 				const Rectangle<float>& rect,
 				float opacity = 1.f
 			) = 0;
 
-			// ƒeƒLƒXƒg‚ğ•`‰æ(ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒgw’è)
+			// ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»(ã‚¢ãƒ³ã‚«ãƒ¼ãƒã‚¤ãƒ³ãƒˆæŒ‡å®š)
 			virtual void draw_text(
 				const std::string& text,
 				const Point<float>& point,
 				const Font& font = Font{},
-				AnchorPosition anchor_pos = AnchorPosition::Center,
+				const AnchorPosition& anchor_pos = AnchorPosition{},
 				const ColorF& color = 0
 			) = 0;
 
-			// ƒeƒLƒXƒg‚ğ•`‰æ(‹éŒ`w’è)
+			// ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»(çŸ©å½¢æŒ‡å®š)
 			virtual void draw_text(
 				const std::string& text,
 				const Rectangle<float>& rect,
 				const Font& font = Font{},
-				AnchorPosition anchor_pos = AnchorPosition::Center,
+				const AnchorPosition& anchor_pos = AnchorPosition{},
 				bool fit_size = true,
 				const ColorF& color = 0
 			) = 0;

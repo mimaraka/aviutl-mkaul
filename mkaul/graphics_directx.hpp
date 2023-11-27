@@ -15,7 +15,7 @@
 
 namespace mkaul {
 	namespace graphics {
-		// ƒOƒ‰ƒtƒBƒbƒN
+		// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
 		class DirectxGraphics : public Graphics, protected DirectxBase {
 		private:
 			inline static ID2D1Factory* p_factory_;
@@ -25,6 +25,18 @@ namespace mkaul {
 			ID2D1SolidColorBrush* p_brush_;
 			PAINTSTRUCT paint_struct_;
 
+			static void apply_stroke_style(
+				const Stroke& stroke,
+				_Out_ ID2D1StrokeStyle** pp_stroke_style
+			) noexcept;
+			static bool apply_text_layout(
+				const std::string& text,
+				const Font& font,
+				const D2D1_SIZE_F& target_size,
+				const AnchorPosition& anchor_pos,
+				_Out_ IDWriteTextLayout** pp_text_layout
+			) noexcept;
+
 		public:
 			DirectxGraphics() :
 				p_render_target_(nullptr),
@@ -32,17 +44,12 @@ namespace mkaul {
 				paint_struct_({ 0 })
 			{}
 
-			// •`‰æŠÂ‹«‚Ì—pˆÓ
+			// æç”»ç’°å¢ƒã®ç”¨æ„
 			static bool startup();
-			// •`‰æŠÂ‹«‚Ì”jŠü
+			// æç”»ç’°å¢ƒã®ç ´æ£„
 			static void shutdown();
 
-			static void stroke_to_d2d_strokestyle(
-				const Stroke& stroke,
-				ID2D1StrokeStyle** pp_stroke_style
-			);
-
-			// ƒtƒ@ƒNƒgƒŠ[Eƒ^[ƒQƒbƒgæ“¾
+			// ãƒ•ã‚¡ã‚¯ãƒˆãƒªãƒ¼ãƒ»ã‚¿ãƒ¼ã‚²ãƒƒãƒˆå–å¾—
 			static auto get_factory() { return p_factory_; }
 			static auto get_write_factory() { return p_write_factory_; }
 			static auto get_imaging_factory() { return p_imaging_factory_; }
@@ -54,12 +61,12 @@ namespace mkaul {
 			bool end_draw() override;
 			bool resize() override;
 
-			// ”wŒi‚ğ“h‚è‚Â‚Ô‚µ
+			// èƒŒæ™¯ã‚’å¡—ã‚Šã¤ã¶ã—
 			void fill_background(
 				const ColorF& color = 0
 			) override;
 
-			// ü‚ğ•`‰æ
+			// ç·šã‚’æç”»
 			void draw_line(
 				const Point<float>& point_from,
 				const Point<float>& point_to,
@@ -67,7 +74,7 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) override;
 
-			// ü‚ğ•`‰æ(•¡”)
+			// ç·šã‚’æç”»(è¤‡æ•°)
 			void draw_lines(
 				const Point<float>* p_points,
 				size_t n_points,
@@ -91,7 +98,7 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) override;
 
-			// ‹éŒ`‚ğ•`‰æ(ü)
+			// çŸ©å½¢ã‚’æç”»(ç·š)
 			void draw_rectangle(
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
@@ -100,7 +107,7 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) override;
 
-			// ‹éŒ`‚ğ•`‰æ(“h‚è)
+			// çŸ©å½¢ã‚’æç”»(å¡—ã‚Š)
 			void fill_rectangle(
 				const Rectangle<float>& rectangle,
 				float round_radius_x = 0.f,
@@ -108,7 +115,7 @@ namespace mkaul {
 				const ColorF& color = 0
 			) override;
 
-			// ‘È‰~‚ğ•`‰æ(ü)(’†S“_w’è)
+			// æ¥•å††ã‚’æç”»(ç·š)(ä¸­å¿ƒç‚¹æŒ‡å®š)
 			void draw_ellipse(
 				const Point<float>& point,
 				float radius_x,
@@ -117,14 +124,14 @@ namespace mkaul {
 				const Stroke& stroke = Stroke()
 			) override;
 
-			// ‘È‰~‚ğ•`‰æ(ü)(‹éŒ`w’è)
+			// æ¥•å††ã‚’æç”»(ç·š)(çŸ©å½¢æŒ‡å®š)
 			void draw_ellipse(
 				const Rectangle<float>& rectangle,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
-			// ‘È‰~‚ğ•`‰æ(“h‚è)(’†S“_w’è)
+			// æ¥•å††ã‚’æç”»(å¡—ã‚Š)(ä¸­å¿ƒç‚¹æŒ‡å®š)
 			void fill_ellipse(
 				const Point<float>& point,
 				float radius_x,
@@ -132,76 +139,76 @@ namespace mkaul {
 				const ColorF& color = 0
 			) override;
 
-			// ‘È‰~‚ğ•`‰æ(“h‚è)(‹éŒ`w’è)
+			// æ¥•å††ã‚’æç”»(å¡—ã‚Š)(çŸ©å½¢æŒ‡å®š)
 			void fill_ellipse(
 				const Rectangle<float>& rectangle,
 				const ColorF& color = 0
 			) override;
 
-			// ƒpƒX‚ğ•`‰æ(ü)
+			// ãƒ‘ã‚¹ã‚’æç”»(ç·š)
 			void draw_path(
 				const Path* p_path,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
 			) override;
 
-			// ƒpƒX‚ğ•`‰æ(“h‚è)
+			// ãƒ‘ã‚¹ã‚’æç”»(å¡—ã‚Š)
 			void fill_path(
 				const Path* p_path,
 				const ColorF& color = 0
 			) override;
 
-			// ‹ó‚Ìƒrƒbƒgƒ}ƒbƒv‚ğì¬
+			// ç©ºã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 			bool initialize_bitmap(
-				Bitmap* p_bitmap,
 				const Size<unsigned>& size,
+				_Out_ Bitmap* p_bitmap,
 				const ColorF& color = 0
 			) override;
 
-			// ƒtƒ@ƒCƒ‹‚©‚çƒrƒbƒgƒ}ƒbƒv‚ğì¬
+			// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 			bool load_bitmap_from_filename(
-				Bitmap* p_bitmap,
-				const std::filesystem::path& path
+				const std::filesystem::path& path,
+				_Out_ Bitmap* p_bitmap
 			) override;
 
-			// ƒŠƒ\[ƒX‚©‚çƒrƒbƒgƒ}ƒbƒv‚ğì¬
+			// ãƒªã‚½ãƒ¼ã‚¹ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ
 			bool load_bitmap_from_resource(
-				Bitmap* p_bitmap,
 				HINSTANCE hinst,
 				const char* res_name,
+				_Out_ Bitmap* p_bitmap,
 				const char* res_type = RT_BITMAP
 			) override;
 
-			// ƒrƒbƒgƒ}ƒbƒv‚ğ•`‰æ(ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒgw’è)
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’æç”»(ã‚¢ãƒ³ã‚«ãƒ¼ãƒã‚¤ãƒ³ãƒˆæŒ‡å®š)
 			void draw_bitmap(
 				const Bitmap* bitmap,
 				const Point<float>& point,
-				AnchorPosition anchor_pos,
+				const AnchorPosition& anchor_pos = AnchorPosition{},
 				float opacity = 1.f
 			) override;
 
-			// ƒrƒbƒgƒ}ƒbƒv‚ğ•`‰æ(‹éŒ`w’è)
+			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’æç”»(çŸ©å½¢æŒ‡å®š)
 			void draw_bitmap(
 				const Bitmap* bitmap,
 				const Rectangle<float>& rect,
 				float opacity = 1.f
 			) override;
 
-			// ƒeƒLƒXƒg‚ğ•`‰æ(ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒgw’è)
+			// ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»(ã‚¢ãƒ³ã‚«ãƒ¼ãƒã‚¤ãƒ³ãƒˆæŒ‡å®š)
 			void draw_text(
 				const std::string& text,
 				const Point<float>& point,
 				const Font& font = Font{},
-				AnchorPosition anchor_pos = AnchorPosition::Center,
+				const AnchorPosition& anchor_pos = AnchorPosition{},
 				const ColorF& color = 0
 			) override;
 
-			// ƒeƒLƒXƒg‚ğ•`‰æ(‹éŒ`w’è)
+			// ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»(çŸ©å½¢æŒ‡å®š)
 			void draw_text(
 				const std::string& text,
 				const Rectangle<float>& rect,
 				const Font& font = Font{},
-				AnchorPosition anchor_pos = AnchorPosition::Center,
+				const AnchorPosition& anchor_pos = AnchorPosition{},
 				bool fit_size = true,
 				const ColorF& color = 0
 			) override;
