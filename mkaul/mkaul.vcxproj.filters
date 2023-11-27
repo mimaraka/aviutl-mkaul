@@ -16,20 +16,20 @@
     <Filter Include="ソース ファイル\Graphics">
       <UniqueIdentifier>{40f0834b-8a4d-48f4-9a60-f7632126758c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Window">
-      <UniqueIdentifier>{95183436-fec6-4c6f-b161-b1905ec06319}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\Window">
-      <UniqueIdentifier>{1fb33cb3-a977-4938-95b8-ba1dd0fc7136}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\Window\Control">
-      <UniqueIdentifier>{8e88e2d9-357e-4516-a93d-2eddd5ed6f59}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Window\Control">
-      <UniqueIdentifier>{de5724c5-d7ac-4df0-8da0-726a992c4319}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\Graphics">
       <UniqueIdentifier>{83aade43-4d84-48a6-9e8c-e74a67d60363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI">
+      <UniqueIdentifier>{95183436-fec6-4c6f-b161-b1905ec06319}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\Control">
+      <UniqueIdentifier>{de5724c5-d7ac-4df0-8da0-726a992c4319}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\UI">
+      <UniqueIdentifier>{1fb33cb3-a977-4938-95b8-ba1dd0fc7136}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\UI\Control">
+      <UniqueIdentifier>{8e88e2d9-357e-4516-a93d-2eddd5ed6f59}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -61,13 +61,13 @@
       <Filter>ヘッダー ファイル\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="window.hpp">
-      <Filter>ヘッダー ファイル\Window</Filter>
+      <Filter>ヘッダー ファイル\UI</Filter>
     </ClInclude>
     <ClInclude Include="button.hpp">
-      <Filter>ヘッダー ファイル\Window\Control</Filter>
+      <Filter>ヘッダー ファイル\UI\Control</Filter>
     </ClInclude>
     <ClInclude Include="control.hpp">
-      <Filter>ヘッダー ファイル\Window\Control</Filter>
+      <Filter>ヘッダー ファイル\UI\Control</Filter>
     </ClInclude>
     <ClInclude Include="exedit.hpp">
       <Filter>ヘッダー ファイル</Filter>
@@ -120,6 +120,15 @@
     <ClInclude Include="flag.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="anchor_position.hpp">
+      <Filter>ヘッダー ファイル\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_component.hpp">
+      <Filter>ヘッダー ファイル\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_list.hpp">
+      <Filter>ヘッダー ファイル\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rectangle.cpp">
@@ -135,13 +144,13 @@
       <Filter>ソース ファイル\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="window.cpp">
-      <Filter>ソース ファイル\Window</Filter>
+      <Filter>ソース ファイル\UI</Filter>
     </ClCompile>
     <ClCompile Include="button.cpp">
-      <Filter>ソース ファイル\Window\Control</Filter>
+      <Filter>ソース ファイル\UI\Control</Filter>
     </ClCompile>
     <ClCompile Include="control.cpp">
-      <Filter>ソース ファイル\Window\Control</Filter>
+      <Filter>ソース ファイル\UI\Control</Filter>
     </ClCompile>
     <ClCompile Include="util_hook.cpp">
       <Filter>ソース ファイル</Filter>
@@ -166,6 +175,9 @@
     </ClCompile>
     <ClCompile Include="path_directx.cpp">
       <Filter>ソース ファイル\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_list.cpp">
+      <Filter>ソース ファイル\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

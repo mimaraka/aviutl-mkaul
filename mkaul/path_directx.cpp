@@ -25,12 +25,12 @@ namespace mkaul {
 			data[0] = nullptr;
 			data[1] = nullptr;
 
-			auto hr = DirectxGraphics::get_factory()->CreatePathGeometry(pp_path);
+			auto hresult = DirectxGraphics::get_factory()->CreatePathGeometry(pp_path);
 
-			if (SUCCEEDED(hr))
-				hr = (*pp_path)->Open(pp_sink);
+			if (SUCCEEDED(hresult))
+				hresult = (*pp_path)->Open(pp_sink);
 
-			if (SUCCEEDED(hr)) {
+			if (SUCCEEDED(hresult)) {
 				(*pp_sink)->BeginFigure(
 					pt.to<D2D1_POINT_2F>(),
 					D2D1_FIGURE_BEGIN_FILLED
@@ -40,7 +40,7 @@ namespace mkaul {
 				return true;
 			}
 
-			// ¸”s‚µ‚½ê‡
+			// å¤±æ•—ã—ãŸå ´åˆ
 			dx_release(pp_sink);
 			dx_release(pp_path);
 
@@ -57,7 +57,7 @@ namespace mkaul {
 		}
 
 
-		// ŒÊ‚ğ’Ç‰Á
+		// å¼§ã‚’è¿½åŠ 
 		void DirectxPath::add_arc(
 			const Size<float>& size,
 			float angle_start,
@@ -70,40 +70,40 @@ namespace mkaul {
 				D2D1_SWEEP_DIRECTION sd;
 				D2D1_ARC_SIZE as;
 
-				// ŒÊ‚ÌŠJnEI—¹’n“_(‘È‰~‚Ì’†S‚©‚ç‚Ì‘Š‘ÎÀ•W)
-				// ŒÊ‚ÌI—¹’n“_
-				// ‘È‰~‚Ì’†S
+				// å¼§ã®é–‹å§‹ãƒ»çµ‚äº†åœ°ç‚¹(æ¥•å††ã®ä¸­å¿ƒã‹ã‚‰ã®ç›¸å¯¾åº§æ¨™)
+				// å¼§ã®çµ‚äº†åœ°ç‚¹
+				// æ¥•å††ã®ä¸­å¿ƒ
 				Point<float> pt_ofs_start, pt_ofs_end, pt_o;
 
-				// Šp“x‚ğ-360d ~ 360d‚Ì”ÍˆÍ‚Éû‚ß‚é
+				// è§’åº¦ã‚’-360d ~ 360dã®ç¯„å›²ã«åã‚ã‚‹
 				angle_sweep = std::fmodf(angle_sweep, 360.f);
 
 				ellipse_pos(size, angle_start, &pt_ofs_start);
 				ellipse_pos(size, angle_start + angle_sweep, &pt_ofs_end);
 
 				pt_o = pt_last - pt_ofs_start;
-				// ÅŒã‚Ì“_‚ğXV
+				// æœ€å¾Œã®ç‚¹ã‚’æ›´æ–°
 				pt_last = pt_o + pt_ofs_end;
 
-				// Œv‰ñ‚è
+				// æ™‚è¨ˆå›ã‚Š
 				if (0 < angle_sweep) {
 					sd = D2D1_SWEEP_DIRECTION_CLOCKWISE;
 
-					// ŒÊ‚ÌŠp“x‚Ì‘å‚«‚³‚ª180d‚æ‚è‘å‚«‚¢ê‡
+					// å¼§ã®è§’åº¦ã®å¤§ãã•ãŒ180dã‚ˆã‚Šå¤§ãã„å ´åˆ
 					if (180.f < angle_sweep)
 						as = D2D1_ARC_SIZE_LARGE;
-					// ŒÊ‚ÌŠp“x‚Ì‘å‚«‚³‚ªƒÎ‚æ‚è¬‚³‚¢ê‡
+					// å¼§ã®è§’åº¦ã®å¤§ãã•ãŒÏ€ã‚ˆã‚Šå°ã•ã„å ´åˆ
 					else
 						as = D2D1_ARC_SIZE_SMALL;
 				}
-				// ”½Œv‰ñ‚è
+				// åæ™‚è¨ˆå›ã‚Š
 				else {
 					sd = D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE;
 
-					// ŒÊ‚ÌŠp“x‚Ì‘å‚«‚³‚ª180d‚æ‚è‘å‚«‚¢ê‡
+					// å¼§ã®è§’åº¦ã®å¤§ãã•ãŒ180dã‚ˆã‚Šå¤§ãã„å ´åˆ
 					if (angle_sweep < -180.f)
 						as = D2D1_ARC_SIZE_LARGE;
-					// ŒÊ‚ÌŠp“x‚Ì‘å‚«‚³‚ªƒÎ‚æ‚è¬‚³‚¢ê‡
+					// å¼§ã®è§’åº¦ã®å¤§ãã•ãŒÏ€ã‚ˆã‚Šå°ã•ã„å ´åˆ
 					else
 						as = D2D1_ARC_SIZE_SMALL;
 				}
@@ -122,7 +122,7 @@ namespace mkaul {
 		}
 
 
-		// ü‚ğ’Ç‰Á
+		// ç·šã‚’è¿½åŠ 
 		void DirectxPath::add_line(
 			const Point<float>& pt
 		)
@@ -130,7 +130,7 @@ namespace mkaul {
 			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 
 			if (p_sink) {
-				// ÅŒã‚Ì“_‚ğXV
+				// æœ€å¾Œã®ç‚¹ã‚’æ›´æ–°
 				pt_last = pt;
 
 				p_sink->AddLine(
@@ -140,7 +140,7 @@ namespace mkaul {
 		}
 
 
-		// ƒxƒWƒF‹Èü‚ğ’Ç‰Á
+		// ãƒ™ã‚¸ã‚§æ›²ç·šã‚’è¿½åŠ 
 		void DirectxPath::add_bezier(
 			const Point<float>& pt_0,
 			const Point<float>& pt_1,
@@ -150,7 +150,7 @@ namespace mkaul {
 			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
 
 			if (p_sink) {
-				// ÅŒã‚Ì“_‚ğXV
+				// æœ€å¾Œã®ç‚¹ã‚’æ›´æ–°
 				pt_last = pt_2;
 
 				p_sink->AddBezier(

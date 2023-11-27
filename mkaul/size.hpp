@@ -16,18 +16,18 @@ namespace mkaul {
 		size.Width; size.Height;
 	};
 
-	// ƒTƒCƒY
+	// ã‚µã‚¤ã‚º
 	template <typename T>
 	struct Size {
 		T width, height;
 
-		// “™†
+		// ç­‰å·
 		inline auto operator == (const Size<T>& size) const noexcept
 		{
-			return (this->width == size.width && this->height == size.height);
+			return (this->width == size.width and this->height == size.height);
 		}
 
-		// ‰ÁZ (lower)
+		// åŠ ç®— (lower)
 		inline auto operator + (const size_lower auto& size) const noexcept
 		{
 			return Size<T>(
@@ -36,7 +36,7 @@ namespace mkaul {
 			);
 		}
 
-		// ‰ÁZ (upper)
+		// åŠ ç®— (upper)
 		inline auto operator + (const size_upper auto& size) const noexcept
 		{
 			return Size<T>(
@@ -45,7 +45,7 @@ namespace mkaul {
 			);
 		}
 
-		// Œ¸Z (lower)
+		// æ¸›ç®— (lower)
 		inline auto operator - (const size_lower auto& size) const noexcept
 		{
 			return Size<T>(
@@ -54,7 +54,7 @@ namespace mkaul {
 			);
 		}
 
-		// Œ¸Z (upper)
+		// æ¸›ç®— (upper)
 		inline auto operator - (const size_upper auto& size) const noexcept
 		{
 			return Size<T>(
@@ -63,14 +63,14 @@ namespace mkaul {
 			);
 		}
 
-		// ‘ã“ü (lower)
+		// ä»£å…¥ (lower)
 		inline void operator = (const size_lower auto& size) noexcept
 		{
 			this->width = (T)size.width;
 			this->height = (T)size.height;
 		}
 
-		// ‘ã“ü (upper)
+		// ä»£å…¥ (upper)
 		inline void operator = (const size_upper auto& size) noexcept
 		{
 			this->width = (T)size.Width;
@@ -82,7 +82,7 @@ namespace mkaul {
 			height(height_)
 		{}
 		
-		// ‘¼‚ÌŒ^‚É•ÏŠ· (lower)
+		// ä»–ã®å‹ã«å¤‰æ› (lower)
 		template <size_lower U>
 		auto to() const noexcept
 		{
@@ -93,7 +93,7 @@ namespace mkaul {
 			return size;
 		}
 
-		// ‘¼‚ÌŒ^‚É•ÏŠ· (upper)
+		// ä»–ã®å‹ã«å¤‰æ› (upper)
 		template <size_upper U>
 		auto to() const noexcept
 		{

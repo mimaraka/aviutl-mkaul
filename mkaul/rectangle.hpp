@@ -1,31 +1,32 @@
 #pragma once
 
 #include <Windows.h>
+#include "point.hpp"
 
 
 
 namespace mkaul {
 	template <typename T>
-	// 矩形
+	// 遏ｩ蠖｢
 	struct Rectangle {
 		T left, top, right, bottom;
 
 		bool operator == (const Rectangle<T>& rc) const
 		{
 			return (
-				this->left == rc.left &&
-				this->top == rc.top &&
-				this->right == rc.right &&
+				this->left == rc.left and
+				this->top == rc.top and
+				this->right == rc.right and
 				this->bottom == rc.bottom
 				);
 		}
 
 		Rectangle<T> operator = (const RECT& rc)
 		{
-			this->left = (T)rc.left;
-			this->top = (T)rc.top;
-			this->right = (T)rc.right;
-			this->bottom = (T)rc.bottom;
+			this->left = static_cast<T>(rc.left);
+			this->top = static_cast<T>(rc.top);
+			this->right = static_cast<T>(rc.right);
+			this->bottom = static_cast<T>(rc.bottom);
 
 			return *this;
 		}
@@ -43,24 +44,36 @@ namespace mkaul {
 		{}
 
 		Rectangle(RECT rc) :
-			left((T)rc.left),
-			top((T)rc.top),
-			right((T)rc.right),
-			bottom((T)rc.bottom)
+			left(static_cast<T>(rc.left)),
+			top(static_cast<T>(rc.top)),
+			right(static_cast<T>(rc.right)),
+			bottom(static_cast<T>(rc.bottom))
 		{}
 
 		template <typename U>
-		inline void convert_to(Rectangle<U>* r) const noexcept
+		void convert_to(Rectangle<U>* r) const noexcept
 		{
-			r->left = (U)left;
-			r->top = (U)top;
-			r->right = (U)right;
-			r->bottom = (U)bottom;
+			r->left = static_cast<U>(left);
+			r->top = static_cast<U>(top);
+			r->right = static_cast<U>(right);
+			r->bottom = static_cast<U>(bottom);
+		}
+
+		constexpr T get_width() const noexcept { return static_cast<T>(std::abs(right - left)); }
+		constexpr T get_height() const noexcept { return static_cast<T>(std::abs(bottom - top)); }
+		constexpr T get_area() const noexcept { return get_width() * get_height(); }
+		
+		template <typename U = T>
+		constexpr auto get_center()
+		{
+			return Point<U>(
+				(left + right) / static_cast<U>(2.),
+				(top + bottom) / static_cast<U>(2.)
+			);
 		}
 	};
 
-
-	// 矩形(ウィンドウ用)
+	// 遏ｩ蠖｢(繧ｦ繧｣繝ｳ繝峨え逕ｨ)
 	struct WindowRectangle : public Rectangle<LONG> {
 		enum class Direction {
 			Vertical,

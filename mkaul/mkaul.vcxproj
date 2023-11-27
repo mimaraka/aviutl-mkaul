@@ -163,10 +163,12 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="anchor_position.hpp" />
     <ClInclude Include="aviutl.hpp" />
     <ClInclude Include="bitmap_base.hpp" />
     <ClInclude Include="bitmap_directx.hpp" />
     <ClInclude Include="bitmap_gdiplus.hpp" />
+    <ClInclude Include="ui_component.hpp" />
     <ClInclude Include="directx_common.hpp" />
     <ClInclude Include="exedit.hpp" />
     <ClInclude Include="button.hpp" />
@@ -188,6 +190,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="rectangle.hpp" />
     <ClInclude Include="size.hpp" />
     <ClInclude Include="stroke.hpp" />
+    <ClInclude Include="ui_list.hpp" />
     <ClInclude Include="util.hpp" />
     <ClInclude Include="util_hook.hpp" />
     <ClInclude Include="http.hpp" />
@@ -202,6 +205,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="ui_list.cpp" />
     <ClCompile Include="control.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>

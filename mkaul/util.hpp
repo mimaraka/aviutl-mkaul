@@ -18,11 +18,11 @@ namespace mkaul {
 	};
 
 
-	// ”ÍˆÍ“à”»’è
+	// ç¯„å›²å†…åˆ¤å®š
 	inline bool in_range(auto val, auto min, auto max, bool equal) noexcept
 	{
-		if (val >= min && val <= max) {
-			if (val == min || val == max)
+		if (val >= min and val <= max) {
+			if (val == min or val == max)
 				return equal;
 			else return true;
 		}
@@ -30,41 +30,45 @@ namespace mkaul {
 	}
 
 
-	// ‹——£‚ğZo
+	// è·é›¢ã‚’ç®—å‡º
 	inline double distance(const pt_lower auto& pt1, const pt_lower auto& pt2) noexcept
 	{
 		return std::sqrt(std::pow(pt2.x - pt1.x, 2) + std::pow(pt2.y - pt1.y, 2));
 	}
 
 
-	// ‹——£‚ğZo
+	// è·é›¢ã‚’ç®—å‡º
 	inline double distance(const pt_upper auto& pt1, const pt_upper auto& pt2) noexcept
 	{
 		return std::sqrt(std::pow(pt2.X - pt1.X, 2) + std::pow(pt2.Y - pt1.Y, 2));
 	}
 
 
-	// ƒ‰ƒWƒAƒ“ -> “x
+	// ãƒ©ã‚¸ã‚¢ãƒ³ -> åº¦
 	inline constexpr auto rad2deg(auto rad) noexcept
 	{
 		return (decltype(rad))180 * rad / std::numbers::pi_v<decltype(rad)>;
 	}
 
 
-	// “x -> ƒ‰ƒWƒAƒ“
+	// åº¦ -> ãƒ©ã‚¸ã‚¢ãƒ³
 	inline constexpr auto deg2rad(auto deg) noexcept
 	{
 		return std::numbers::pi_v<decltype(deg)> * deg / (decltype(deg))180;
 	}
 
 
-	// •„†ŠÖ”
+	// ç¬¦å·é–¢æ•°
 	inline constexpr auto sign(auto value) noexcept
 	{
-		if (value < (decltype(value))0)
+		if (value < (decltype(value))0) {
 			return (decltype(value))(-1);
-		else if (value == (decltype(value))0)
+		}
+		else if (value == (decltype(value))0) {
 			return (decltype(value))0;
-		else return (decltype(value))1;
+		}
+		else {
+			return (decltype(value))1;
+		}
 	}
 }

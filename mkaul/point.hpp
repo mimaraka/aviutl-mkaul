@@ -7,18 +7,18 @@
 
 
 namespace mkaul {
-	// ƒ|ƒCƒ“ƒg
+	// ãƒã‚¤ãƒ³ãƒˆ
 	template <typename T>
 	struct Point {
 		T x, y;
 
-		// “™‰¿
+		// ç­‰ä¾¡
 		inline auto operator == (const Point<T>& pt) const noexcept
 		{
-			return (this->x == pt.x && this->y == pt.y);
+			return (this->x == pt.x and this->y == pt.y);
 		}
 
-		// ‰ÁZ (lower)
+		// åŠ ç®— (lower)
 		inline auto operator + (const pt_lower auto& pt) const noexcept
 		{
 			return Point<T>(
@@ -27,7 +27,7 @@ namespace mkaul {
 			);
 		}
 
-		// ‰ÁZ (upper)
+		// åŠ ç®— (upper)
 		inline auto operator + (const pt_upper auto& pt) const noexcept
 		{
 			return Point<T>(
@@ -36,7 +36,7 @@ namespace mkaul {
 			);
 		}
 
-		// Œ¸Z (lower)
+		// æ¸›ç®— (lower)
 		inline auto operator - (const pt_lower auto& pt) const noexcept
 		{
 			return Point<T>(
@@ -45,7 +45,7 @@ namespace mkaul {
 			);
 		}
 
-		// Œ¸Z (upper)
+		// æ¸›ç®— (upper)
 		inline auto operator - (const pt_upper auto& pt) const noexcept
 		{
 			return Point<T>(
@@ -54,19 +54,19 @@ namespace mkaul {
 			);
 		}
 
-		// “àÏ (lower)
+		// å†…ç© (lower)
 		inline auto operator * (const pt_lower auto& pt) const noexcept
 		{
 			return this->x * (T)pt.x + this->y * (T)pt.y;
 		}
 
-		// “àÏ
+		// å†…ç©
 		inline auto operator * (const pt_upper auto& pt) const noexcept
 		{
 			return this->x * (T)pt.X + this->y * (T)pt.Y;
 		}
 
-		// ‘ã“ü (lower)
+		// ä»£å…¥ (lower)
 		inline auto operator = (const pt_lower auto& pt) noexcept
 		{
 			this->x = (T)pt.x;
@@ -74,7 +74,7 @@ namespace mkaul {
 			return *this;
 		}
 
-		// ‘ã“ü (upper)
+		// ä»£å…¥ (upper)
 		inline auto operator = (const pt_upper auto& pt) noexcept
 		{
 			this->x = (T)pt.X;
@@ -92,7 +92,7 @@ namespace mkaul {
 			y((T)pt.y)
 		{}
 
-		// ‘¼‚ÌŒ^‚É•ÏŠ· (lower)
+		// ä»–ã®å‹ã«å¤‰æ› (lower)
 		template <pt_lower U>
 		auto to() const noexcept
 		{
@@ -102,7 +102,7 @@ namespace mkaul {
 			return pt;
 		}
 
-		// ‘¼‚ÌŒ^‚É•ÏŠ· (upper)
+		// ä»–ã®å‹ã«å¤‰æ› (upper)
 		template <pt_upper U>
 		auto to() const noexcept
 		{
@@ -112,14 +112,14 @@ namespace mkaul {
 			return pt;
 		}
 
-		// ’è””{
+		// å®šæ•°å€
 		void scale(auto scl) noexcept
 		{
 			x = (T)(x * scl);
 			y = (T)(y * scl);
 		}
 
-		// ‰ñ“]
+		// å›è»¢
 		void rotate(double deg) noexcept
 		{
 			auto rad = deg2rad(deg);
