@@ -1,4 +1,5 @@
 #include "graphics_directx.hpp"
+#include "bitmap_directx.hpp"
 #include <strconv2/strconv2.h>
 
 
@@ -730,12 +731,13 @@ namespace mkaul {
 
 
 		// 空のビットマップを作成
-		bool DirectxGraphics::initialize_bitmap(
+		bool DirectxGraphics::create_bitmap(
 			const Size<unsigned>& size,
-			_Out_ Bitmap* p_bitmap,
+			_Out_ Bitmap** pp_bitmap,
 			const ColorF& color
 		)
 		{
+			*pp_bitmap = nullptr;
 			if (p_render_target_) {
 				ID2D1Bitmap* p_d2d1_bitmap = nullptr;
 
@@ -746,7 +748,8 @@ namespace mkaul {
 				);
 
 				if (SUCCEEDED(hresult)) {
-					p_bitmap->set_data(p_d2d1_bitmap);
+					*pp_bitmap = new DirectxBitmap;
+					(*pp_bitmap)->set_data(p_d2d1_bitmap);
 					return true;
 				}
 
@@ -759,7 +762,7 @@ namespace mkaul {
 		// ファイルからビットマップを作成
 		bool DirectxGraphics::load_bitmap_from_filename(
 			const std::filesystem::path& path,
-			_Out_ Bitmap* p_bitmap
+			_Out_ Bitmap** pp_bitmap
 		)
 		{
 			IWICBitmapDecoder* p_decoder = nullptr;
@@ -767,6 +770,7 @@ namespace mkaul {
 			IWICFormatConverter* p_converter = nullptr;
 			HRESULT hresult = E_FAIL;
 			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
+			*pp_bitmap = nullptr;
 
 			// デコーダを生成
 			hresult = p_imaging_factory_->CreateDecoderFromFilename(
@@ -805,10 +809,13 @@ namespace mkaul {
 				);
 			}
 
-			if (SUCCEEDED(hresult))
-				p_bitmap->set_data(p_d2d1_bitmap);
-			else
+			if (SUCCEEDED(hresult)) {
+				*pp_bitmap = new DirectxBitmap;
+				(*pp_bitmap)->set_data(p_d2d1_bitmap);
+			}
+			else {
 				dx_release(&p_d2d1_bitmap);
+			}
 
 			dx_release(&p_converter);
 			dx_release(&p_source);
@@ -822,7 +829,7 @@ namespace mkaul {
 		bool DirectxGraphics::load_bitmap_from_resource(
 			HINSTANCE hinst,
 			const char* res_name,
-			_Out_ Bitmap* p_bitmap,
+			_Out_ Bitmap** pp_bitmap,
 			const char* res_type
 		)
 		{
@@ -849,6 +856,7 @@ namespace mkaul {
 
 			// ビットマップ(Direct2D)のポインタ
 			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
+			*pp_bitmap = nullptr;
 
 			// リソースを探す
 			img_res_handle = ::FindResourceA(
@@ -939,7 +947,8 @@ namespace mkaul {
 
 			// ビットマップの作成に成功した場合
 			if (SUCCEEDED(hresult)) {
-				p_bitmap->set_data(p_d2d1_bitmap);
+				*pp_bitmap = new DirectxBitmap;
+				(*pp_bitmap)->set_data(p_d2d1_bitmap);
 			}
 			// ビットマップの作成に失敗した場合
 			else {

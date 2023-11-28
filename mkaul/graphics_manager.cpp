@@ -8,7 +8,7 @@
 
 namespace mkaul {
 	namespace graphics {
-		// •`‰æŠÂ‹«‚Ì—pˆÓ
+		// æç”»ç’°å¢ƒã®ç”¨æ„
 		bool Manager::startup(GraphicMethod method_)
 		{
 			bool result = false;
@@ -33,7 +33,7 @@ namespace mkaul {
 		}
 
 
-		// •`‰æŠÂ‹«‚Ì”jŠü
+		// æç”»ç’°å¢ƒã®ç ´æ£„
 		bool Manager::shutdown()
 		{
 			switch (method) {
@@ -62,25 +62,6 @@ namespace mkaul {
 
 			case GraphicMethod::Directx:
 				*pp_graphics = new DirectxGraphics;
-				break;
-
-			default:
-				return false;
-			}
-
-			return true;
-		}
-
-
-		bool Manager::create_bitmap(Bitmap** pp_bitmap)
-		{
-			switch (method) {
-			case GraphicMethod::Gdiplus:
-				*pp_bitmap = new GdiplusBitmap;
-				break;
-
-			case GraphicMethod::Directx:
-				*pp_bitmap = new DirectxBitmap;
 				break;
 
 			default:

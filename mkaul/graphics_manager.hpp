@@ -9,7 +9,7 @@ namespace mkaul {
 	namespace graphics {
 		class Manager final {
 		public:
-			// •`‰æ•û®
+			// æç”»æ–¹å¼
 			enum class GraphicMethod {
 				Null,
 				Gdiplus,
@@ -19,20 +19,17 @@ namespace mkaul {
 			Manager() = delete;
 			~Manager() = delete;
 
-			// •`‰æŠÂ‹«‚Ì—pˆÓ
+			// æç”»ç’°å¢ƒã®ç”¨æ„
 			static bool startup(GraphicMethod method_ = GraphicMethod::Gdiplus);
-			// •`‰æŠÂ‹«‚Ì”jŠü
+			// æç”»ç’°å¢ƒã®ç ´æ£„
 			static bool shutdown();
 
 			static auto get_method() { return method; }
 
-			// ƒOƒ‰ƒtƒBƒbƒNƒXì¬
+			// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ä½œæˆ
 			static bool create_graphics(Graphics** pp_graphics);
 
-			// ƒrƒbƒgƒ}ƒbƒvì¬
-			static bool create_bitmap(Bitmap** pp_bitmap);
-
-			// ƒWƒIƒƒgƒŠì¬
+			// ã‚¸ã‚ªãƒ¡ãƒˆãƒªä½œæˆ
 			static bool create_path(Path** pp_path);
 
 		private:

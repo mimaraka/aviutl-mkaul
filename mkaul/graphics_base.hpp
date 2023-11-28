@@ -142,23 +142,23 @@ namespace mkaul {
 			) = 0;
 
 			// 空のビットマップを作成
-			virtual bool initialize_bitmap(
+			virtual bool create_bitmap(
 				const Size<unsigned>& size,
-				_Out_ Bitmap* p_bitmap,
+				_Out_ Bitmap** pp_bitmap,
 				const ColorF& color = 0
 			) = 0;
 
 			// ファイルからビットマップを作成
 			virtual bool load_bitmap_from_filename(
 				const std::filesystem::path& path,
-				_Out_ Bitmap* p_bitmap
+				_Out_ Bitmap** pp_bitmap
 			) = 0;
 
 			// リソースからビットマップを作成
 			virtual bool load_bitmap_from_resource(
 				HINSTANCE hinst,
 				const char* res_name,
-				_Out_ Bitmap* p_bitmap,
+				_Out_ Bitmap** pp_bitmap,
 				const char* res_type = RT_BITMAP
 			) = 0;
 

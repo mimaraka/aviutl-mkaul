@@ -1,6 +1,7 @@
 #define NOMINMAX
-#include <strconv2/strconv2.h>
 #include "graphics_gdiplus.hpp"
+#include "bitmap_gdiplus.hpp"
+#include <strconv2/strconv2.h>
 
 
 
@@ -31,7 +32,7 @@ namespace mkaul {
 
 
 		// Strokeの情報をPenに反映
-		void GdiplusGraphics::apply_pen_style(
+		void GdiplusGraphics::get_gdip_pen(
 			const ColorF& color,
 			const Stroke& stroke,
 			_Out_ Gdiplus::Pen* p_pen
@@ -64,14 +65,14 @@ namespace mkaul {
 
 
 		// Brushの色を反映
-		void GdiplusGraphics::apply_brush_color(
+		void GdiplusGraphics::get_gdip_brush(
 			const ColorF& color,
-			_Out_ Gdiplus::SolidBrush* p_brush_
+			_Out_ Gdiplus::SolidBrush* p_brush
 		) noexcept
 		{
 			ColorI8 col_i8{ color };
 
-			p_brush_->SetColor(
+			p_brush->SetColor(
 				Gdiplus::Color(
 					(BYTE)col_i8.get_a(),
 					(BYTE)col_i8.get_r(),
@@ -79,6 +80,26 @@ namespace mkaul {
 					(BYTE)col_i8.get_b()
 				)
 			);
+		}
+
+
+		void GdiplusGraphics::get_gdip_font(
+			const Font& font,
+			_Out_ Gdiplus::Font** pp_font
+		) noexcept
+		{
+			Gdiplus::FontStyle font_style = Gdiplus::FontStyleRegular;
+			if ((bool)(font.style & flag::FontStyle::Italic)) {
+				font_style = (Gdiplus::FontStyle)(font_style | Gdiplus::FontStyleItalic);
+			}
+			if (500 < font.weight) {
+				font_style = (Gdiplus::FontStyle)(font_style | Gdiplus::FontStyleBold);
+			}
+			if ((bool)(font.style & flag::FontStyle::UnderLine)) {
+				font_style = (Gdiplus::FontStyle)(font_style | Gdiplus::FontStyleUnderline);
+			}
+			auto f = Gdiplus::Font{ ::sjis_to_wide(font.family_name).c_str(), font.height, font_style };
+			*pp_font = f.Clone();
 		}
 
 
@@ -166,7 +187,7 @@ namespace mkaul {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 				RECT rect;
 
-				apply_brush_color(color, &brush);
+				get_gdip_brush(color, &brush);
 
 				if (::GetClientRect(hwnd_, &rect)) {
 					// 境界付近が切れるので広めにとる
@@ -194,7 +215,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(color, stroke, &pen);
+				get_gdip_pen(color, stroke, &pen);
 
 				p_graphics_buffer_->DrawLine(
 					&pen,
@@ -215,7 +236,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(color, stroke, &pen);
+				get_gdip_pen(color, stroke, &pen);
 
 				auto gdiplus_points = new Gdiplus::PointF[n_points];
 
@@ -247,7 +268,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(color, stroke, &pen);
+				get_gdip_pen(color, stroke, &pen);
 
 				p_graphics_buffer_->DrawBezier(
 					&pen,
@@ -270,7 +291,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(color, stroke, &pen);
+				get_gdip_pen(color, stroke, &pen);
 
 				auto gdip_points = new Gdiplus::PointF[n_points];
 
@@ -301,7 +322,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(color, stroke, &pen);
+				get_gdip_pen(color, stroke, &pen);
 				
 				// 角丸矩形を描画
 				if (0 < round_radius_x or 0 < round_radius_y) {
@@ -393,7 +414,7 @@ namespace mkaul {
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 
-				apply_brush_color(color, &brush);
+				get_gdip_brush(color, &brush);
 				
 				// 角丸矩形を描画
 				if (0 < round_radius_x or 0 < round_radius_y) {
@@ -485,7 +506,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(color, stroke, &pen);
+				get_gdip_pen(color, stroke, &pen);
 
 				Gdiplus::RectF rect_f{
 					point.x - radius_x,
@@ -508,7 +529,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(color, stroke, &pen);
+				get_gdip_pen(color, stroke, &pen);
 
 				Gdiplus::RectF rect_f{
 					rectangle.left,
@@ -532,7 +553,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
-				apply_brush_color(color, &brush);
+				get_gdip_brush(color, &brush);
 
 				Gdiplus::RectF rect_f{
 					point.x - radius_x,
@@ -554,7 +575,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
-				apply_brush_color(color, &brush);
+				get_gdip_brush(color, &brush);
 
 				Gdiplus::RectF rect_f{
 					rectangle.left,
@@ -577,7 +598,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
-				apply_pen_style(color, stroke, &pen);
+				get_gdip_pen(color, stroke, &pen);
 
 				p_graphics_buffer_->DrawPath(
 					&pen,
@@ -595,7 +616,7 @@ namespace mkaul {
 		{
 			if (drawing_ and p_graphics_buffer_) {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
-				apply_brush_color(color, &brush);
+				get_gdip_brush(color, &brush);
 
 				p_graphics_buffer_->FillPath(
 					&brush,
@@ -606,16 +627,18 @@ namespace mkaul {
 
 
 		// 空のビットマップを作成
-		bool GdiplusGraphics::initialize_bitmap(
+		bool GdiplusGraphics::create_bitmap(
 			const Size<unsigned>& size,
-			_Out_ Bitmap* p_bitmap,
+			_Out_ Bitmap** pp_bitmap,
 			const ColorF& color
 		)
 		{
 			auto p_gdip_bitmap = new Gdiplus::Bitmap{ (INT)size.width, (INT)size.height };
+			*pp_bitmap = nullptr;
 
 			if (p_gdip_bitmap and p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
-				p_bitmap->set_data(p_gdip_bitmap);
+				*pp_bitmap = new GdiplusBitmap;
+				(*pp_bitmap)->set_data(p_gdip_bitmap);
 				return true;
 			}
 			else return false;
@@ -625,14 +648,16 @@ namespace mkaul {
 		// ファイルからビットマップを作成
 		bool GdiplusGraphics::load_bitmap_from_filename(
 			const std::filesystem::path& path,
-			_Out_ Bitmap* p_bitmap
+			_Out_ Bitmap** pp_bitmap
 		)
 		{
 			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
+			*pp_bitmap = nullptr;
 			p_gdip_bitmap = new Gdiplus::Bitmap{ path.c_str() };
 
 			if (p_gdip_bitmap and p_gdip_bitmap->GetWidth() != 0 and p_gdip_bitmap->GetHeight() != 0) {
-				p_bitmap->set_data(p_gdip_bitmap);
+				*pp_bitmap = new GdiplusBitmap;
+				(*pp_bitmap)->set_data(p_gdip_bitmap);
 				return true;
 			}
 			else return false;
@@ -643,13 +668,14 @@ namespace mkaul {
 		bool GdiplusGraphics::load_bitmap_from_resource(
 			HINSTANCE hinst,
 			const char* res_name,
-			_Out_ Bitmap* p_bitmap,
+			_Out_ Bitmap** pp_bitmap,
 			const char* res_type
 		)
 		{
 			wchar_t* wc = nullptr;
 			// ビットマップ(GDI+)のポインタ
 			Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
+			*pp_bitmap = nullptr;
 
 			// リソースタイプがBITMAPのとき
 			if (res_type == RT_BITMAP) {
@@ -743,7 +769,8 @@ namespace mkaul {
 
 			// ビットマップの作成に成功した場合
 			if (p_gdip_bitmap and p_gdip_bitmap->GetLastStatus() == Gdiplus::Ok) {
-				p_bitmap->set_data(p_gdip_bitmap);
+				*pp_bitmap = new GdiplusBitmap;
+				(*pp_bitmap)->set_data(p_gdip_bitmap);
 				return true;
 			}
 			else return false;
@@ -827,14 +854,10 @@ namespace mkaul {
 		)
 		{
 			Gdiplus::SolidBrush brush{ Gdiplus::Color{0} };
-			apply_brush_color(color, &brush);
+			get_gdip_brush(color, &brush);
 
-			Gdiplus::Font gdip_font{
-				::sjis_to_wide(font.family_name).c_str(),
-				font.height,
-				Gdiplus::FontStyleRegular,
-				Gdiplus::UnitPixel
-			};
+			Gdiplus::Font* p_gdip_font = nullptr;
+			get_gdip_font(font, &p_gdip_font);
 
 			Gdiplus::StringFormat string_format;
 			string_format.SetAlignment(Gdiplus::StringAlignmentCenter);
@@ -843,10 +866,11 @@ namespace mkaul {
 			p_graphics_buffer_->DrawString(
 				::sjis_to_wide(text).c_str(),
 				-1,
-				&gdip_font,
+				p_gdip_font,
 				point.to<Gdiplus::PointF>(),
 				&brush
 			);
+			delete p_gdip_font;
 		}
 
 
@@ -861,14 +885,10 @@ namespace mkaul {
 		)
 		{
 			Gdiplus::SolidBrush brush{ Gdiplus::Color{0} };
-			apply_brush_color(color, &brush);
+			get_gdip_brush(color, &brush);
 
-			Gdiplus::Font gdip_font{
-				::sjis_to_wide(font.family_name).c_str(),
-				font.height,
-				Gdiplus::FontStyleRegular,
-				Gdiplus::UnitPixel
-			};
+			Gdiplus::Font* p_gdip_font = nullptr;
+			get_gdip_font(font, &p_gdip_font);
 
 			Gdiplus::StringFormat string_format;
 			string_format.SetAlignment(Gdiplus::StringAlignmentCenter);
@@ -890,7 +910,7 @@ namespace mkaul {
 				p_graphics_buffer_->MeasureCharacterRanges(
 					::sjis_to_wide(text).c_str(),
 					-1,
-					&gdip_font,
+					p_gdip_font,
 					rect_wnd,
 					&string_format,
 					1,
@@ -904,6 +924,7 @@ namespace mkaul {
 				rect_text.GetSize(&size_rect_text);
 
 				if (fit_size and size_rect.Width < size_rect_text.Width) {
+					delete p_gdip_font;
 					Font new_font{
 						font.height* (size_rect.Width / size_rect_text.Width),
 						font.family_name,
@@ -916,11 +937,12 @@ namespace mkaul {
 					p_graphics_buffer_->DrawString(
 						::sjis_to_wide(text).c_str(),
 						-1,
-						&gdip_font,
+						p_gdip_font,
 						rect_wnd,
 						&string_format,
 						&brush
 					);
+					delete p_gdip_font;
 				}
 			}
 		}

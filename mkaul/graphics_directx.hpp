@@ -159,23 +159,23 @@ namespace mkaul {
 			) override;
 
 			// 空のビットマップを作成
-			bool initialize_bitmap(
+			bool create_bitmap(
 				const Size<unsigned>& size,
-				_Out_ Bitmap* p_bitmap,
+				_Out_ Bitmap** pp_bitmap,
 				const ColorF& color = 0
 			) override;
 
 			// ファイルからビットマップを作成
 			bool load_bitmap_from_filename(
 				const std::filesystem::path& path,
-				_Out_ Bitmap* p_bitmap
+				_Out_ Bitmap** pp_bitmap
 			) override;
 
 			// リソースからビットマップを作成
 			bool load_bitmap_from_resource(
 				HINSTANCE hinst,
 				const char* res_name,
-				_Out_ Bitmap* p_bitmap,
+				_Out_ Bitmap** pp_bitmap,
 				const char* res_type = RT_BITMAP
 			) override;
 
