@@ -1,4 +1,4 @@
-#include "graphics_manager.hpp"
+#include "graphics_factory.hpp"
 #include "bitmap_gdiplus.hpp"
 #include "bitmap_directx.hpp"
 #include "path_gdiplus.hpp"
@@ -9,11 +9,10 @@
 namespace mkaul {
 	namespace graphics {
 		// 描画環境の用意
-		bool Manager::startup(GraphicMethod method_)
-		{
+		bool Factory::startup(GraphicMethod method) noexcept {
 			bool result = false;
 
-			switch (method_) {
+			switch (method) {
 			case GraphicMethod::Gdiplus:
 				result = GdiplusGraphics::startup();
 				break;
@@ -27,16 +26,15 @@ namespace mkaul {
 			}
 
 			if (result)
-				method = method_;
+				method_ = method;
 
 			return result;
 		}
 
 
 		// 描画環境の破棄
-		bool Manager::shutdown()
-		{
-			switch (method) {
+		bool Factory::shutdown() noexcept {
+			switch (method_) {
 			case GraphicMethod::Gdiplus:
 				GdiplusGraphics::shutdown();
 				break;
@@ -53,41 +51,31 @@ namespace mkaul {
 		}
 
 
-		bool Manager::create_graphics(Graphics** pp_graphics)
-		{
-			switch (method) {
+		std::unique_ptr<Graphics> Factory::create_graphics() noexcept {
+			switch (method_) {
 			case GraphicMethod::Gdiplus:
-				*pp_graphics = new GdiplusGraphics;
-				break;
+				return std::make_unique<GdiplusGraphics>();
 
 			case GraphicMethod::Directx:
-				*pp_graphics = new DirectxGraphics;
-				break;
+				return std::make_unique<DirectxGraphics>();
 
 			default:
-				return false;
+				return nullptr;
 			}
-
-			return true;
 		}
 
 
-		bool Manager::create_path(Path** pp_path)
-		{
-			switch (method) {
+		std::unique_ptr<Path> Factory::create_path() noexcept {
+			switch (method_) {
 			case GraphicMethod::Gdiplus:
-				*pp_path = new GdiplusPath;
-				break;
+				return std::make_unique<GdiplusPath>();
 
 			case GraphicMethod::Directx:
-				*pp_path = new DirectxPath;
-				break;
+				return std::make_unique<DirectxPath>();
 
 			default:
-				return false;
+				return nullptr;
 			}
-
-			return true;
 		}
 	}
 }
