@@ -4,7 +4,7 @@
 
 namespace mkaul {
 	namespace graphics {
-		// ƒrƒbƒgƒ}ƒbƒv(’ŠÛƒNƒ‰ƒX)
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—(æŠ½è±¡ã‚¯ãƒ©ã‚¹)
 		struct Bitmap {
 		protected:
 			void* data;
@@ -13,20 +13,19 @@ namespace mkaul {
 			Bitmap() :
 				data(nullptr)
 			{}
+			virtual ~Bitmap() {}
 
-			// ƒrƒbƒgƒ}ƒbƒv‚ğ”jŠü
-			virtual void release() = 0;
+			virtual void release() noexcept = 0;
 
-			// ƒf[ƒ^‚ğæ“¾
+			// ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
 			template <typename Ptr>
-			Ptr get_data() const
-			{
+			Ptr get_data() const {
 				return reinterpret_cast<Ptr>(data);
 			}
-			// ƒf[ƒ^‚ğİ’è
+			// ãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®š
 			void set_data(void* ptr) { data = ptr; };
 
-			// •E‚‚³‚ğæ“¾
+			// å¹…ãƒ»é«˜ã•ã‚’å–å¾—
 			virtual size_t get_width() const = 0;
 			virtual size_t get_height() const = 0;
 		};

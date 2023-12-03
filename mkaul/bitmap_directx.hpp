@@ -7,12 +7,13 @@
 
 namespace mkaul {
 	namespace graphics {
-		// ビットマップ
+		// 繝薙ャ繝医�槭ャ繝�
 		struct DirectxBitmap : public Bitmap, protected DirectxBase {
 		public:
 			using Bitmap::Bitmap;
+			~DirectxBitmap();
 
-			void release() override;
+			void release() noexcept override;
 
 			size_t get_width() const override;
 			size_t get_height() const override;

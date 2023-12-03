@@ -29,23 +29,23 @@ namespace mkaul {
 				hwnd_(NULL),
 				drawing_(false)
 			{}
+			virtual ~Graphics() {}
 
-			virtual bool init(HWND hwnd) = 0;
-			virtual void exit() = 0;
+			virtual bool init(HWND hwnd) noexcept = 0;
+			virtual void release() noexcept = 0;
+			virtual bool begin_draw() noexcept = 0;
+			virtual bool end_draw() noexcept = 0;
 
-			virtual bool begin_draw() = 0;
-			virtual bool end_draw() = 0;
-
-			bool is_drawing() { return drawing_; }
-			HWND get_hwnd() { return hwnd_; }
+			bool is_drawing() const noexcept { return drawing_; }
+			HWND get_hwnd() const noexcept { return hwnd_; }
 
 			// リサイズ
-			virtual bool resize() = 0;
+			virtual bool resize() noexcept = 0;
 
 			// 背景を塗りつぶし
 			virtual void fill_background(
 				const ColorF& color = 0
-			) = 0;
+			) noexcept = 0;
 
 			// 線を描画
 			virtual void draw_line(
@@ -53,7 +53,7 @@ namespace mkaul {
 				const Point<float>& point_to,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) = 0;
+			) noexcept = 0;
 
 			// 線を描画(複数)
 			virtual void draw_lines(
@@ -61,7 +61,7 @@ namespace mkaul {
 				size_t n_points,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) = 0;
+			) noexcept = 0;
 
 			// ベジェ曲線を描画
 			virtual void draw_bezier(
@@ -71,7 +71,7 @@ namespace mkaul {
 				const Point<float>& point_3,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) = 0;
+			) noexcept = 0;
 
 			// ベジェ曲線を描画(複数)
 			virtual void draw_beziers(
@@ -79,7 +79,7 @@ namespace mkaul {
 				size_t n_points,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) = 0;
+			) noexcept = 0;
 
 			// 矩形を描画(線)
 			virtual void draw_rectangle(
@@ -88,7 +88,7 @@ namespace mkaul {
 				float round_radius_y = 0.f,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) = 0;
+			) noexcept = 0;
 
 			// 矩形を描画(塗り)
 			virtual void fill_rectangle(
@@ -96,7 +96,7 @@ namespace mkaul {
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
 				const ColorF& color = 0
-			) = 0;
+			) noexcept = 0;
 
 			// 楕円を描画(線)(中心点指定)
 			virtual void draw_ellipse(
@@ -105,14 +105,14 @@ namespace mkaul {
 				float radius_y,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) = 0;
+			) noexcept = 0;
 
 			// 楕円を描画(線)(矩形指定)
 			virtual void draw_ellipse(
 				const Rectangle<float>& rectangle,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) = 0;
+			) noexcept = 0;
 
 			// 楕円を描画(塗り)(中心点指定)
 			virtual void fill_ellipse(
@@ -120,47 +120,44 @@ namespace mkaul {
 				float radius_x,
 				float radius_y,
 				const ColorF& color = 0
-			) = 0;
+			) noexcept = 0;
 
 			// 楕円を描画(塗り)(矩形指定)
 			virtual void fill_ellipse(
 				const Rectangle<float>& rectangle,
 				const ColorF& color = 0
-			) = 0;
+			) noexcept = 0;
 
 			// パスを描画(線)
 			virtual void draw_path(
 				const Path* p_path,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) = 0;
+			) noexcept = 0;
 
 			// パスを描画(塗り)
 			virtual void fill_path(
 				const Path* p_path,
 				const ColorF& color = 0
-			) = 0;
+			) noexcept = 0;
 
 			// 空のビットマップを作成
-			virtual bool create_bitmap(
+			virtual std::unique_ptr<Bitmap> create_bitmap(
 				const Size<unsigned>& size,
-				_Out_ Bitmap** pp_bitmap,
 				const ColorF& color = 0
-			) = 0;
+			) noexcept = 0;
 
 			// ファイルからビットマップを作成
-			virtual bool load_bitmap_from_filename(
-				const std::filesystem::path& path,
-				_Out_ Bitmap** pp_bitmap
-			) = 0;
+			virtual std::unique_ptr<Bitmap> load_bitmap_from_filename(
+				const std::filesystem::path& path
+			) noexcept = 0;
 
 			// リソースからビットマップを作成
-			virtual bool load_bitmap_from_resource(
+			virtual std::unique_ptr<Bitmap> load_bitmap_from_resource(
 				HINSTANCE hinst,
 				const char* res_name,
-				_Out_ Bitmap** pp_bitmap,
 				const char* res_type = RT_BITMAP
-			) = 0;
+			) noexcept = 0;
 
 			// ビットマップを描画(アンカーポイント指定)
 			virtual void draw_bitmap(
@@ -168,14 +165,14 @@ namespace mkaul {
 				const Point<float>& point,
 				const AnchorPosition& anchor_pos = AnchorPosition{},
 				float opacity = 1.f
-			) = 0;
+			) noexcept = 0;
 
 			// ビットマップを描画(矩形指定)
 			virtual void draw_bitmap(
 				const Bitmap* p_bitmap,
 				const Rectangle<float>& rect,
 				float opacity = 1.f
-			) = 0;
+			) noexcept = 0;
 
 			// テキストを描画(アンカーポイント指定)
 			virtual void draw_text(
@@ -184,7 +181,7 @@ namespace mkaul {
 				const Font& font = Font{},
 				const AnchorPosition& anchor_pos = AnchorPosition{},
 				const ColorF& color = 0
-			) = 0;
+			) noexcept = 0;
 
 			// テキストを描画(矩形指定)
 			virtual void draw_text(
@@ -194,7 +191,7 @@ namespace mkaul {
 				const AnchorPosition& anchor_pos = AnchorPosition{},
 				bool fit_size = true,
 				const ColorF& color = 0
-			) = 0;
+			) noexcept = 0;
 		};
 	}
 }

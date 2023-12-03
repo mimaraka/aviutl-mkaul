@@ -8,21 +8,21 @@
 
 namespace mkaul {
 	namespace graphics {
-		void GdiplusBitmap::release()
-		{
+		GdiplusBitmap::~GdiplusBitmap() {
+			release();
+		}
+
+		void GdiplusBitmap::release() noexcept {
 			gdip_release(reinterpret_cast<Gdiplus::Bitmap**>(&data));
 		}
 
-
-		size_t GdiplusBitmap::get_width() const
-		{
-			return reinterpret_cast<Gdiplus::Bitmap*>(data)->GetWidth();
+		size_t GdiplusBitmap::get_width() const {
+			return get_data<Gdiplus::Bitmap*>()->GetWidth();
 		}
 
 
-		size_t GdiplusBitmap::get_height() const
-		{
-			return reinterpret_cast<Gdiplus::Bitmap*>(data)->GetHeight();
+		size_t GdiplusBitmap::get_height() const {
+			return get_data<Gdiplus::Bitmap*>()->GetHeight();
 		}
 	}
 }

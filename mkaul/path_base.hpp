@@ -7,36 +7,37 @@
 
 namespace mkaul {
 	namespace graphics {
-		// パス
+		// 繝代せ
 		struct Path {
 		protected:
-			void* data[2];
-			Point<float> pt_last;
+			void* data_[2];
+			Point<float> pt_last_;
 
-			void ellipse_pos(const Size<float>& size, float angle, Point<float>* p_pt);
+			static void ellipse_pos(const Size<float>& size, float angle, Point<float>* p_pt);
 
 		public:
-			Path() : data(), pt_last() {}
-
 			enum class FigureEnd {
 				Open,
 				Closed
 			};
 
-			virtual void release() = 0;
+			Path() : data_(), pt_last_() {}
+			virtual ~Path() {}
+
+			virtual void release() noexcept = 0;
 
 			template <typename Ptr>
-			Ptr get_data(int idx) const { return reinterpret_cast<Ptr>(data[idx]); }
+			Ptr get_data(int idx) const noexcept { return reinterpret_cast<Ptr>(data_[idx]); }
 
-			virtual bool begin(const Point<float>& pt) = 0;
-			virtual void end(FigureEnd fe = FigureEnd::Closed) = 0;
+			virtual bool begin(const Point<float>& pt) noexcept = 0;
+			virtual void end(FigureEnd fe = FigureEnd::Closed) noexcept = 0;
 
-			// 弧を追加
-			virtual void add_arc(const Size<float>& size, float angle_start, float angle_sweep) = 0;
-			// 線を追加
-			virtual void add_line(const Point<float>& pt) = 0;
-			// ベジェを追加
-			virtual void add_bezier(const Point<float>& pt_0, const Point<float>& pt_1, const Point<float>& pt_2) = 0;
+			// 蠑ｧ繧定ｿｽ蜉
+			virtual void add_arc(const Size<float>& size, float angle_start, float angle_sweep) noexcept = 0;
+			// 邱壹ｒ霑ｽ蜉
+			virtual void add_line(const Point<float>& pt) noexcept = 0;
+			// 繝吶ず繧ｧ繧定ｿｽ蜉
+			virtual void add_bezier(const Point<float>& pt_0, const Point<float>& pt_1, const Point<float>& pt_2) noexcept = 0;
 		};
 	}
 }

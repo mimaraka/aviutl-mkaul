@@ -7,8 +7,7 @@
 namespace mkaul {
 	namespace graphics {
 		// 描画環境の用意
-		bool DirectxGraphics::startup()
-		{
+		bool DirectxGraphics::startup() noexcept {
 			HRESULT hresult;
 
 			// ID2D1Factoryの作成
@@ -47,8 +46,7 @@ namespace mkaul {
 
 
 		// 描画環境の破棄
-		void DirectxGraphics::shutdown()
-		{
+		void DirectxGraphics::shutdown() noexcept {
 			dx_release(&p_imaging_factory_);
 			dx_release(&p_write_factory_);
 			dx_release(&p_factory_);
@@ -59,8 +57,7 @@ namespace mkaul {
 		void DirectxGraphics::apply_stroke_style(
 			const Stroke& stroke,
 			_Out_ ID2D1StrokeStyle** pp_stroke_style
-		) noexcept
-		{
+		) noexcept {
 			*pp_stroke_style = nullptr;
 			if (p_factory_) p_factory_->CreateStrokeStyle(
 				D2D1::StrokeStyleProperties(
@@ -85,8 +82,7 @@ namespace mkaul {
 			const D2D1_SIZE_F& target_size,
 			const AnchorPosition& anchor_pos,
 			_Out_ IDWriteTextLayout** pp_text_layout
-		) noexcept
-		{
+		) noexcept {
 			HRESULT hresult = S_OK;
 			IDWriteTextFormat* p_text_format = nullptr;
 			DWRITE_FONT_STYLE font_style = DWRITE_FONT_STYLE_NORMAL;
@@ -163,8 +159,7 @@ namespace mkaul {
 
 
 		// 初期化
-		bool DirectxGraphics::init(HWND hwnd)
-		{
+		bool DirectxGraphics::init(HWND hwnd) noexcept {
 			RECT rect;
 
 			if (::GetClientRect(hwnd, &rect)) {
@@ -198,17 +193,14 @@ namespace mkaul {
 		}
 
 
-		// 終了
-		void DirectxGraphics::exit()
-		{
+		void DirectxGraphics::release() noexcept {
 			dx_release(&p_brush_);
 			dx_release(&p_render_target_);
 		}
 
 
 		// 描画開始
-		bool DirectxGraphics::begin_draw()
-		{
+		bool DirectxGraphics::begin_draw() noexcept {
 			if (!drawing_) {
 				auto hdc = ::BeginPaint(hwnd_, &paint_struct_);
 
@@ -224,8 +216,7 @@ namespace mkaul {
 
 
 		// 描画終了
-		bool DirectxGraphics::end_draw()
-		{
+		bool DirectxGraphics::end_draw() noexcept {
 			if (drawing_) {
 				auto hresult = p_render_target_->EndDraw();
 				::EndPaint(hwnd_, &paint_struct_);
@@ -239,14 +230,13 @@ namespace mkaul {
 
 
 		// リサイズ
-		bool DirectxGraphics::resize()
-		{
+		bool DirectxGraphics::resize() noexcept {
 			RECT rect;
 
 			if (::GetClientRect(hwnd_, &rect)) {
 				D2D1_SIZE_U pixel_size = {
-				(unsigned)(rect.right - rect.left),
-				(unsigned)(rect.bottom - rect.top)
+					(uint32_t)(rect.right - rect.left),
+					(uint32_t)(rect.bottom - rect.top)
 				};
 
 				if (p_render_target_) {
@@ -261,8 +251,7 @@ namespace mkaul {
 		// 背景を塗りつぶし
 		void DirectxGraphics::fill_background(
 			const ColorF& color
-		)
-		{
+		) noexcept {
 			if (drawing_ and p_render_target_ and p_brush_) {
 				RECT rect;
 
@@ -289,8 +278,7 @@ namespace mkaul {
 			const Point<float>& pt_to,
 			const ColorF& color,
 			const Stroke& stroke
-		)
-		{
+		) noexcept {
 			if (drawing_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				apply_stroke_style(stroke, &stroke_style);
@@ -317,8 +305,7 @@ namespace mkaul {
 			size_t n_pts,
 			const ColorF& color,
 			const Stroke& stroke 
-		)
-		{
+		) noexcept {
 			if (drawing_) {
 				ID2D1GeometrySink* sink = nullptr;
 				ID2D1PathGeometry* path_lines = nullptr;
@@ -375,8 +362,7 @@ namespace mkaul {
 			const Point<float>& pt_3,
 			const ColorF& color,
 			const Stroke& stroke
-		)
-		{
+		) noexcept {
 			if (drawing_) {
 				ID2D1GeometrySink* sink = nullptr;
 				ID2D1PathGeometry* path_bezier = nullptr;
@@ -428,8 +414,7 @@ namespace mkaul {
 			size_t n_pts,
 			const ColorF& color,
 			const Stroke& stroke
-		)
-		{
+		) noexcept {
 			if (drawing_) {
 				ID2D1GeometrySink* sink = nullptr;
 				ID2D1PathGeometry* path_bezier = nullptr;
@@ -494,8 +479,7 @@ namespace mkaul {
 			float round_radius_y,
 			const ColorF& color,
 			const Stroke& stroke
-		)
-		{
+		) noexcept {
 			if (drawing_ and p_render_target_ and p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				apply_stroke_style(stroke, &stroke_style);
@@ -544,8 +528,7 @@ namespace mkaul {
 			float round_radius_x,
 			float round_radius_y,
 			const ColorF& color
-		)
-		{
+		) noexcept {
 			if (drawing_ and p_render_target_ and p_brush_) {
 				p_brush_->SetColor(color.d2d1_colorf());
 
@@ -587,8 +570,7 @@ namespace mkaul {
 			float radius_y,
 			const ColorF& color,
 			const Stroke& stroke
-		)
-		{
+		) noexcept {
 			if (drawing_ and p_render_target_ and p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				apply_stroke_style(stroke, &stroke_style);
@@ -616,8 +598,7 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			const ColorF& color,
 			const Stroke& stroke
-		)
-		{
+		) noexcept {
 			if (drawing_ and p_render_target_ and p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				apply_stroke_style(stroke, &stroke_style);
@@ -649,8 +630,7 @@ namespace mkaul {
 			float radius_x,
 			float radius_y,
 			const ColorF& color
-		)
-		{
+		) noexcept {
 			if (drawing_ and p_render_target_ and p_brush_) {
 				p_brush_->SetColor(color.d2d1_colorf());
 
@@ -670,8 +650,7 @@ namespace mkaul {
 		void DirectxGraphics::fill_ellipse(
 			const Rectangle<float>& rect,
 			const ColorF& color
-		)
-		{
+		) noexcept {
 			if (drawing_ and p_render_target_ and p_brush_) {
 				p_brush_->SetColor(color.d2d1_colorf());
 
@@ -695,8 +674,7 @@ namespace mkaul {
 			const Path* p_path,
 			const ColorF& color,
 			const Stroke& stroke
-		)
-		{
+		) noexcept {
 			if (drawing_ and p_render_target_ and p_brush_) {
 				ID2D1StrokeStyle* stroke_style = nullptr;
 				apply_stroke_style(stroke, &stroke_style);
@@ -717,8 +695,7 @@ namespace mkaul {
 		void DirectxGraphics::fill_path(
 			const Path* p_path,
 			const ColorF& color
-		)
-		{
+		) noexcept {
 			if (drawing_ and p_render_target_ and p_brush_) {
 				p_brush_->SetColor(color.d2d1_colorf());
 
@@ -731,13 +708,10 @@ namespace mkaul {
 
 
 		// 空のビットマップを作成
-		bool DirectxGraphics::create_bitmap(
+		std::unique_ptr<Bitmap> DirectxGraphics::create_bitmap(
 			const Size<unsigned>& size,
-			_Out_ Bitmap** pp_bitmap,
 			const ColorF& color
-		)
-		{
-			*pp_bitmap = nullptr;
+		) noexcept {
 			if (p_render_target_) {
 				ID2D1Bitmap* p_d2d1_bitmap = nullptr;
 
@@ -748,29 +722,27 @@ namespace mkaul {
 				);
 
 				if (SUCCEEDED(hresult)) {
-					*pp_bitmap = new DirectxBitmap;
-					(*pp_bitmap)->set_data(p_d2d1_bitmap);
-					return true;
+					auto p_bitmap = std::make_unique<DirectxBitmap>();
+					p_bitmap->set_data(p_d2d1_bitmap);
+					return p_bitmap;
 				}
 
 				dx_release(&p_d2d1_bitmap);
 			}
-			return false;
+			return nullptr;
 		}
 
 
 		// ファイルからビットマップを作成
-		bool DirectxGraphics::load_bitmap_from_filename(
-			const std::filesystem::path& path,
-			_Out_ Bitmap** pp_bitmap
-		)
-		{
+		std::unique_ptr<Bitmap> DirectxGraphics::load_bitmap_from_filename(
+			const std::filesystem::path& path
+		) noexcept {
 			IWICBitmapDecoder* p_decoder = nullptr;
 			IWICBitmapFrameDecode* p_source = nullptr;
 			IWICFormatConverter* p_converter = nullptr;
 			HRESULT hresult = E_FAIL;
 			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
-			*pp_bitmap = nullptr;
+			std::unique_ptr<DirectxBitmap> p_bitmap;
 
 			// デコーダを生成
 			hresult = p_imaging_factory_->CreateDecoderFromFilename(
@@ -808,10 +780,9 @@ namespace mkaul {
 					&p_d2d1_bitmap
 				);
 			}
-
 			if (SUCCEEDED(hresult)) {
-				*pp_bitmap = new DirectxBitmap;
-				(*pp_bitmap)->set_data(p_d2d1_bitmap);
+				p_bitmap = std::make_unique<DirectxBitmap>();
+				p_bitmap->set_data(p_d2d1_bitmap);
 			}
 			else {
 				dx_release(&p_d2d1_bitmap);
@@ -821,18 +792,16 @@ namespace mkaul {
 			dx_release(&p_source);
 			dx_release(&p_decoder);
 
-			return SUCCEEDED(hresult);
+			return p_bitmap;
 		}
 
 
 		// リソースからビットマップを作成
-		bool DirectxGraphics::load_bitmap_from_resource(
+		std::unique_ptr<Bitmap> DirectxGraphics::load_bitmap_from_resource(
 			HINSTANCE hinst,
 			const char* res_name,
-			_Out_ Bitmap** pp_bitmap,
 			const char* res_type
-		)
-		{
+		) noexcept {
 			// ビットマップデコーダ
 			IWICBitmapDecoder* p_decoder = nullptr;
 			// ビットマップのフレーム
@@ -856,7 +825,7 @@ namespace mkaul {
 
 			// ビットマップ(Direct2D)のポインタ
 			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
-			*pp_bitmap = nullptr;
+			std::unique_ptr<Bitmap> p_bitmap;
 
 			// リソースを探す
 			img_res_handle = ::FindResourceA(
@@ -929,7 +898,6 @@ namespace mkaul {
 					WICBitmapPaletteTypeMedianCut
 				);
 			}
-
 			// フォーマットコンバータの初期化に成功した場合
 			if (SUCCEEDED(hresult)) {
 				if (p_render_target_) {
@@ -944,11 +912,10 @@ namespace mkaul {
 					hresult = E_FAIL;
 				}
 			}
-
 			// ビットマップの作成に成功した場合
 			if (SUCCEEDED(hresult)) {
-				*pp_bitmap = new DirectxBitmap;
-				(*pp_bitmap)->set_data(p_d2d1_bitmap);
+				p_bitmap = std::make_unique<DirectxBitmap>();
+				p_bitmap->set_data(p_d2d1_bitmap);
 			}
 			// ビットマップの作成に失敗した場合
 			else {
@@ -962,7 +929,7 @@ namespace mkaul {
 			dx_release(&p_decoder);
 			dx_release(&p_stream);
 
-			return SUCCEEDED(hresult);
+			return p_bitmap;
 		}
 
 
@@ -973,8 +940,7 @@ namespace mkaul {
 			const Point<float>& point,
 			const AnchorPosition& anchor_pos,
 			float opacity
-		)
-		{
+		) noexcept {
 			if (drawing_) {
 				auto p_d2d1_bitmap = p_bitmap->get_data<ID2D1Bitmap*>();
 				D2D1_RECT_F rect_f;
@@ -1034,8 +1000,7 @@ namespace mkaul {
 			const Bitmap* p_bitmap,
 			const Rectangle<float>& rect,
 			float opacity
-		)
-		{
+		) noexcept {
 			auto p_d2d1_bitmap = p_bitmap->get_data<ID2D1Bitmap*>();
 
 			if (drawing_ and p_d2d1_bitmap and p_render_target_) {
@@ -1060,8 +1025,7 @@ namespace mkaul {
 			const Font& font,
 			const AnchorPosition& anchor_pos,
 			const ColorF& color
-		)
-		{
+		) noexcept {
 			
 		}
 
@@ -1073,8 +1037,7 @@ namespace mkaul {
 			const AnchorPosition& anchor_pos,
 			bool fit_size,
 			const ColorF& color
-		)
-		{
+		) noexcept {
 			HRESULT hresult = S_OK;
 			IDWriteTextLayout* p_text_layout = nullptr;
 			D2D1_SIZE_F target_size = p_render_target_->GetSize();

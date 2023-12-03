@@ -14,17 +14,17 @@ namespace mkaul {
 		class GdiplusGraphics : public Graphics, protected GdiplusBase {
 		private:
 			inline static ULONG_PTR gdiplus_token_ = NULL;
-			Gdiplus::Graphics* p_graphics_buffer_;
-			Gdiplus::Bitmap* p_bitmap_buffer_;
+			std::unique_ptr<Gdiplus::Graphics> p_graphics_buffer_;
+			std::unique_ptr<Gdiplus::Bitmap> p_bitmap_buffer_;
 
 		public:
 			GdiplusGraphics() :
-				p_graphics_buffer_(nullptr),
-				p_bitmap_buffer_(nullptr)
+				p_graphics_buffer_(),
+				p_bitmap_buffer_()
 			{}
 
-			static bool startup();
-			static void shutdown();
+			static bool startup() noexcept;
+			static void shutdown() noexcept;
 
 			// Stroke, ColorからGdiplus::Penを生成
 			static void get_gdip_pen(
@@ -45,22 +45,16 @@ namespace mkaul {
 				_Out_ Gdiplus::Font** pp_font
 			) noexcept;
 
-			// インスタンス初期化
-			bool init(HWND hwnd) override;
-			// インスタンス終了
-			void exit() override;
-
-			// 描画開始
-			bool begin_draw() override;
-			// 描画終了
-			bool end_draw() override;
-
-			bool resize() override { return true; };
+			bool init(HWND hwnd) noexcept override;
+			void release() noexcept override;
+			bool begin_draw() noexcept override;
+			bool end_draw() noexcept override;
+			bool resize() noexcept override { return true; };
 
 			// 背景を塗りつぶし
 			void fill_background(
 				const ColorF& color = 0
-			) override;
+			) noexcept override;
 
 			// 線を描画
 			void draw_line(
@@ -68,7 +62,7 @@ namespace mkaul {
 				const Point<float>& point_to,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) override;
+			) noexcept override;
 
 			// 線を描画(複数)
 			void draw_lines(
@@ -76,7 +70,7 @@ namespace mkaul {
 				size_t n_points,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) override;
+			) noexcept override;
 
 			// ベジェ曲線を描画
 			void draw_bezier(
@@ -86,7 +80,7 @@ namespace mkaul {
 				const Point<float>& point_3,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) override;
+			) noexcept override;
 
 			// ベジェ曲線を描画(複数)
 			void draw_beziers(
@@ -94,7 +88,7 @@ namespace mkaul {
 				size_t n_points,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) override;
+			) noexcept override;
 
 			// 矩形を描画(線)
 			void draw_rectangle(
@@ -103,7 +97,7 @@ namespace mkaul {
 				float round_radius_y = 0.f,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) override;
+			) noexcept override;
 
 			// 矩形を描画(塗り)
 			void fill_rectangle(
@@ -111,7 +105,7 @@ namespace mkaul {
 				float round_radius_x = 0.f,
 				float round_radius_y = 0.f,
 				const ColorF& color = 0
-			) override;
+			) noexcept override;
 
 			// 楕円を描画(線)(中心点指定)
 			void draw_ellipse(
@@ -120,14 +114,14 @@ namespace mkaul {
 				float radius_y,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) override;
+			) noexcept override;
 
 			// 楕円を描画(線)(矩形指定)
 			void draw_ellipse(
 				const Rectangle<float>& rectangle,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) override;
+			) noexcept override;
 
 			// 楕円を描画(塗り)(中心点指定)
 			void fill_ellipse(
@@ -135,47 +129,44 @@ namespace mkaul {
 				float radius_x,
 				float radius_y,
 				const ColorF& color = 0
-			) override;
+			) noexcept override;
 
 			// 楕円を描画(塗り)(矩形指定)
 			void fill_ellipse(
 				const Rectangle<float>& rectangle,
 				const ColorF& color = 0
-			) override;
+			) noexcept override;
 
 			// パスを描画(線)
 			void draw_path(
 				const Path* p_path,
 				const ColorF& color = 0,
 				const Stroke& stroke = Stroke()
-			) override;
+			) noexcept override;
 
 			// パスを描画(塗り)
 			void fill_path(
 				const Path* p_path,
 				const ColorF& color = 0
-			) override;
+			) noexcept override;
 
 			// 空のビットマップを作成
-			bool create_bitmap(
+			std::unique_ptr<Bitmap> create_bitmap(
 				const Size<unsigned>& size,
-				_Out_ Bitmap** pp_bitmap,
 				const ColorF& color = 0
-			) override;
+			) noexcept override;
 
 			// ファイルからビットマップを作成
-			bool load_bitmap_from_filename(
-				const std::filesystem::path& path,
-				_Out_ Bitmap** pp_bitmap
-			) override;
+			std::unique_ptr<Bitmap> load_bitmap_from_filename(
+				const std::filesystem::path& path
+			) noexcept override;
 
 			// リソースからビットマップを作成
-			bool load_bitmap_from_resource(
+			std::unique_ptr<Bitmap> load_bitmap_from_resource(
 				HINSTANCE hinst,
 				const char* res_name,
-				_Out_ Bitmap** pp_bitmap,
 				const char* res_type = RT_BITMAP
-			) override;
+			) noexcept override;
 
 			// ビットマップを描画(アンカーポイント指定)
 			void draw_bitmap(
@@ -183,14 +174,14 @@ namespace mkaul {
 				const Point<float>& point,
 				const AnchorPosition& anchor_pos = AnchorPosition{},
 				float opacity = 1.f
-			) override;
+			) noexcept override;
 
 			// ビットマップを描画(矩形指定)
 			void draw_bitmap(
 				const Bitmap* bitmap,
 				const Rectangle<float>& rect,
 				float opacity = 1.f
-			) override;
+			) noexcept override;
 
 			// テキストを描画(アンカーポイント指定)
 			void draw_text(
@@ -199,7 +190,7 @@ namespace mkaul {
 				const Font& font = Font{},
 				const AnchorPosition& anchor_pos = AnchorPosition{},
 				const ColorF& color = 0
-			) override;
+			) noexcept override;
 
 			// テキストを描画(矩形指定)
 			void draw_text(
@@ -209,7 +200,7 @@ namespace mkaul {
 				const AnchorPosition& anchor_pos = AnchorPosition{},
 				bool fit_size = true,
 				const ColorF& color = 0
-			) override;
+			) noexcept override;
 		};
 	}
 }

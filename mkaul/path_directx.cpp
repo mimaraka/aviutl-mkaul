@@ -8,22 +8,26 @@
 
 namespace mkaul {
 	namespace graphics {
-		void DirectxPath::release()
+		DirectxPath::~DirectxPath() noexcept
 		{
-			auto p_path = reinterpret_cast<ID2D1PathGeometry*>(data[0]);
-			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+			release();
+		}
+
+
+		void DirectxPath::release() noexcept {
+			auto p_path = reinterpret_cast<ID2D1PathGeometry*>(data_[0]);
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data_[1]);
 
 			dx_release(&p_sink);
 			dx_release(&p_path);
 		}
 
 
-		bool DirectxPath::begin(const Point<float>& pt)
-		{
-			auto pp_path = reinterpret_cast<ID2D1PathGeometry**>(&data[0]);
-			auto pp_sink = reinterpret_cast<ID2D1GeometrySink**>(&data[1]);
-			data[0] = nullptr;
-			data[1] = nullptr;
+		bool DirectxPath::begin(const Point<float>& pt) noexcept {
+			auto pp_path = reinterpret_cast<ID2D1PathGeometry**>(&data_[0]);
+			auto pp_sink = reinterpret_cast<ID2D1GeometrySink**>(&data_[1]);
+			data_[0] = nullptr;
+			data_[1] = nullptr;
 
 			auto hresult = DirectxGraphics::get_factory()->CreatePathGeometry(pp_path);
 
@@ -35,7 +39,7 @@ namespace mkaul {
 					pt.to<D2D1_POINT_2F>(),
 					D2D1_FIGURE_BEGIN_FILLED
 				);
-				pt_last = pt;
+				pt_last_ = pt;
 
 				return true;
 			}
@@ -48,9 +52,8 @@ namespace mkaul {
 		}
 
 
-		void DirectxPath::end(FigureEnd fe)
-		{
-			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+		void DirectxPath::end(FigureEnd fe) noexcept {
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data_[1]);
 
 			p_sink->EndFigure((D2D1_FIGURE_END)fe);
 			p_sink->Close();
@@ -62,9 +65,8 @@ namespace mkaul {
 			const Size<float>& size,
 			float angle_start,
 			float angle_sweep
-		)
-		{
-			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+		) noexcept {
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data_[1]);
 
 			if (p_sink) {
 				D2D1_SWEEP_DIRECTION sd;
@@ -81,9 +83,9 @@ namespace mkaul {
 				ellipse_pos(size, angle_start, &pt_ofs_start);
 				ellipse_pos(size, angle_start + angle_sweep, &pt_ofs_end);
 
-				pt_o = pt_last - pt_ofs_start;
+				pt_o = pt_last_ - pt_ofs_start;
 				// 最後の点を更新
-				pt_last = pt_o + pt_ofs_end;
+				pt_last_ = pt_o + pt_ofs_end;
 
 				// 時計回り
 				if (0 < angle_sweep) {
@@ -111,7 +113,7 @@ namespace mkaul {
 
 				p_sink->AddArc(
 					D2D1::ArcSegment(
-						pt_last.to<D2D1_POINT_2F>(),
+						pt_last_.to<D2D1_POINT_2F>(),
 						size.to<D2D1_SIZE_F>(),
 						0.f,
 						sd,
@@ -125,13 +127,12 @@ namespace mkaul {
 		// 線を追加
 		void DirectxPath::add_line(
 			const Point<float>& pt
-		)
-		{
-			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+		) noexcept {
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data_[1]);
 
 			if (p_sink) {
 				// 最後の点を更新
-				pt_last = pt;
+				pt_last_ = pt;
 
 				p_sink->AddLine(
 					pt.to<D2D1_POINT_2F>()
@@ -145,13 +146,12 @@ namespace mkaul {
 			const Point<float>& pt_0,
 			const Point<float>& pt_1,
 			const Point<float>& pt_2
-		)
-		{
-			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data[1]);
+		) noexcept {
+			auto p_sink = reinterpret_cast<ID2D1GeometrySink*>(data_[1]);
 
 			if (p_sink) {
 				// 最後の点を更新
-				pt_last = pt_2;
+				pt_last_ = pt_2;
 
 				p_sink->AddBezier(
 					D2D1::BezierSegment(

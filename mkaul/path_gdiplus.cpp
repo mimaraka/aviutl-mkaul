@@ -8,106 +8,109 @@
 
 namespace mkaul {
 	namespace graphics {
-		// ŠJ•ú
-		void GdiplusPath::release()
-		{
-			gdip_release(reinterpret_cast<Gdiplus::GraphicsPath**>(&data[0]));
+		// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+		GdiplusPath::~GdiplusPath() noexcept {
+			release();
 		}
 
 
-		// ƒpƒX‚ÌŠJn
-		bool GdiplusPath::begin(const Point<float>& pt)
-		{
-			if (!data[0]) {
-				auto p_path = new Gdiplus::GraphicsPath;
-				data[0] = p_path;
+		void GdiplusPath::release() noexcept {
+			gdip_release(reinterpret_cast<Gdiplus::GraphicsPath**>(&data_[0]));
+		}
 
-				pt_last = pt;
 
+		// ãƒ‘ã‚¹ã®é–‹å§‹
+		bool GdiplusPath::begin(const Point<float>& pt) noexcept {
+			if (!data_[0]) {
+				data_[0] = new Gdiplus::GraphicsPath;
+				pt_last_ = pt;
 				return true;
 			}
 			else return false;
 		}
 
 
-		// ƒpƒX‚ÌI—¹
-		void GdiplusPath::end(FigureEnd fe)
-		{
-			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
+		// ãƒ‘ã‚¹ã®çµ‚äº†
+		void GdiplusPath::end(FigureEnd fe) noexcept {
+			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data_[0]);
 
-			if (fe == FigureEnd::Closed)
+			if (fe == FigureEnd::Closed) {
 				p_path->CloseAllFigures();
+			}
 		}
 
 
-		// ŒÊ‚ğ’Ç‰Á
+		// å¼§ã‚’è¿½åŠ 
 		void GdiplusPath::add_arc(
 			const Size<float>& size,
 			float angle_start,
 			float angle_sweep
-		)
-		{
-			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
+		) noexcept {
+			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data_[0]);
 			Point<float> pt_ofs_start, pt_ofs_end, pt_o;
 
-			// Šp“x‚ğ-360d ~ 360d‚Ì”ÍˆÍ‚Éû‚ß‚é
+			// è§’åº¦ã‚’-360d ~ 360dã®ç¯„å›²ã«åã‚ã‚‹
 			angle_sweep = std::fmodf(angle_sweep, 360.f);
 
 			ellipse_pos(size, angle_start, &pt_ofs_start);
 			ellipse_pos(size, angle_start + angle_sweep, &pt_ofs_end);
-			pt_o = pt_last - pt_ofs_start;
-			// ÅŒã‚Ì“_‚ğXV
-			pt_last = pt_o + pt_ofs_end;
+			pt_o = pt_last_ - pt_ofs_start;
+			// æœ€å¾Œã®ç‚¹ã‚’æ›´æ–°
+			pt_last_ = pt_o + pt_ofs_end;
 
-			// À•W‚Ì‚¸‚ê•â³
-			if (p_path) p_path->AddArc(
-				Gdiplus::RectF{
-					pt_o.x - size.width - 0.5f,
-					pt_o.y - size.height - 0.5f,
-					size.width * 2.f,
-					size.height * 2.f
-				},
-				angle_start - 90.f,
-				angle_sweep
-			);
+			// åº§æ¨™ã®ãšã‚Œè£œæ­£
+			if (p_path) {
+				p_path->AddArc(
+					Gdiplus::RectF{
+						pt_o.x - size.width - 0.5f,
+						pt_o.y - size.height - 0.5f,
+						size.width * 2.f,
+						size.height * 2.f
+					},
+					angle_start - 90.f,
+					angle_sweep
+				);
+			}
 		}
 
 
-		// ü‚ğ’Ç‰Á
+		// ç·šã‚’è¿½åŠ 
 		void GdiplusPath::add_line(
 			const Point<float>& pt
-		)
-		{
-			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
+		) noexcept {
+			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data_[0]);
 
-			// À•W‚Ì‚¸‚ê•â³
-			if (p_path) p_path->AddLine(
-				Gdiplus::PointF{ pt_last.x - 0.5f, pt_last.y - 0.5f },
-				Gdiplus::PointF{ pt.x - 0.5f, pt.y - 0.5f }
-			);
-			// ÅŒã‚Ì“_‚ğXV
-			pt_last = pt;
+			// åº§æ¨™ã®ãšã‚Œè£œæ­£
+			if (p_path) {
+				p_path->AddLine(
+					Gdiplus::PointF{ pt_last_.x - 0.5f, pt_last_.y - 0.5f },
+					Gdiplus::PointF{ pt.x - 0.5f, pt.y - 0.5f }
+				);
+			}
+			// æœ€å¾Œã®ç‚¹ã‚’æ›´æ–°
+			pt_last_ = pt;
 		}
 
 
-		// ƒxƒWƒF‹Èü‚ğ’Ç‰Á
+		// ãƒ™ã‚¸ã‚§æ›²ç·šã‚’è¿½åŠ 
 		void GdiplusPath::add_bezier(
 			const Point<float>& pt_0,
 			const Point<float>& pt_1,
 			const Point<float>& pt_2
-		)
-		{
-			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data[0]);
+		) noexcept {
+			auto p_path = reinterpret_cast<Gdiplus::GraphicsPath*>(data_[0]);
 
-			// À•W‚Ì‚¸‚ê•â³
-			if (p_path) p_path->AddBezier(
-				Gdiplus::PointF{ pt_last.x - 0.5f, pt_last.y - 0.5f },
-				Gdiplus::PointF{ pt_0.x - 0.5f, pt_0.y - 0.5f },
-				Gdiplus::PointF{ pt_1.x - 0.5f, pt_1.y - 0.5f },
-				Gdiplus::PointF{ pt_2.x - 0.5f, pt_2.y - 0.5f }
-			);
-			// ÅŒã‚Ì“_‚ğXV
-			pt_last = pt_2;
+			// åº§æ¨™ã®ãšã‚Œè£œæ­£
+			if (p_path) {
+				p_path->AddBezier(
+					Gdiplus::PointF{ pt_last_.x - 0.5f, pt_last_.y - 0.5f },
+					Gdiplus::PointF{ pt_0.x - 0.5f, pt_0.y - 0.5f },
+					Gdiplus::PointF{ pt_1.x - 0.5f, pt_1.y - 0.5f },
+					Gdiplus::PointF{ pt_2.x - 0.5f, pt_2.y - 0.5f }
+				);
+			}
+			// æœ€å¾Œã®ç‚¹ã‚’æ›´æ–°
+			pt_last_ = pt_2;
 		}
 	}
 }

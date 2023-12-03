@@ -7,12 +7,13 @@
 
 namespace mkaul {
 	namespace graphics {
-		// ビットマップ
+		// 繝薙ャ繝医�槭ャ繝�
 		struct GdiplusBitmap : public Bitmap, protected GdiplusBase {
 		public:
 			using Bitmap::Bitmap;
+			~GdiplusBitmap();
 
-			void release() override;
+			void release() noexcept override;
 
 			size_t get_width() const override;
 			size_t get_height() const override;
