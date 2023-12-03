@@ -22,6 +22,7 @@ namespace mkaul {
 			}
 
 			void add(const Component* child) noexcept { children_.emplace_back(const_cast<Component*>(child)); }
+			bool redraw() const noexcept override;
 		};
 
 		// 行

@@ -7,9 +7,8 @@
 
 
 namespace mkaul {
-	// w’èƒAƒhƒŒƒXAƒTƒCƒY•ª‚Ì‹@ŠBŒê‚ğ‘‚«Š·‚¦
-	bool replace_x86(uint32_t address, uint8_t code[], size_t n)
-	{
+	// æŒ‡å®šã‚¢ãƒ‰ãƒ¬ã‚¹ã€ã‚µã‚¤ã‚ºåˆ†ã®æ©Ÿæ¢°èªã‚’æ›¸ãæ›ãˆ
+	bool replace_x86(uint32_t address, uint8_t code[], size_t n) {
 		DWORD old_protect;
 
 		if (!::VirtualProtect(reinterpret_cast<void*>(address), n, PAGE_EXECUTE_READWRITE, &old_protect)) {
@@ -22,9 +21,8 @@ namespace mkaul {
 	}
 
 
-	// ŠÖ”‚Ì’u‚«Š·‚¦(ŠÖ”–¼w’è)
-	void* replace_func(uint32_t base_address, const char* func_name, void* replaced_func)
-	{
+	// é–¢æ•°ã®ç½®ãæ›ãˆ(é–¢æ•°åæŒ‡å®š)
+	void* replace_func(uint32_t base_address, const char* func_name, void* replaced_func) {
 		if (base_address) {
 			ULONG size;
 			auto p_img_desc = (PIMAGE_IMPORT_DESCRIPTOR)::ImageDirectoryEntryToData(
@@ -38,18 +36,18 @@ namespace mkaul {
 				auto p_first_thunk = (PIMAGE_THUNK_DATA)(intptr_t)(base_address + p_img_desc->FirstThunk);
 				auto p_orig_first_thunk = (PIMAGE_THUNK_DATA)(intptr_t)(base_address + p_img_desc->OriginalFirstThunk);
 
-				// ŠÖ”—ñ‹“
+				// é–¢æ•°åˆ—æŒ™
 				for (; p_first_thunk->u1.Function; p_first_thunk++, p_orig_first_thunk++) {
 					if (IMAGE_SNAP_BY_ORDINAL(p_orig_first_thunk->u1.Ordinal))
 						continue;
 
 					auto p_import_name = (PIMAGE_IMPORT_BY_NAME)(intptr_t)(base_address + (DWORD)p_orig_first_thunk->u1.AddressOfData);
 
-					// ‘‚«Š·‚¦”»’è
+					// æ›¸ãæ›ãˆåˆ¤å®š
 					if (::_stricmp((const char*)p_import_name->Name, func_name) != 0)
 						continue;
 
-					// •ÛŒìó‘Ô‚ğ•ÏX
+					// ä¿è­·çŠ¶æ…‹ã‚’å¤‰æ›´
 					DWORD old_protect;
 
 					if (::VirtualProtect(
@@ -58,7 +56,7 @@ namespace mkaul {
 						PAGE_READWRITE,
 						&old_protect
 					)) {
-						// ‘‚«Š·‚¦
+						// æ›¸ãæ›ãˆ
 						auto p_orig_func = (void*)(intptr_t)p_first_thunk->u1.Function;
 						::WriteProcessMemory(
 							::GetCurrentProcess(),
@@ -69,7 +67,7 @@ namespace mkaul {
 						);
 						p_first_thunk->u1.Function = (DWORD)(intptr_t)replaced_func;
 
-						// •ÛŒìó‘Ô‚ğ–ß‚·
+						// ä¿è­·çŠ¶æ…‹ã‚’æˆ»ã™
 						::VirtualProtect(
 							&p_first_thunk->u1.Function,
 							sizeof(p_first_thunk->u1.Function),

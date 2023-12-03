@@ -4,7 +4,7 @@
 
 
 namespace mkaul {
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	void WindowRectangle::set(int l, int t, int r, int b) noexcept
 	{
 		left = l;
@@ -14,59 +14,7 @@ namespace mkaul {
 	}
 
 
-	// ‹éŒ`‚ğnŒÂ‚É•ªŠ„
-	void WindowRectangle::divide(
-		Direction dir,
-		WindowRectangle* rects_child[],
-		float weights[],
-		int n
-	) const noexcept
-	{
-		int l_parent, l_child;
-		float weights_sum = 0.f;
-		std::vector<float> list_weights_sum;
-
-		if (weights) {
-			for (int i = 0; i < n; i++) {
-				weights_sum += weights[i];
-				list_weights_sum.emplace_back(weights_sum);
-			}
-		}
-		if (dir == Direction::Vertical)
-			l_parent = bottom - top;
-		else
-			l_parent = right - left;
-
-		l_child = l_parent / n;
-
-		for (int i = 0; i < n; i++) {
-			int st, ed;
-
-			if (weights) {
-				st = (int)(l_parent * ((i == 0) ? 0 : list_weights_sum[i - 1]) / weights_sum);
-				ed = (int)(l_parent * list_weights_sum[i] / weights_sum);
-			}
-			else {
-				st = i * l_child;
-				ed = (i + 1) * l_child;
-			}
-
-			if (dir == Direction::Vertical) {
-				rects_child[i]->left = left;
-				rects_child[i]->right = right;
-				rects_child[i]->top = top + st;
-				rects_child[i]->bottom = top + ed;
-			}
-			else {
-				rects_child[i]->left = left + st;
-				rects_child[i]->right = left + ed;
-				rects_child[i]->top = top;
-				rects_child[i]->bottom = bottom;
-			}
-		}
-	}
-
-	// ƒ}[ƒWƒ“‚ğİ’è
+	// ãƒãƒ¼ã‚¸ãƒ³ã‚’è¨­å®š
 	void WindowRectangle::set_margin(int l, int t, int r, int b) noexcept
 	{
 		left += l;
@@ -81,43 +29,34 @@ namespace mkaul {
 	}
 
 
-	RECT WindowRectangle::get_rect() const noexcept
-	{
-		return { left, top, right, bottom };
-	}
-
-
-	// ƒNƒ‰ƒCƒAƒ“ƒg -> ƒXƒNƒŠ[ƒ“
+	// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆ -> ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 	void WindowRectangle::client_to_screen(HWND hwnd) noexcept
 	{
-		POINT pt[] = {
-			{left, top},
-			{right, bottom}
-		};
+		POINT pt_lefttop = { left, top };
+		POINT pt_rightbottom = { right, bottom };
 
-		::ClientToScreen(hwnd, &pt[0]);
-		::ClientToScreen(hwnd, &pt[1]);
+		::ClientToScreen(hwnd, &pt_lefttop);
+		::ClientToScreen(hwnd, &pt_rightbottom);
 
-		left = pt[0].x;
-		top = pt[0].y;
-		right = pt[1].x;
-		bottom = pt[1].y;
+		left = pt_lefttop.x;
+		top = pt_lefttop.y;
+		right = pt_rightbottom.x;
+		bottom = pt_rightbottom.y;
 	}
 
-	// ƒXƒNƒŠ[ƒ“ -> ƒNƒ‰ƒCƒAƒ“ƒg
+
+	// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ -> ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆ
 	void WindowRectangle::screen_to_client(HWND hwnd) noexcept
 	{
-		POINT pt[] = {
-			{left, top},
-			{right, bottom}
-		};
+		POINT pt_lefttop = { left, top };
+		POINT pt_rightbottom = { right, bottom };
 
-		::ScreenToClient(hwnd, &pt[0]);
-		::ScreenToClient(hwnd, &pt[1]);
+		::ScreenToClient(hwnd, &pt_lefttop);
+		::ScreenToClient(hwnd, &pt_rightbottom);
 
-		left = pt[0].x;
-		top = pt[0].y;
-		right = pt[1].x;
-		bottom = pt[1].y;
+		left = pt_lefttop.x;
+		top = pt_lefttop.y;
+		right = pt_rightbottom.x;
+		bottom = pt_rightbottom.y;
 	}
 }

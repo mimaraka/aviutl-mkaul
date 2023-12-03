@@ -18,8 +18,7 @@ namespace mkaul {
 			flag::RoundEdge round_edge,
 			float round_radius,
 			float hover_highlight
-		)
-		{
+		) noexcept {
 			tooltip_label_ = tooltip_label;
 			hover_highlight_ = hover_highlight;
 
@@ -55,8 +54,7 @@ namespace mkaul {
 			flag::RoundEdge round_edge,
 			float round_radius,
 			float hover_highlight
-		)
-		{
+		) noexcept {
 			label_ = label;
 			font_ = font;
 			p_color_label_ = const_cast<ColorF*>(p_color_label);
@@ -81,8 +79,7 @@ namespace mkaul {
 			HINSTANCE hinst,
 			HWND hwnd_parent,
 			int id,
-			const char* icon_source,
-			SourceType source_type,
+			graphics::Bitmap* icon,
 			const ColorF* p_color_bg,
 			const ColorF* p_color_control,
 			const WindowRectangle& rect,
@@ -90,31 +87,8 @@ namespace mkaul {
 			flag::RoundEdge round_edge,
 			float round_radius,
 			float hover_highlight
-		)
-		{
-			source_type_ = source_type;
-
-			// ソースの種類で場合分け
-			switch (source_type) {
-			// ファイル
-			case SourceType::File:
-				icon_source_ = icon_source;
-				break;
-
-			// リソース
-			case SourceType::Resource:
-				// リソースが数値の場合
-				if (!HIWORD(icon_source))
-					icon_resource_num_ = LOWORD(icon_source);
-				// リソースが文字列の場合
-				else
-					icon_source_ = icon_source;
-				break;
-
-			default:
-				return NULL;
-			}
-
+		) noexcept {
+			icon_ = icon;
 			return Button::create(
 				hinst,
 				hwnd_parent,
@@ -130,16 +104,14 @@ namespace mkaul {
 		}
 
 
-		void LabelButton::set_label(const std::string& label) noexcept
-		{
+		void LabelButton::set_label(const std::string& label) noexcept {
 			label_ = label;
 			redraw();
 		}
 
 
 		// ウィンドウプロシージャ
-		LRESULT Button::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
-		{
+		LRESULT Button::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 			RECT rect_wnd;
 			::GetClientRect(hwnd, &rect_wnd);
 
@@ -169,10 +141,6 @@ namespace mkaul {
 				tme_.cbSize = sizeof(tme_);
 				tme_.dwFlags = TME_LEAVE;
 				tme_.hwndTrack = hwnd;
-				break;
-
-			case WM_CLOSE:
-				p_graphics_->exit();
 				break;
 
 			case WM_SIZE:
@@ -243,8 +211,7 @@ namespace mkaul {
 		}
 
 
-		LRESULT LabelButton::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
-		{
+		LRESULT LabelButton::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 			RECT rect_wnd;
 			::GetClientRect(hwnd, &rect_wnd);
 
@@ -275,14 +242,42 @@ namespace mkaul {
 				draw_round_edge();
 				p_graphics_->end_draw();
 
-				break;
+				return 0;
 			}
-			
-			default:
-				return Button::wndproc(hwnd, message, wparam, lparam);
 			}
 
-			return 0;
+			return Button::wndproc(hwnd, message, wparam, lparam);
+		}
+
+
+		LRESULT IconButton::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+			RECT rect_wnd;
+			::GetClientRect(hwnd, &rect_wnd);
+
+			switch (message) {
+			case WM_PAINT:
+			{
+				ColorF color = *p_color_control_;
+
+				if (clicked_)
+					color.change_brightness(-hover_highlight_);
+				else if (hovered_)
+					color.change_brightness(hover_highlight_);
+
+				p_graphics_->begin_draw();
+				p_graphics_->fill_background(color);
+				p_graphics_->draw_bitmap(
+					icon_,
+					Point{rect_wnd.right * 0.5f, rect_wnd.bottom * 0.5f}
+				);
+				draw_round_edge();
+				p_graphics_->end_draw();
+
+				return 0;
+			}
+			}
+
+			return Button::wndproc(hwnd, message, wparam, lparam);
 		}
 	}
 }

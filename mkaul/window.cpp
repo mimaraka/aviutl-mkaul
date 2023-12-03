@@ -6,8 +6,7 @@
 namespace mkaul {
 	namespace ui {
 		// ウィンドウを移動
-		bool Window::move(const WindowRectangle& rect) const noexcept
-		{
+		bool Window::move(const WindowRectangle& rect) const noexcept {
 			return ::MoveWindow(
 				hwnd_,
 				std::min(rect.left, rect.right),
@@ -19,17 +18,17 @@ namespace mkaul {
 		}
 
 		// 再描画
-		bool Window::redraw() const
-		{
+		bool Window::redraw() const noexcept {
 			if (hwnd_) {
-				std::vector<HWND> hwnd_list;
-				get_all_children(hwnd_, &hwnd_list);
+				std::vector<HWND> hwnd_children;
+				get_all_children(hwnd_, &hwnd_children);
 				// 自身を再描画
 				::InvalidateRect(hwnd_, NULL, FALSE);
 
 				// 下層のウィンドウを全て再描画
-				for (auto hw : hwnd_list)
-					::InvalidateRect(hw, NULL, FALSE);
+				for (auto hwnd : hwnd_children) {
+					::InvalidateRect(hwnd, NULL, FALSE);
+				}
 
 				return true;
 			}
@@ -37,8 +36,7 @@ namespace mkaul {
 		}
 
 		// 子ウィンドウを再帰的に検索
-		void get_all_children(HWND hwnd, std::vector<HWND>* p_vec_hwnd)
-		{
+		void get_all_children(HWND hwnd, std::vector<HWND>* p_vec_hwnd) {
 			HWND hwnd_child = ::GetWindow(hwnd, GW_CHILD);
 			// 初回ループは子ウィンドウが存在するかを判定(子ウィンドウが存在しなかったらそのまま終了)
 			// 2回目以降のループは兄弟ウィンドウが存在する限り続く
@@ -65,8 +63,7 @@ namespace mkaul {
 			const WindowRectangle&	rect,
 			HCURSOR					cursor,
 			LPVOID					lp_param
-		)
-		{
+		)  noexcept {
 			WNDCLASSEX tmp;
 			// 同名クラスが存在しない場合は作成
 			if (!::GetClassInfoExA(hinst, class_name, &tmp)) {

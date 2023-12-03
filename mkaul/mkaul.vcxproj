@@ -179,7 +179,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="gdiplus_common.hpp" />
     <ClInclude Include="graphics.hpp" />
     <ClInclude Include="graphics_base.hpp" />
-    <ClInclude Include="graphics_manager.hpp" />
+    <ClInclude Include="graphics_factory.hpp" />
     <ClInclude Include="graphics_directx.hpp" />
     <ClInclude Include="graphics_gdiplus.hpp" />
     <ClInclude Include="mkaul.hpp" />
@@ -213,7 +213,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="exedit.cpp" />
-    <ClCompile Include="graphics_manager.cpp" />
+    <ClCompile Include="graphics_factory.cpp" />
     <ClCompile Include="graphics_directx.cpp" />
     <ClCompile Include="graphics_gdiplus.cpp" />
     <ClCompile Include="path_base.cpp" />

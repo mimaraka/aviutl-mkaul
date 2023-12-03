@@ -39,14 +39,14 @@ namespace mkaul {
 				const WindowRectangle&	rect,
 				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW),
 				LPVOID					lp_param = nullptr
-			);
+			) noexcept;
 
-			HWND get_hwnd() { return hwnd_; }
+			HWND get_hwnd() const noexcept { return hwnd_; }
 			bool move(const WindowRectangle& rect) const noexcept override;
-			bool redraw() const;
-			bool close() const { return ::DestroyWindow(hwnd_); }
-			bool show() const { return ::ShowWindow(hwnd_, SW_SHOW); }
-			bool hide() const { return ::ShowWindow(hwnd_, SW_HIDE); }
+			bool redraw() const noexcept override;
+			bool close() const noexcept { return ::DestroyWindow(hwnd_); }
+			bool show() const noexcept { return ::ShowWindow(hwnd_, SW_SHOW); }
+			bool hide() const noexcept { return ::ShowWindow(hwnd_, SW_HIDE); }
 		};
 	}
 }

@@ -4,8 +4,7 @@
 
 namespace mkaul {
 	namespace exedit {
-		bool Internal::init(AviUtl::FilterPlugin* fp)
-		{
+		bool Internal::init(AviUtl::FilterPlugin* fp) noexcept {
 			AviUtl::SysInfo si;
 			fp->exfunc->get_sys_info(nullptr, &si);
 

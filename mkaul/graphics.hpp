@@ -1,3 +1,3 @@
 #pragma once
 
-#include "graphics_manager.hpp"
+#include "graphics_factory.hpp"

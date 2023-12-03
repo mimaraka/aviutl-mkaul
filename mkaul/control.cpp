@@ -18,8 +18,7 @@ namespace mkaul {
 			flag::RoundEdge			round_edge,
 			float					round_radius,
 			HCURSOR					cursor
-		)
-		{
+		) noexcept {
 			id_ = id;
 			hwnd_parent_ = hwnd_parent;
 			round_edge_ = round_edge;
@@ -28,7 +27,8 @@ namespace mkaul {
 			p_color_control_ = const_cast<ColorF*>(p_color_control);
 
 			// 描画オブジェクトを作成
-			if (!graphics::Manager::create_graphics(&p_graphics_)) return NULL;
+			p_graphics_ = graphics::Factory::create_graphics();
+			if (!p_graphics_) return NULL;
 
 			return Window::create(
 				hinst,
@@ -46,8 +46,7 @@ namespace mkaul {
 
 
 		// 静的ウィンドウプロシージャ
-		LRESULT CALLBACK Control::wndproc_static(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
-		{
+		LRESULT CALLBACK Control::wndproc_static(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 			// 自身のインスタンスのポインタをウィンドウに設定したユーザーデータから取得
 			// (静的メンバ関数内ではthisポインタおよび非静的メンバが使用できないため)
 			Control* app = (Control*)::GetWindowLongPtr(hwnd, GWLP_USERDATA);
@@ -74,24 +73,21 @@ namespace mkaul {
 
 
 		// ステータスを設定
-		void Control::set_status(flag::Status status)
-		{
+		void Control::set_status(flag::Status status) noexcept {
 			status_ = status;
 			redraw();
 		}
 
 
 		// ステータスを追加
-		void Control::add_status(flag::Status status)
-		{
+		void Control::add_status(flag::Status status) noexcept {
 			status_ |= status;
 			redraw();
 		}
 
 
 		// ラウンドエッジを描画
-		void Control::draw_round_edge()
-		{
+		void Control::draw_round_edge() noexcept {
 			// 描画オブジェクトが存在し、描画中である場合
 			if (p_graphics_ and p_graphics_->is_drawing()) {
 				RECT rect;
@@ -113,8 +109,7 @@ namespace mkaul {
 					for (int i = 0; i < 4; i++) {
 						// 角を丸くするフラグが立っている場合
 						if ((uint32_t)round_edge_ & 1 << i) {
-							graphics::Path* path;
-							graphics::Manager::create_path(&path);
+							auto path = graphics::Factory::create_path();
 
 							path->begin(pts[i]);
 							path->add_line(pts[i] + pt);
@@ -125,10 +120,9 @@ namespace mkaul {
 							path->end();
 
 							p_graphics_->fill_path(
-								path,
+								path.get(),
 								*p_color_bg_
 							);
-							path->release();
 						}
 
 						// 90d回転

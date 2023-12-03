@@ -71,13 +71,13 @@ namespace mkaul {
 				p_exedit_current_frame_(nullptr)
 			{}
 
-			bool init(AviUtl::FilterPlugin* fp);
+			bool init(AviUtl::FilterPlugin* fp) noexcept;
 
-			auto base_address() const noexcept
-			{
+			auto base_address() const noexcept {
 				if (fp_) return (uint32_t)fp_->dll_hinst;
 				else return 0x0u;
 			}
+
 			auto fp() const noexcept { return fp_; }
 			auto p_hwnd_timeline() const noexcept { return p_hwnd_timeline_; }
 			auto p_hwnd_objdialog() const noexcept { return p_hwnd_objdialog_; }

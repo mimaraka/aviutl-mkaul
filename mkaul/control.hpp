@@ -27,7 +27,7 @@ namespace mkaul {
 
 	namespace ui {
 		//---------------------------------------------------------------------
-		//		コントロール(抽象クラス)
+		//		コントロール
 		//---------------------------------------------------------------------
 		class Control : public Window {
 		protected:
@@ -38,7 +38,7 @@ namespace mkaul {
 			flag::Status			status_;
 			TRACKMOUSEEVENT			tme_;
 			HWND					hwnd_parent_;
-			graphics::Graphics*		p_graphics_;
+			std::unique_ptr<graphics::Graphics> p_graphics_;
 			flag::RoundEdge			round_edge_;
 			// コントロールID
 			int						id_;
@@ -58,7 +58,7 @@ namespace mkaul {
 				round_radius_(0.f),
 				round_edge_(flag::RoundEdge::None),
 				tme_({ 0 }),
-				p_graphics_(nullptr)
+				p_graphics_()
 			{}
 
 			// デストラクタ
@@ -79,15 +79,15 @@ namespace mkaul {
 				flag::RoundEdge			round_edge = flag::RoundEdge::None,
 				float					round_radius = 0.f,
 				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW)
-			);
+			) noexcept;
 			auto get_id() const noexcept { return id_; }
 			auto get_status() const noexcept { return status_; }
 			// ステータスを設定
-			void set_status(flag::Status status);
+			void set_status(flag::Status status) noexcept;
 			// ステータスを追加
-			void add_status(flag::Status status);
+			void add_status(flag::Status status) noexcept;
 			// ラウンドエッジを描画
-			void draw_round_edge();
+			void draw_round_edge() noexcept;
 		};
 	}
 }

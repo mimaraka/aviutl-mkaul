@@ -31,27 +31,27 @@
     <Filter Include="ヘッダー ファイル\UI\Control">
       <UniqueIdentifier>{8e88e2d9-357e-4516-a93d-2eddd5ed6f59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\AviUtl">
+      <UniqueIdentifier>{73238037-c782-4562-838e-7f49b5e4cbeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\AviUtl">
+      <UniqueIdentifier>{bea96693-1a0f-4cc5-aebe-7a5c1308caf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Util">
+      <UniqueIdentifier>{2cd0d1ea-4abe-494c-ae8d-55a6af067321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Util">
+      <UniqueIdentifier>{c90fe3b3-72c0-4cf5-824d-0693d2add49e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mkaul.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="util.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="point.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="rectangle.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="color.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="graphics_base.hpp">
       <Filter>ヘッダー ファイル\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics_manager.hpp">
+    <ClInclude Include="graphics_factory.hpp">
       <Filter>ヘッダー ファイル\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics_directx.hpp">
@@ -69,23 +69,8 @@
     <ClInclude Include="control.hpp">
       <Filter>ヘッダー ファイル\UI\Control</Filter>
     </ClInclude>
-    <ClInclude Include="exedit.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="size.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="aviutl.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="util_hook.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="graphics.hpp">
       <Filter>ヘッダー ファイル\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="http.hpp">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="stroke.hpp">
       <Filter>ヘッダー ファイル\Graphics</Filter>
@@ -111,14 +96,8 @@
     <ClInclude Include="directx_common.hpp">
       <Filter>ヘッダー ファイル\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="bitmap_directx.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="path_directx.hpp">
       <Filter>ヘッダー ファイル\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="flag.hpp">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="anchor_position.hpp">
       <Filter>ヘッダー ファイル\Graphics</Filter>
@@ -129,18 +108,48 @@
     <ClInclude Include="ui_list.hpp">
       <Filter>ヘッダー ファイル\UI</Filter>
     </ClInclude>
+    <ClInclude Include="bitmap_directx.hpp">
+      <Filter>ヘッダー ファイル\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="aviutl.hpp">
+      <Filter>ヘッダー ファイル\AviUtl</Filter>
+    </ClInclude>
+    <ClInclude Include="exedit.hpp">
+      <Filter>ヘッダー ファイル\AviUtl</Filter>
+    </ClInclude>
+    <ClInclude Include="util_hook.hpp">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="rectangle.hpp">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="size.hpp">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="util.hpp">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="point.hpp">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="http.hpp">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="flag.hpp">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="color.hpp">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="rectangle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="graphics_directx.cpp">
       <Filter>ソース ファイル\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="graphics_gdiplus.cpp">
       <Filter>ソース ファイル\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics_manager.cpp">
+    <ClCompile Include="graphics_factory.cpp">
       <Filter>ソース ファイル\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="window.cpp">
@@ -151,15 +160,6 @@
     </ClCompile>
     <ClCompile Include="control.cpp">
       <Filter>ソース ファイル\UI\Control</Filter>
-    </ClCompile>
-    <ClCompile Include="util_hook.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="exedit.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="http.cpp">
-      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="path_base.cpp">
       <Filter>ソース ファイル\Graphics</Filter>
@@ -178,6 +178,18 @@
     </ClCompile>
     <ClCompile Include="ui_list.cpp">
       <Filter>ソース ファイル\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="exedit.cpp">
+      <Filter>ソース ファイル\AviUtl</Filter>
+    </ClCompile>
+    <ClCompile Include="util_hook.cpp">
+      <Filter>ソース ファイル\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="http.cpp">
+      <Filter>ソース ファイル\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="rectangle.cpp">
+      <Filter>ソース ファイル\Util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

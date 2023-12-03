@@ -38,7 +38,7 @@ namespace mkaul {
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
 				float hover_highlight = 0.05f
-			);
+			) noexcept;
 		};
 
 
@@ -74,7 +74,7 @@ namespace mkaul {
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
 				float hover_highlight = 0.05f
-			);
+			) noexcept;
 
 			auto get_label() const noexcept { return label_; }
 			void set_label(const std::string& label) noexcept;
@@ -83,26 +83,14 @@ namespace mkaul {
 
 		// ボタン(アイコン)
 		class IconButton : public Button {
-		public:
-			enum class SourceType {
-				File,
-				Resource
-			};
-
 		protected:
 			graphics::Bitmap* icon_;
-			SourceType source_type_;
-			std::string icon_source_;
-			uint16_t icon_resource_num_;
 
 			virtual LRESULT wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 
 		public:
 			IconButton() :
-				icon_(nullptr),
-				icon_source_(),
-				source_type_(SourceType::File),
-				icon_resource_num_(0)
+				icon_(nullptr)
 			{}
 
 			// ボタンを作成(アイコン)
@@ -110,8 +98,7 @@ namespace mkaul {
 				HINSTANCE hinst,
 				HWND hwnd_parent,
 				int id,
-				const char* icon_source,
-				SourceType source_type,
+				graphics::Bitmap* icon,
 				const ColorF* p_color_bg,
 				const ColorF* p_color_control,
 				const WindowRectangle& rect,
@@ -119,7 +106,7 @@ namespace mkaul {
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
 				float hover_highlight = 0.05f
-			);
+			) noexcept;
 		};
 	}
 }

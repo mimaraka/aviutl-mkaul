@@ -90,13 +90,7 @@ namespace mkaul {
 
 		void set(int left, int top, int right, int bottom) noexcept;
 		void set_margin(int left, int top, int right, int bottom) noexcept;
-		void divide(
-			Direction dir,
-			WindowRectangle* rects_child[],
-			float weights[],
-			int n
-		) const noexcept;
-		RECT get_rect() const noexcept;
+		auto get_rect() const noexcept { return RECT{ left, top, right, bottom }; };
 		void client_to_screen(HWND hwnd) noexcept;
 		void screen_to_client(HWND hwnd) noexcept;
 	};
