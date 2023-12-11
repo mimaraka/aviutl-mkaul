@@ -12,8 +12,7 @@ namespace mkaul {
 		}
 
 		void DirectxBitmap::release() noexcept {
-			auto p_bitmap = reinterpret_cast<ID2D1Bitmap*>(data);
-			dx_release(&p_bitmap);
+			dx_release(reinterpret_cast<ID2D1Bitmap**>(&data));
 		}
 
 		size_t DirectxBitmap::get_width() const {

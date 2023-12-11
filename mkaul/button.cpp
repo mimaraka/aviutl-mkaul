@@ -143,6 +143,11 @@ namespace mkaul {
 				tme_.hwndTrack = hwnd;
 				break;
 
+			case WM_DESTROY:
+			case WM_CLOSE:
+				p_graphics_->release();
+				break;
+
 			case WM_SIZE:
 				p_graphics_->resize();
 
@@ -275,6 +280,10 @@ namespace mkaul {
 
 				return 0;
 			}
+
+			case WM_CLOSE:
+				icon_->release();
+				break;
 			}
 
 			return Button::wndproc(hwnd, message, wparam, lparam);
