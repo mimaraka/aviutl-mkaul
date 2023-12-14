@@ -22,14 +22,12 @@ namespace mkaul {
 		T width, height;
 
 		// 等号
-		inline auto operator == (const Size<T>& size) const noexcept
-		{
+		inline constexpr auto operator == (const Size<T>& size) const noexcept {
 			return (this->width == size.width and this->height == size.height);
 		}
 
 		// 加算 (lower)
-		inline auto operator + (const size_lower auto& size) const noexcept
-		{
+		inline constexpr auto operator + (const size_lower auto& size) const noexcept {
 			return Size<T>(
 				this->width + (T)size.width,
 				this->height + (T)size.height
@@ -37,8 +35,7 @@ namespace mkaul {
 		}
 
 		// 加算 (upper)
-		inline auto operator + (const size_upper auto& size) const noexcept
-		{
+		inline constexpr auto operator + (const size_upper auto& size) const noexcept {
 			return Size<T>(
 				this->width + (T)size.Width,
 				this->height + (T)size.Height
@@ -46,8 +43,7 @@ namespace mkaul {
 		}
 
 		// 減算 (lower)
-		inline auto operator - (const size_lower auto& size) const noexcept
-		{
+		inline auto operator - (const size_lower auto& size) const noexcept {
 			return Size<T>(
 				this->width - (T)size.width,
 				this->height - (T)size.height
@@ -55,8 +51,7 @@ namespace mkaul {
 		}
 
 		// 減算 (upper)
-		inline auto operator - (const size_upper auto& size) const noexcept
-		{
+		inline constexpr auto operator - (const size_upper auto& size) const noexcept {
 			return Size<T>(
 				this->width - (T)size.Width,
 				this->height - (T)size.Height
@@ -64,15 +59,13 @@ namespace mkaul {
 		}
 
 		// 代入 (lower)
-		inline void operator = (const size_lower auto& size) noexcept
-		{
+		inline void operator = (const size_lower auto& size) noexcept {
 			this->width = (T)size.width;
 			this->height = (T)size.height;
 		}
 
 		// 代入 (upper)
-		inline void operator = (const size_upper auto& size) noexcept
-		{
+		inline void operator = (const size_upper auto& size) noexcept {
 			this->width = (T)size.Width;
 			this->height = (T)size.Height;
 		}
@@ -84,8 +77,7 @@ namespace mkaul {
 		
 		// 他の型に変換 (lower)
 		template <size_lower U>
-		auto to() const noexcept
-		{
+		constexpr auto to() const noexcept {
 			U size = { 0 };
 			size.width = static_cast<decltype(size.width)>(width);
 			size.height = static_cast<decltype(size.height)>(height);
@@ -95,8 +87,7 @@ namespace mkaul {
 
 		// 他の型に変換 (upper)
 		template <size_upper U>
-		auto to() const noexcept
-		{
+		constexpr auto to() const noexcept {
 			U size = { 0 };
 			size.Width = static_cast<decltype(size.Width)>(width);
 			size.Height = static_cast<decltype(size.Height)>(height);
@@ -104,8 +95,7 @@ namespace mkaul {
 			return size;
 		}
 
-		inline void scale(double scale) noexcept
-		{
+		inline void scale(double scale) noexcept {
 			width *= std::abs(scale);
 			height *= std::abs(scale);
 		}

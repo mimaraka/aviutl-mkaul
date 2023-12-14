@@ -197,6 +197,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="aviutl.cpp" />
     <ClCompile Include="bitmap_directx.cpp" />
     <ClCompile Include="bitmap_gdiplus.cpp" />
     <ClCompile Include="button.cpp">

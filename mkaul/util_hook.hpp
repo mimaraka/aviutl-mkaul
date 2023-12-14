@@ -5,23 +5,21 @@
 
 
 namespace mkaul {
-	// w’èƒAƒhƒŒƒXAƒTƒCƒY•ª‚Ì‹@ŠBŒê‚ğ‘‚«Š·‚¦
+	// æŒ‡å®šã‚¢ãƒ‰ãƒ¬ã‚¹ã€ã‚µã‚¤ã‚ºåˆ†ã®æ©Ÿæ¢°èªã‚’æ›¸ãæ›ãˆ
 	bool replace_x86(uint32_t address, uint8_t code[], size_t n);
 
-	// “¯‚¶Œ^‚Ì•Ï”‚ğ’u‚«Š·‚¦
+	// åŒã˜å‹ã®å¤‰æ•°ã‚’ç½®ãæ›ãˆ
 	template <typename T>
-	bool replace_var(uint32_t address, T new_var)
-	{
+	bool replace_var(uint32_t address, T new_var) {
 		auto code = reinterpret_cast<uint8_t*>(&new_var);
 		return replace_x86(address, code, sizeof(T));
 	}
 
 	template <typename T>
-	bool replace_var(T* p_old_var, T new_var)
-	{
+	bool replace_var(T* p_old_var, T new_var) {
 		return replace_var(reinterpret_cast<uint32_t>(p_old_var), new_var);
 	}
 
-	// ŠÖ”‚Ì’u‚«Š·‚¦(ŠÖ”–¼‚©‚ç)
+	// é–¢æ•°ã®ç½®ãæ›ãˆ(é–¢æ•°åã‹ã‚‰)
 	void* replace_func(uint32_t base_address, const char* func_name, void* replaced_func);
 }

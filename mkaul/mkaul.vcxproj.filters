@@ -191,5 +191,8 @@
     <ClCompile Include="rectangle.cpp">
       <Filter>ソース ファイル\Util</Filter>
     </ClCompile>
+    <ClCompile Include="aviutl.cpp">
+      <Filter>ソース ファイル\AviUtl</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

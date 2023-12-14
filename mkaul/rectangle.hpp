@@ -11,8 +11,7 @@ namespace mkaul {
 	struct Rectangle {
 		T left, top, right, bottom;
 
-		bool operator == (const Rectangle<T>& rc) const
-		{
+		constexpr bool operator == (const Rectangle<T>& rc) const noexcept {
 			return (
 				this->left == rc.left and
 				this->top == rc.top and
@@ -21,8 +20,7 @@ namespace mkaul {
 				);
 		}
 
-		Rectangle<T> operator = (const RECT& rc)
-		{
+		Rectangle<T> operator = (const RECT& rc) noexcept {
 			this->left = static_cast<T>(rc.left);
 			this->top = static_cast<T>(rc.top);
 			this->right = static_cast<T>(rc.right);
@@ -31,7 +29,7 @@ namespace mkaul {
 			return *this;
 		}
 
-		Rectangle(
+		constexpr Rectangle(
 			T l = 0,
 			T t = 0,
 			T r = 0,
@@ -43,7 +41,7 @@ namespace mkaul {
 			bottom(b)
 		{}
 
-		Rectangle(RECT rc) :
+		constexpr Rectangle(RECT rc) :
 			left(static_cast<T>(rc.left)),
 			top(static_cast<T>(rc.top)),
 			right(static_cast<T>(rc.right)),
@@ -51,8 +49,7 @@ namespace mkaul {
 		{}
 
 		template <typename U>
-		void convert_to(Rectangle<U>* r) const noexcept
-		{
+		constexpr void convert_to(Rectangle<U>* r) const noexcept {
 			r->left = static_cast<U>(left);
 			r->top = static_cast<U>(top);
 			r->right = static_cast<U>(right);
@@ -64,8 +61,7 @@ namespace mkaul {
 		constexpr T get_area() const noexcept { return get_width() * get_height(); }
 		
 		template <typename U = T>
-		constexpr auto get_center()
-		{
+		constexpr auto get_center() const noexcept {
 			return Point<U>(
 				(left + right) / static_cast<U>(2.),
 				(top + bottom) / static_cast<U>(2.)
@@ -80,8 +76,7 @@ namespace mkaul {
 			Horizontal
 		};
 
-		WindowRectangle operator = (const RECT& rc)
-		{
+		WindowRectangle operator = (const RECT& rc) {
 			Rectangle<LONG>::operator = (rc);
 			return *this;
 		}
@@ -90,7 +85,7 @@ namespace mkaul {
 
 		void set(int left, int top, int right, int bottom) noexcept;
 		void set_margin(int left, int top, int right, int bottom) noexcept;
-		auto get_rect() const noexcept { return RECT{ left, top, right, bottom }; };
+		constexpr auto get_rect() const noexcept { return RECT{ left, top, right, bottom }; };
 		void client_to_screen(HWND hwnd) noexcept;
 		void screen_to_client(HWND hwnd) noexcept;
 	};

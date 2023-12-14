@@ -14,8 +14,7 @@ namespace mkaul {
 
 		public:
 			template<class... Args>
-			List(Args... args)
-			{
+			List(Args... args) {
 				for (auto child : std::initializer_list<Component*>{ args... }) {
 					children_.emplace_back(child);
 				}

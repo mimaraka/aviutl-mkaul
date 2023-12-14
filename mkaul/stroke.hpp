@@ -4,7 +4,7 @@
 
 namespace mkaul {
 	namespace graphics {
-		// ストローク
+		// 繧ｹ繝医Ο繝ｼ繧ｯ
 		struct Stroke {
 		public:
 			float width;
@@ -31,7 +31,7 @@ namespace mkaul {
 			int dashes_count;
 			float dash_offset;
 
-			Stroke(
+			constexpr Stroke(
 				float width_ = 1.f,
 				DashStyle dash_style_ = DashStyle::Solid,
 				CapStyle start_cap_ = CapStyle::Round,
