@@ -38,6 +38,7 @@ namespace mkaul {
 
 			bool is_drawing() const noexcept { return drawing_; }
 			HWND get_hwnd() const noexcept { return hwnd_; }
+			void get_rect(WindowRectangle* p_rect) const noexcept;
 
 			// リサイズ
 			virtual bool resize() noexcept = 0;

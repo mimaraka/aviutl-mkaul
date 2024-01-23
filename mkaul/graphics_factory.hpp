@@ -11,7 +11,6 @@ namespace mkaul {
 		public:
 			// 描画方式
 			enum class GraphicMethod {
-				Null,
 				Gdiplus,
 				Directx
 			};
@@ -33,7 +32,7 @@ namespace mkaul {
 			static std::unique_ptr<Path> create_path() noexcept;
 
 		private:
-			inline static GraphicMethod method_ = GraphicMethod::Null;
+			inline static GraphicMethod method_ = GraphicMethod::Gdiplus;
 		};
 	}
 }

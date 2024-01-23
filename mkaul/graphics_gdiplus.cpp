@@ -478,11 +478,14 @@ namespace mkaul {
 				Gdiplus::Pen pen{Gdiplus::Color{0}};
 				get_gdip_pen(color, stroke, &pen);
 
+				radius_x = std::abs(radius_x);
+				radius_y = std::abs(radius_y);
+
 				Gdiplus::RectF rect_f{
 					point.x - radius_x,
 					point.y - radius_y,
-					point.x + radius_x,
-					point.y + radius_y
+					radius_x * 2.f,
+					radius_y * 2.f
 				};
 
 				p_graphics_buffer_->DrawEllipse(&pen, rect_f);
@@ -523,11 +526,14 @@ namespace mkaul {
 				Gdiplus::SolidBrush brush{Gdiplus::Color{0}};
 				get_gdip_brush(color, &brush);
 
+				radius_x = std::abs(radius_x);
+				radius_y = std::abs(radius_y);
+
 				Gdiplus::RectF rect_f{
 					point.x - radius_x,
 					point.y - radius_y,
-					point.x + radius_x,
-					point.y + radius_y
+					radius_x * 2.f,
+					radius_y * 2.f
 				};
 
 				p_graphics_buffer_->FillEllipse(&brush, rect_f);

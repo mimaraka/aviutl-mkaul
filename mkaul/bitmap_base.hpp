@@ -19,11 +19,11 @@ namespace mkaul {
 
 			// データを取得
 			template <typename Ptr>
-			Ptr get_data() const {
+			Ptr get_data() const noexcept {
 				return reinterpret_cast<Ptr>(data);
 			}
 			// データを設定
-			void set_data(void* ptr) { data = ptr; };
+			void set_data(void* ptr) noexcept { data = ptr; };
 
 			// 幅・高さを取得
 			virtual size_t get_width() const = 0;

@@ -200,9 +200,9 @@ namespace mkaul {
 	inline D2D1_COLOR_F ColorF::d2d1_colorf() const noexcept
 	{
 		return D2D1::ColorF(
-			std::clamp(b_, 0.f, 1.f),
-			std::clamp(g_, 0.f, 1.f),
 			std::clamp(r_, 0.f, 1.f),
+			std::clamp(g_, 0.f, 1.f),
+			std::clamp(b_, 0.f, 1.f),
 			std::clamp(a_, 0.f, 1.f)
 		);
 	}

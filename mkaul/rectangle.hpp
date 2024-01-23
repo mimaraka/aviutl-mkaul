@@ -60,6 +60,11 @@ namespace mkaul {
 		constexpr T get_height() const noexcept { return static_cast<T>(std::abs(bottom - top)); }
 		constexpr T get_area() const noexcept { return get_width() * get_height(); }
 		
+		constexpr auto left_top() const noexcept { return mkaul::Point{left, top}; }
+		constexpr auto right_top() const noexcept { return mkaul::Point{ right, top }; }
+		constexpr auto left_bottom() const noexcept { return mkaul::Point{ left, bottom }; }
+		constexpr auto right_bottom() const noexcept { return mkaul::Point{ right, bottom }; }
+
 		template <typename U = T>
 		constexpr auto get_center() const noexcept {
 			return Point<U>(
@@ -85,7 +90,7 @@ namespace mkaul {
 
 		void set(int left, int top, int right, int bottom) noexcept;
 		void set_margin(int left, int top, int right, int bottom) noexcept;
-		constexpr auto get_rect() const noexcept { return RECT{ left, top, right, bottom }; };
+		constexpr const auto& get_rect() const noexcept { return RECT{ left, top, right, bottom }; };
 		void client_to_screen(HWND hwnd) noexcept;
 		void screen_to_client(HWND hwnd) noexcept;
 	};

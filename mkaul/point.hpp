@@ -49,12 +49,20 @@ namespace mkaul {
 			);
 		}
 
+		// 負
+		inline constexpr auto operator - () const noexcept {
+			return Point<T>(
+				-this->x,
+				-this->y
+			);
+		}
+
 		// 内積 (lower)
 		inline constexpr auto operator * (const pt_lower auto& pt) const noexcept {
 			return this->x * (T)pt.x + this->y * (T)pt.y;
 		}
 
-		// 内積
+		// 内積 (upper)
 		inline constexpr auto operator * (const pt_upper auto& pt) const noexcept {
 			return this->x * (T)pt.X + this->y * (T)pt.Y;
 		}

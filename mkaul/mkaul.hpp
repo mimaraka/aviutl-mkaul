@@ -1,7 +1,6 @@
 #pragma once
 
 #include "aviutl.hpp"
-#include "button.hpp"
 #include "color.hpp"
 #include "control.hpp"
 #include "exedit.hpp"
@@ -10,7 +9,7 @@
 #include "point.hpp"
 #include "rectangle.hpp"
 #include "size.hpp"
-#include "ui_list.hpp"
+#include "ui.hpp"
 #include "util.hpp"
 #include "util_hook.hpp"
 #include "window.hpp"

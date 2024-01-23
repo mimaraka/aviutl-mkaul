@@ -1,5 +1,14 @@
 #pragma once
 
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+#define NOMINMAX
+
+#include <algorithm>
 #include <cmath>
 #include <numbers>
 
@@ -19,7 +28,7 @@ namespace mkaul {
 
 
 	// 範囲内判定
-	inline constexpr bool in_range(auto val, auto min, auto max, bool equal) noexcept {
+	inline constexpr bool in_range(auto val, auto min, auto max, bool equal = false) noexcept {
 		if (val >= min and val <= max) {
 			if (val == min or val == max)
 				return equal;
@@ -35,9 +44,19 @@ namespace mkaul {
 	}
 
 
+	inline constexpr double distance(const pt_lower auto& pt) noexcept {
+		return std::sqrt(std::pow(pt.x, 2) + std::pow(pt.y, 2));
+	}
+
+
 	// 距離を算出 (upper)
 	inline constexpr double distance(const pt_upper auto& pt1, const pt_upper auto& pt2) noexcept {
 		return std::sqrt(std::pow(pt2.X - pt1.X, 2) + std::pow(pt2.Y - pt1.Y, 2));
+	}
+
+
+	inline constexpr double distance(const pt_upper auto& pt) noexcept {
+		return std::sqrt(std::pow(pt.X, 2) + std::pow(pt.Y, 2));
 	}
 
 
@@ -54,15 +73,21 @@ namespace mkaul {
 
 
 	// 符号関数
-	inline constexpr auto sign(auto value) noexcept {
-		if (value < (decltype(value))0) {
-			return (decltype(value))(-1);
+	inline constexpr auto sign(auto val) noexcept {
+		if (val < (decltype(val))0) {
+			return (decltype(val))(-1);
 		}
-		else if (value == (decltype(value))0) {
-			return (decltype(value))0;
+		else if (val == (decltype(val))0) {
+			return (decltype(val))0;
 		}
 		else {
-			return (decltype(value))1;
+			return (decltype(val))1;
 		}
+	}
+
+
+	template<typename T>
+	inline constexpr T clamp(T val, T min_or_max1, T min_or_max2) {
+		return std::clamp(val, std::min(min_or_max1, min_or_max2), std::max(min_or_max1, min_or_max2));
 	}
 }

@@ -141,6 +141,9 @@
     <ClInclude Include="color.hpp">
       <Filter>ヘッダー ファイル\Util</Filter>
     </ClInclude>
+    <ClInclude Include="ui.hpp">
+      <Filter>ヘッダー ファイル\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphics_directx.cpp">
@@ -193,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="aviutl.cpp">
       <Filter>ソース ファイル\AviUtl</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_base.cpp">
+      <Filter>ソース ファイル\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
