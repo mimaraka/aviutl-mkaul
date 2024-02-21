@@ -58,6 +58,13 @@ namespace mkaul {
 			const Stroke& stroke,
 			_Out_ ID2D1StrokeStyle** pp_stroke_style
 		) noexcept {
+			// widthが1より小さいときにdashの間隔が狭くなるバグ？がある
+			if (stroke.width < 1.f and 0.f < stroke.width) {
+				for (int i = 0; i < stroke.dashes_count; i++) {
+					stroke.custom_dashes[i] /= stroke.width;
+				}
+			}
+			
 			*pp_stroke_style = nullptr;
 			if (p_factory_) p_factory_->CreateStrokeStyle(
 				D2D1::StrokeStyleProperties(

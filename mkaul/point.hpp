@@ -81,6 +81,26 @@ namespace mkaul {
 			return *this;
 		}
 
+		// 加算代入 (lower)
+		inline constexpr auto operator += (const pt_lower auto& pt) noexcept {
+			return *this = *this + pt;
+		}
+
+		// 加算代入 (upper)
+		inline constexpr auto operator += (const pt_upper auto& pt) noexcept {
+			return *this = *this + pt;
+		}
+
+		// 減算代入 (lower)
+		inline constexpr auto operator -= (const pt_lower auto& pt) noexcept {
+			return *this = *this - pt;
+		}
+
+		// 減算代入 (upper)
+		inline constexpr auto operator -= (const pt_upper auto& pt) noexcept {
+			return *this = *this - pt;
+		}
+
 		constexpr Point(T x_ = 0, T y_ = 0) :
 			x(x_),
 			y(y_)

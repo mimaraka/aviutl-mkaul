@@ -36,6 +36,9 @@ namespace mkaul {
 			_Out_ Gdiplus::Pen* p_pen
 		) noexcept {
 			ColorI8 col_i8{ color };
+			if (stroke.width < 1.f) {
+				col_i8.set_a((int)(col_i8.get_a() * (0.3f + stroke.width * 0.7f)));
+			}
 			p_pen->SetColor(
 				Gdiplus::Color(
 					(BYTE)col_i8.get_a(),
@@ -123,8 +126,8 @@ namespace mkaul {
 					p_graphics_buffer_ = std::make_unique<Gdiplus::Graphics>(p_bitmap_buffer_.get());
 
 					if (p_bitmap_buffer_ and p_graphics_buffer_) {
-						p_graphics_buffer_->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-						p_graphics_buffer_->SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);
+						p_graphics_buffer_->SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);
+						p_graphics_buffer_->SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAliasGridFit);
 						drawing_ = true;
 						return true;
 					}

@@ -100,7 +100,7 @@ namespace mkaul {
 
 		constexpr ColorF(COLORREF cr = (COLORREF)0l) noexcept;
 		constexpr ColorF(const ColorI8& col_i8) noexcept;
-		constexpr ColorF(int r, int g, int b, int a = 1) noexcept;
+		constexpr ColorF(int r, int g, int b, int a = MAX) noexcept;
 
 		void clamp() noexcept;
 		void invert() noexcept;
