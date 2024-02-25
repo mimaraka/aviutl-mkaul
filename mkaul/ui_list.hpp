@@ -20,8 +20,12 @@ namespace mkaul {
 				}
 			}
 
-			void add(const Component* child) noexcept { children_.emplace_back(const_cast<Component*>(child)); }
+			void add(const Component* child) { children_.emplace_back(const_cast<Component*>(child)); }
+			bool insert(size_t index, const Component* child);
+			bool replace(size_t index, const Component* child);
 			bool redraw() const noexcept override;
+			bool show() const noexcept override;
+			bool hide() const noexcept override;
 		};
 
 		// 行

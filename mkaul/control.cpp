@@ -12,9 +12,10 @@ namespace mkaul {
 			LPCTSTR					class_name,
 			LONG					window_style,
 			LONG					class_style,
-			const WindowRectangle&	rect,
 			const ColorF*			p_color_bg,
 			const ColorF*			p_color_control,
+			const WindowRectangle&	rect,
+			const WindowRectangle&	padding,
 			flag::RoundEdge			round_edge,
 			float					round_radius,
 			HCURSOR					cursor
@@ -39,6 +40,7 @@ namespace mkaul {
 				WS_CHILD | window_style,
 				class_style,
 				rect,
+				padding,
 				cursor,
 				this
 			);

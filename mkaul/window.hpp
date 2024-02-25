@@ -22,6 +22,9 @@ namespace mkaul {
 		class Window : public Component {
 		protected:
 			HWND hwnd_;
+			WindowRectangle padding_;
+			// 
+			void calc_net_rect(WindowRectangle* p_rect_wnd) const noexcept;
 
 		public:
 			Window() :
@@ -36,17 +39,21 @@ namespace mkaul {
 				WNDPROC					wndproc,
 				LONG					window_style,
 				LONG					class_style,
-				const WindowRectangle&	rect,
-				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW),
+				const WindowRectangle&	rect = WindowRectangle{},
+				const WindowRectangle&	padding = WindowRectangle{},
+				HCURSOR					cursor = ::LoadCursorA(NULL, IDC_ARROW),
 				LPVOID					lp_param = nullptr
 			) noexcept;
 
 			HWND get_hwnd() const noexcept { return hwnd_; }
+			void get_rect(WindowRectangle* p_wnd_rect, bool include_padding = false) const noexcept;
+			void set_padding(const WindowRectangle& rect) noexcept;
 			bool move(const WindowRectangle& rect) const noexcept override;
 			bool redraw() const noexcept override;
 			bool close() const noexcept { return ::DestroyWindow(hwnd_); }
-			bool show() const noexcept { return ::ShowWindow(hwnd_, SW_SHOW); }
-			bool hide() const noexcept { return ::ShowWindow(hwnd_, SW_HIDE); }
+			bool show() const noexcept override { return ::ShowWindow(hwnd_, SW_SHOW); }
+			bool hide() const noexcept override { return ::ShowWindow(hwnd_, SW_HIDE); }
+			bool send_command(WPARAM wparam = 0, LPARAM lparam = 0) const noexcept { return ::SendMessageA(hwnd_, WM_COMMAND, wparam, lparam); }
 		};
 	}
 }

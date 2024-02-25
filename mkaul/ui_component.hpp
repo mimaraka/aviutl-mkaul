@@ -11,6 +11,8 @@ namespace mkaul {
 		public:
 			virtual bool move(const WindowRectangle& rect) const noexcept = 0;
 			virtual bool redraw() const noexcept = 0;
+			virtual bool show() const noexcept = 0;
+			virtual bool hide() const noexcept = 0;
 		};
 	}
 }

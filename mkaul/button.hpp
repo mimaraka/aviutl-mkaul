@@ -33,8 +33,9 @@ namespace mkaul {
 				int id,
 				const ColorF* p_color_bg,
 				const ColorF* p_color_control,
-				const WindowRectangle& rect,
 				const std::string& tooltip_label = "",
+				const WindowRectangle& rect = WindowRectangle{},
+				const WindowRectangle& padding = WindowRectangle{},
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
 				float hover_highlight = 0.05f
@@ -69,8 +70,9 @@ namespace mkaul {
 				const ColorF* p_color_bg,
 				const ColorF* p_color_control,
 				const ColorF* p_color_label,
-				const WindowRectangle& rect,
 				const std::string& tooltip_label = "",
+				const WindowRectangle& rect = WindowRectangle{},
+				const WindowRectangle& padding = WindowRectangle{},
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
 				float hover_highlight = 0.05f
@@ -101,8 +103,9 @@ namespace mkaul {
 				graphics::Bitmap* icon,
 				const ColorF* p_color_bg,
 				const ColorF* p_color_control,
-				const WindowRectangle& rect,
 				const std::string& tooltip_label = "",
+				const WindowRectangle& rect = WindowRectangle{},
+				const WindowRectangle& padding = WindowRectangle{},
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
 				float hover_highlight = 0.05f

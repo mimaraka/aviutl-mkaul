@@ -73,9 +73,10 @@ namespace mkaul {
 				LPCTSTR					class_name,
 				LONG					window_style,
 				LONG					class_style,
-				const WindowRectangle&	rect,
 				const ColorF*			p_color_bg,
 				const ColorF*			p_color_control,
+				const WindowRectangle&	rect = WindowRectangle{},
+				const WindowRectangle&	padding = WindowRectangle{},
 				flag::RoundEdge			round_edge = flag::RoundEdge::None,
 				float					round_radius = 0.f,
 				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW)

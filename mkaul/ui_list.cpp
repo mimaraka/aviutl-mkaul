@@ -4,6 +4,18 @@
 
 namespace mkaul {
 	namespace ui {
+		bool List::insert(size_t index, const Component* child) {
+			if (children_.size() < index) return false;
+			children_.insert(children_.begin() + index, const_cast<Component*>(child));
+			return true;
+		}
+
+		bool List::replace(size_t index, const Component* child) {
+			if (children_.size() <= index) return false;
+			children_[index] = const_cast<Component*>(child);
+			return true;
+		}
+
 		bool List::redraw() const noexcept {
 			for (auto child : children_) {
 				if (!child->redraw()) {
@@ -11,6 +23,22 @@ namespace mkaul {
 				}
 			}
 			return true;
+		}
+
+		bool List::show() const noexcept {
+			bool result = true;
+			for (auto child : children_) {
+				result &= child->show();
+			}
+			return result;
+		}
+
+		bool List::hide() const noexcept {
+			bool result = true;
+			for (auto child : children_) {
+				result &= child->hide();
+			}
+			return result;
 		}
 
 		bool Row::move(const WindowRectangle& rect) const noexcept {

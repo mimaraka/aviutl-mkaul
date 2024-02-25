@@ -72,6 +72,14 @@ namespace mkaul {
 				(top + bottom) / static_cast<U>(2.)
 			);
 		}
+
+		constexpr bool pt_in_rect(const pt_lower auto& pt, bool include_edge = true) const noexcept {
+			return in_range(pt.x, left, right, include_edge) and in_range(pt.y, top, bottom, include_edge);
+		}
+
+		constexpr bool pt_in_rect(const pt_upper auto& pt, bool include_edge = true) const noexcept {
+			return in_range(pt.X, left, right, include_edge) and in_range(pt.Y, top, bottom, include_edge);
+		}
 	};
 
 	// 矩形(ウィンドウ用)
@@ -90,7 +98,7 @@ namespace mkaul {
 
 		void set(int left, int top, int right, int bottom) noexcept;
 		void set_margin(int left, int top, int right, int bottom) noexcept;
-		constexpr const auto& get_rect() const noexcept { return RECT{ left, top, right, bottom }; };
+		constexpr auto get_rect() const noexcept { return RECT{ left, top, right, bottom }; };
 		void client_to_screen(HWND hwnd) noexcept;
 		void screen_to_client(HWND hwnd) noexcept;
 	};
