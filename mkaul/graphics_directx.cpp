@@ -106,7 +106,7 @@ namespace mkaul {
 				(DWRITE_FONT_WEIGHT)font.weight,
 				font_style,
 				DWRITE_FONT_STRETCH_NORMAL,
-				font.height,
+				font.height * 1.3f, // フォントの高さを補正
 				L"",
 				&p_text_format
 			);

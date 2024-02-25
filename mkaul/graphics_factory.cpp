@@ -9,15 +9,15 @@
 namespace mkaul {
 	namespace graphics {
 		// 描画環境の用意
-		bool Factory::startup(GraphicMethod method) noexcept {
+		bool Factory::startup(GraphicEngine engine) noexcept {
 			bool result = false;
 
-			switch (method) {
-			case GraphicMethod::Gdiplus:
+			switch (engine) {
+			case GraphicEngine::Gdiplus:
 				result = GdiplusGraphics::startup();
 				break;
 
-			case GraphicMethod::Directx:
+			case GraphicEngine::Directx:
 				result = DirectxGraphics::startup();
 				break;
 
@@ -26,7 +26,7 @@ namespace mkaul {
 			}
 
 			if (result)
-				method_ = method;
+				engine_ = engine;
 
 			return result;
 		}
@@ -34,12 +34,12 @@ namespace mkaul {
 
 		// 描画環境の破棄
 		bool Factory::shutdown() noexcept {
-			switch (method_) {
-			case GraphicMethod::Gdiplus:
+			switch (engine_) {
+			case GraphicEngine::Gdiplus:
 				GdiplusGraphics::shutdown();
 				break;
 
-			case GraphicMethod::Directx:
+			case GraphicEngine::Directx:
 				DirectxGraphics::shutdown();
 				break;
 
@@ -52,11 +52,11 @@ namespace mkaul {
 
 
 		std::unique_ptr<Graphics> Factory::create_graphics() noexcept {
-			switch (method_) {
-			case GraphicMethod::Gdiplus:
+			switch (engine_) {
+			case GraphicEngine::Gdiplus:
 				return std::make_unique<GdiplusGraphics>();
 
-			case GraphicMethod::Directx:
+			case GraphicEngine::Directx:
 				return std::make_unique<DirectxGraphics>();
 
 			default:
@@ -66,11 +66,11 @@ namespace mkaul {
 
 
 		std::unique_ptr<Path> Factory::create_path() noexcept {
-			switch (method_) {
-			case GraphicMethod::Gdiplus:
+			switch (engine_) {
+			case GraphicEngine::Gdiplus:
 				return std::make_unique<GdiplusPath>();
 
-			case GraphicMethod::Directx:
+			case GraphicEngine::Directx:
 				return std::make_unique<DirectxPath>();
 
 			default:

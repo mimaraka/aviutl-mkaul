@@ -15,8 +15,8 @@ AviUtlのプラグインを作成する上での基本的な機能を提供す�
 1. `Factory::startup()`関数で描画方式を指定して描画環境を用意します。
 ```cpp
 using graphics = mkaul::graphics;
-using GraphicMethod = graphics::Factory::GraphicMethod;
-graphics::Factory::startup(GraphicMethod::Directx);
+using GraphicEngine = graphics::Factory::GraphicEngine;
+graphics::Factory::startup(GraphicEngine::Directx);
 ```
 
 2. `Factory::create_graphics()`関数でGraphicsオブジェクトを作成し、`Graphics::init()`メソッドで初期化します。
