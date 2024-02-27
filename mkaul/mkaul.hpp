@@ -4,6 +4,7 @@
 #include "color.hpp"
 #include "control.hpp"
 #include "exedit.hpp"
+#include "file.hpp"
 #include "graphics.hpp"
 #include "http.hpp"
 #include "point.hpp"
@@ -12,4 +13,5 @@
 #include "ui.hpp"
 #include "util.hpp"
 #include "util_hook.hpp"
+#include "version.hpp"
 #include "window.hpp"
