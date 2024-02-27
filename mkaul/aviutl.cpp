@@ -3,7 +3,7 @@
 
 namespace mkaul {
 	namespace aviutl {
-		FilterPlugin* get_filterp_by_name(FilterPlugin* fp, const std::string& name, bool by_filter_name) {
+		FilterPlugin* get_fp_by_name(FilterPlugin* fp, const std::string& name, bool by_filter_name) {
 			SysInfo si;
 			if (!fp->exfunc->get_sys_info(nullptr, &si)) {
 				return nullptr;
@@ -17,7 +17,7 @@ namespace mkaul {
 					}
 				}
 				else {
-					if (tfp->dll_hinst == ::GetModuleHandleA(name.c_str())) {
+					if (tfp->dll_hinst and tfp->dll_hinst == ::GetModuleHandleA(name.c_str())) {
 						return tfp;
 					}
 				}

@@ -6,7 +6,7 @@
 namespace mkaul {
 	namespace exedit {
 		bool Internal::init(AviUtl::FilterPlugin* fp) noexcept {
-			auto exedit_fp = aviutl::get_filterp_by_name(fp, "exedit.auf");
+			auto exedit_fp = aviutl::get_fp_by_name(fp, "exedit.auf");
 			if (exedit_fp) {
 				fp_ = exedit_fp;
 				auto exedit_base = (uint32_t)exedit_fp->dll_hinst;
