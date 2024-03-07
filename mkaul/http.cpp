@@ -110,7 +110,7 @@ namespace mkaul {
 				);
 			}
 			if (*p_status_code == HTTP_STATUS_OK) {
-				// –{•¶‚ÌŽóM
+				// æœ¬æ–‡ã®å—ä¿¡
 				stream->clear();
 				while (true) {
 					size = 0;

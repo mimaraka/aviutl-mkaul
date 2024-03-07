@@ -4,10 +4,10 @@
 
 namespace mkaul {
 	namespace graphics {
-		// DirectX共通の基底クラス
+		// DirectX蜈ｱ騾壹�ｮ蝓ｺ蠎輔け繝ｩ繧ｹ
 		class DirectxBase {
 		protected:
-			// DirectXオブジェクトの開放
+			// DirectX繧ｪ繝悶ず繧ｧ繧ｯ繝医�ｮ髢区叛
 			template <class Interface>
 			static void dx_release(Interface** pp_obj)
 			{

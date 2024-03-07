@@ -183,7 +183,11 @@ namespace mkaul {
 				if (p_factory_ and p_write_factory_ and p_imaging_factory_) {
 					// HwndRenderTargetを作成
 					hresult = p_factory_->CreateHwndRenderTarget(
-						D2D1::RenderTargetProperties(),
+						D2D1::RenderTargetProperties(
+							D2D1_RENDER_TARGET_TYPE_DEFAULT,
+							D2D1::PixelFormat(),
+							96.f, 96.f
+						),
 						D2D1::HwndRenderTargetProperties(hwnd, pixel_size),
 						&p_render_target_
 					);

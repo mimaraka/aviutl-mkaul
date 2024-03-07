@@ -4,10 +4,10 @@
 
 namespace mkaul {
 	namespace graphics {
-		// GDI+共通の基底クラス
+		// GDI+蜈ｱ騾壹�ｮ蝓ｺ蠎輔け繝ｩ繧ｹ
 		class GdiplusBase {
 		protected:
-			// オブジェクトを開放
+			// 繧ｪ繝悶ず繧ｧ繧ｯ繝医ｒ髢区叛
 			template <class Interface>
 			static void gdip_release(Interface** pp_obj)
 			{
