@@ -250,6 +250,11 @@ namespace mkaul {
 					true,
 					*p_color_label_
 				);
+				if ((uint32_t)(status_ & flag::Status::Disabled)) {
+					ColorF tmp = color;
+					tmp.set_a(0.5f);
+					p_graphics_->fill_background(tmp);
+				}
 				draw_round_edge();
 				p_graphics_->end_draw();
 
@@ -281,6 +286,11 @@ namespace mkaul {
 					icon_,
 					Point{rect_wnd.right * 0.5f, rect_wnd.bottom * 0.5f}
 				);
+				if ((uint32_t)(status_ & flag::Status::Disabled)) {
+					ColorF tmp = color;
+					tmp.set_a(0.5f);
+					p_graphics_->fill_background(tmp);
+				}
 				draw_round_edge();
 				p_graphics_->end_draw();
 

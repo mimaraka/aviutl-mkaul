@@ -33,7 +33,7 @@ namespace mkaul {
 	std::string PreviewType::capitalize_(const char* str) noexcept {
 		std::string tmp{ str };
 		if (tmp.size() == 0) return "";
-		tmp[0] = std::toupper(tmp[0]);
+		tmp[0] = (char)std::toupper(tmp[0]);
 		return tmp;
 	}
 

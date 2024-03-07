@@ -24,7 +24,7 @@ namespace mkaul {
 			int32_t* p_current_filter_idx_;
 			int32_t* p_obj_num_;
 			int32_t* p_current_scene_obj_num_;
-			ExEdit::Object** p_obj_;
+			ExEdit::Object** p_array_obj_;
 			uint8_t** p_obj_exdata_;
 			int32_t* array_next_obj_idcs_;
 			int32_t* array_selected_obj_idcs_;
@@ -55,7 +55,7 @@ namespace mkaul {
 				p_current_filter_idx_(nullptr),
 				p_obj_num_(nullptr),
 				p_current_scene_obj_num_(nullptr),
-				p_obj_(nullptr),
+				p_array_obj_(nullptr),
 				p_obj_exdata_(nullptr),
 				array_next_obj_idcs_(nullptr),
 				array_selected_obj_idcs_(nullptr),
@@ -92,7 +92,7 @@ namespace mkaul {
 			auto p_current_filter_idx() const noexcept { return p_current_filter_idx_; }
 			auto p_obj_num() const noexcept { return p_obj_num_; }
 			auto p_current_scene_obj_num() const noexcept { return p_current_scene_obj_num_; }
-			auto p_obj() const noexcept { return p_obj_; }
+			auto p_array_obj() const noexcept { return p_array_obj_; }
 			auto p_obj_exdata() const noexcept { return p_obj_exdata_; }
 			auto array_next_obj_idcs() const noexcept { return array_next_obj_idcs_; }
 			auto array_selected_obj_idcs() const noexcept { return array_selected_obj_idcs_; }
