@@ -16,13 +16,20 @@ namespace mkaul {
 			return true;
 		}
 
-		bool List::redraw() const noexcept {
-			for (auto child : children_) {
-				if (!child->redraw()) {
-					return false;
-				}
+		bool List::close() const noexcept {
+			bool result = true;
+			for (const auto child : children_) {
+				result &= child->close();
 			}
-			return true;
+			return result;
+		}
+
+		bool List::redraw() const noexcept {
+			bool result = true;
+			for (const auto child : children_) {
+				result &= child->redraw();
+			}
+			return result;
 		}
 
 		bool List::show() const noexcept {

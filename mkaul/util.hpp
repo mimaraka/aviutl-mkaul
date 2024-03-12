@@ -72,6 +72,18 @@ namespace mkaul {
 	}
 
 
+	// 浮動小数点の誤差を考慮した等価比較
+	inline constexpr bool real_equal(float val1, float val2) noexcept {
+		const float diff = val1 - val2;
+		return mkaul::in_range(diff, -std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon());
+	}
+
+	inline constexpr bool real_equal(double val1, double val2) noexcept {
+		const double diff = val1 - val2;
+		return mkaul::in_range(diff, -std::numeric_limits<double>::epsilon(), std::numeric_limits<double>::epsilon());
+	}
+
+
 	// 符号関数
 	inline constexpr auto sign(auto val) noexcept {
 		if (val < (decltype(val))0) {

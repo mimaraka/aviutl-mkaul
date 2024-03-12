@@ -6,9 +6,6 @@
 #include "util.hpp"
 #include "ui_component.hpp"
 #include <Windows.h>
-#include <commctrl.h>
-
-#pragma comment(lib, "comctl32.lib")
 
 
 
@@ -50,7 +47,7 @@ namespace mkaul {
 			void set_padding(const WindowRectangle& rect) noexcept;
 			bool move(const WindowRectangle& rect) const noexcept override;
 			bool redraw() const noexcept override;
-			bool close() const noexcept { return ::DestroyWindow(hwnd_); }
+			bool close() const noexcept override { return ::DestroyWindow(hwnd_); }
 			bool show() const noexcept override { return ::ShowWindow(hwnd_, SW_SHOW); }
 			bool hide() const noexcept override { return ::ShowWindow(hwnd_, SW_HIDE); }
 			bool send_command(WPARAM wparam = 0, LPARAM lparam = 0) const noexcept { return ::SendMessageA(hwnd_, WM_COMMAND, wparam, lparam); }
