@@ -41,81 +41,6 @@ namespace mkaul {
 		}
 
 
-		// ボタンを作成(ラベル)
-		HWND LabelButton::create(
-			HINSTANCE hinst,
-			HWND hwnd_parent,
-			int id,
-			const std::string& label,
-			const graphics::Font font,
-			const ColorF* p_color_bg,
-			const ColorF* p_color_control,
-			const ColorF* p_color_label,
-			const std::string& tooltip_label,
-			const WindowRectangle& rect,
-			const WindowRectangle& padding,
-			flag::RoundEdge round_edge,
-			float round_radius,
-			float hover_highlight
-		) noexcept {
-			label_ = label;
-			font_ = font;
-			p_color_label_ = const_cast<ColorF*>(p_color_label);
-
-			return Button::create(
-				hinst,
-				hwnd_parent,
-				id,
-				p_color_bg,
-				p_color_control,
-				tooltip_label,
-				rect,
-				padding,
-				round_edge,
-				round_radius,
-				hover_highlight
-			);
-		}
-
-
-		// ボタンを作成(アイコン)
-		HWND IconButton::create(
-			HINSTANCE hinst,
-			HWND hwnd_parent,
-			int id,
-			graphics::Bitmap* icon,
-			const ColorF* p_color_bg,
-			const ColorF* p_color_control,
-			const std::string& tooltip_label,
-			const WindowRectangle& rect,
-			const WindowRectangle& padding,
-			flag::RoundEdge round_edge,
-			float round_radius,
-			float hover_highlight
-		) noexcept {
-			icon_ = icon;
-			return Button::create(
-				hinst,
-				hwnd_parent,
-				id,
-				p_color_bg,
-				p_color_control,
-				tooltip_label,
-				rect,
-				padding,
-				round_edge,
-				round_radius,
-				hover_highlight
-			);
-		}
-
-
-		void LabelButton::set_label(const std::string& label) noexcept {
-			label_ = label;
-			redraw();
-		}
-
-
 		// ウィンドウプロシージャ
 		LRESULT Button::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 			RECT rect_wnd;
@@ -126,7 +51,7 @@ namespace mkaul {
 				p_graphics_->init(hwnd);
 
 				if (!tooltip_label_.empty()) {
-					hwnd_tooltip_ = ::CreateWindowEx(
+					hwnd_tooltip_ = ::CreateWindowExA(
 						0, TOOLTIPS_CLASS,
 						NULL, TTS_ALWAYSTIP,
 						CW_USEDEFAULT, CW_USEDEFAULT,
@@ -219,90 +144,6 @@ namespace mkaul {
 			}
 
 			return 0;
-		}
-
-
-		LRESULT LabelButton::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
-			RECT rect_wnd;
-			::GetClientRect(hwnd, &rect_wnd);
-
-			switch (message) {
-			case WM_PAINT:
-			{
-				ColorF color = *p_color_control_;
-
-				if (clicked_)
-					color.change_brightness(-hover_highlight_);
-				else if (hovered_)
-					color.change_brightness(hover_highlight_);
-
-				p_graphics_->begin_draw();
-				p_graphics_->fill_background(color);
-				p_graphics_->draw_text(
-					label_,
-					Rectangle<float>{
-						0.f, 0.f,
-						(float)rect_wnd.right,
-						(float)rect_wnd.bottom
-					},
-					font_,
-					graphics::AnchorPosition{},
-					true,
-					*p_color_label_
-				);
-				if ((uint32_t)(status_ & flag::Status::Disabled)) {
-					ColorF tmp = color;
-					tmp.set_a(0.5f);
-					p_graphics_->fill_background(tmp);
-				}
-				draw_round_edge();
-				p_graphics_->end_draw();
-
-				return 0;
-			}
-			}
-
-			return Button::wndproc(hwnd, message, wparam, lparam);
-		}
-
-
-		LRESULT IconButton::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
-			RECT rect_wnd;
-			::GetClientRect(hwnd, &rect_wnd);
-
-			switch (message) {
-			case WM_PAINT:
-			{
-				ColorF color = *p_color_control_;
-
-				if (clicked_)
-					color.change_brightness(-hover_highlight_);
-				else if (hovered_)
-					color.change_brightness(hover_highlight_);
-
-				p_graphics_->begin_draw();
-				p_graphics_->fill_background(color);
-				p_graphics_->draw_bitmap(
-					icon_,
-					Point{rect_wnd.right * 0.5f, rect_wnd.bottom * 0.5f}
-				);
-				if ((uint32_t)(status_ & flag::Status::Disabled)) {
-					ColorF tmp = color;
-					tmp.set_a(0.5f);
-					p_graphics_->fill_background(tmp);
-				}
-				draw_round_edge();
-				p_graphics_->end_draw();
-
-				return 0;
-			}
-
-			case WM_CLOSE:
-				icon_->release();
-				break;
-			}
-
-			return Button::wndproc(hwnd, message, wparam, lparam);
 		}
 	}
 }

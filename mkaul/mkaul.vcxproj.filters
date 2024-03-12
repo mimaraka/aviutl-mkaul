@@ -150,6 +150,12 @@
     <ClInclude Include="version.hpp">
       <Filter>ヘッダー ファイル\Util</Filter>
     </ClInclude>
+    <ClInclude Include="button_label.hpp">
+      <Filter>ヘッダー ファイル\UI\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="button_icon.hpp">
+      <Filter>ヘッダー ファイル\UI\Control</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphics_directx.cpp">
@@ -211,6 +217,12 @@
     </ClCompile>
     <ClCompile Include="version.cpp">
       <Filter>ソース ファイル\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="button_label.cpp">
+      <Filter>ソース ファイル\UI\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="button_icon.cpp">
+      <Filter>ソース ファイル\UI\Control</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -32,54 +32,40 @@ namespace mkaul {
 		class Control : public Window {
 		protected:
 			// 色
-			ColorF*					p_color_bg_;
-			ColorF*					p_color_control_;
+			ColorF* p_color_bg_ = nullptr;
+			ColorF* p_color_control_ = nullptr;
 			// ステータス
-			flag::Status			status_;
-			TRACKMOUSEEVENT			tme_;
-			HWND					hwnd_parent_;
+			flag::Status status_ = flag::Status::Null;
+			TRACKMOUSEEVENT tme_ = { 0 };
+			HWND hwnd_parent_ = NULL;
 			std::unique_ptr<graphics::Graphics> p_graphics_;
-			flag::RoundEdge			round_edge_;
+			flag::RoundEdge round_edge_ = flag::RoundEdge::None;
 			// コントロールID
-			int						id_;
-			float					round_radius_;
+			int id_ = 0;
+			float round_radius_ = 0.f;
 
 			static LRESULT CALLBACK	wndproc_static(HWND hwnd_, UINT message, WPARAM wparam, LPARAM lparam);
 			virtual LRESULT			wndproc(HWND hwnd_, UINT message, WPARAM wparam, LPARAM lparam) = 0;
 
 		public:
-			// コンストラクタ
-			Control() :
-				hwnd_parent_(NULL),
-				id_(0),
-				status_(flag::Status::Null),
-				p_color_bg_(nullptr),
-				p_color_control_(nullptr),
-				round_radius_(0.f),
-				round_edge_(flag::RoundEdge::None),
-				tme_({ 0 }),
-				p_graphics_()
-			{}
-
-			// デストラクタ
-			~Control()
-			{}
+			Control() {}
+			~Control() {}
 
 			// コントロールを作成
 			virtual HWND create(
-				HINSTANCE				hinst,
-				HWND					hwnd_parent,
-				int						id,
-				LPCTSTR					class_name,
-				LONG					window_style,
-				LONG					class_style,
-				const ColorF*			p_color_bg,
-				const ColorF*			p_color_control,
-				const WindowRectangle&	rect = WindowRectangle{},
-				const WindowRectangle&	padding = WindowRectangle{},
-				flag::RoundEdge			round_edge = flag::RoundEdge::None,
-				float					round_radius = 0.f,
-				HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW)
+				HINSTANCE hinst,
+				HWND hwnd_parent,
+				int id,
+				LPCTSTR class_name,
+				LONG window_style,
+				LONG class_style,
+				const ColorF* p_color_bg,
+				const ColorF* p_color_control,
+				const WindowRectangle& rect = WindowRectangle{},
+				const WindowRectangle& padding = WindowRectangle{},
+				flag::RoundEdge round_edge = flag::RoundEdge::None,
+				float round_radius = 0.f,
+				HCURSOR cursor = ::LoadCursorA(NULL, IDC_ARROW)
 			) noexcept;
 			auto get_id() const noexcept { return id_; }
 			auto get_status() const noexcept { return status_; }

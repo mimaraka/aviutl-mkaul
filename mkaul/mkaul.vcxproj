@@ -169,6 +169,8 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="bitmap_base.hpp" />
     <ClInclude Include="bitmap_directx.hpp" />
     <ClInclude Include="bitmap_gdiplus.hpp" />
+    <ClInclude Include="button_icon.hpp" />
+    <ClInclude Include="button_label.hpp" />
     <ClInclude Include="file.hpp" />
     <ClInclude Include="ui.hpp" />
     <ClInclude Include="ui_component.hpp" />
@@ -210,6 +212,8 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="button_icon.cpp" />
+    <ClCompile Include="button_label.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="graphics_base.cpp" />
     <ClCompile Include="ui_list.cpp" />
