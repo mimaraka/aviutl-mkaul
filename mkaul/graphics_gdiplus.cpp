@@ -797,12 +797,12 @@ namespace mkaul {
 		) noexcept {
 			p_graphics_buffer_->DrawImage(
 				bitmap->get_data<Gdiplus::Bitmap*>(),
-				Gdiplus::RectF(
+				Gdiplus::RectF{
 					rect.left,
 					rect.top,
-					rect.right,
-					rect.bottom
-				)
+					rect.right - rect.left,
+					rect.bottom - rect.top
+				}
 			);
 		}
 
