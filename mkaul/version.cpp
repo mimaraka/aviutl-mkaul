@@ -62,7 +62,11 @@ namespace mkaul {
 	}
 
 	std::string Version::str() const noexcept {
-		return "v" + number_.str() + "-" + preview_type_.str() + number_preview_.str();
+		std::string ret = "v" + number_.str();
+		if (preview_type_.is_preview()) {
+			ret += "-" + preview_type_.str() + number_preview_.str();
+		}
+		return ret;
 	}
 
 	bool Version::from_str(const std::string& ver_str) noexcept {
