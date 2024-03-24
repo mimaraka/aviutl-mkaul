@@ -1,228 +1,228 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="リソース ファイル">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\Graphics">
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{40f0834b-8a4d-48f4-9a60-f7632126758c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Graphics">
-      <UniqueIdentifier>{83aade43-4d84-48a6-9e8c-e74a67d60363}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\UI">
+    <Filter Include="Source Files\UI">
       <UniqueIdentifier>{95183436-fec6-4c6f-b161-b1905ec06319}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\UI\Control">
+    <Filter Include="Source Files\UI\Control">
       <UniqueIdentifier>{de5724c5-d7ac-4df0-8da0-726a992c4319}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\UI">
-      <UniqueIdentifier>{1fb33cb3-a977-4938-95b8-ba1dd0fc7136}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\UI\Control">
-      <UniqueIdentifier>{8e88e2d9-357e-4516-a93d-2eddd5ed6f59}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\AviUtl">
+    <Filter Include="Source Files\AviUtl">
       <UniqueIdentifier>{73238037-c782-4562-838e-7f49b5e4cbeb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\AviUtl">
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{c90fe3b3-72c0-4cf5-824d-0693d2add49e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Graphics">
+      <UniqueIdentifier>{83aade43-4d84-48a6-9e8c-e74a67d60363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{1fb33cb3-a977-4938-95b8-ba1dd0fc7136}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI\Control">
+      <UniqueIdentifier>{8e88e2d9-357e-4516-a93d-2eddd5ed6f59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AviUtl">
       <UniqueIdentifier>{bea96693-1a0f-4cc5-aebe-7a5c1308caf1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Util">
+    <Filter Include="Header Files\Util">
       <UniqueIdentifier>{2cd0d1ea-4abe-494c-ae8d-55a6af067321}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Util">
-      <UniqueIdentifier>{c90fe3b3-72c0-4cf5-824d-0693d2add49e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mkaul.hpp">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphics_base.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics_factory.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics_directx.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics_gdiplus.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="window.hpp">
-      <Filter>ヘッダー ファイル\UI</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="button.hpp">
-      <Filter>ヘッダー ファイル\UI\Control</Filter>
+      <Filter>Header Files\UI\Control</Filter>
     </ClInclude>
     <ClInclude Include="control.hpp">
-      <Filter>ヘッダー ファイル\UI\Control</Filter>
+      <Filter>Header Files\UI\Control</Filter>
     </ClInclude>
     <ClInclude Include="graphics.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="stroke.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="font.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="path_base.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="bitmap_base.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="gdiplus_common.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="bitmap_gdiplus.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="path_gdiplus.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="directx_common.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="path_directx.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="anchor_position.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="ui_component.hpp">
-      <Filter>ヘッダー ファイル\UI</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="ui_list.hpp">
-      <Filter>ヘッダー ファイル\UI</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="bitmap_directx.hpp">
-      <Filter>ヘッダー ファイル\Graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="aviutl.hpp">
-      <Filter>ヘッダー ファイル\AviUtl</Filter>
+      <Filter>Header Files\AviUtl</Filter>
     </ClInclude>
     <ClInclude Include="exedit.hpp">
-      <Filter>ヘッダー ファイル\AviUtl</Filter>
+      <Filter>Header Files\AviUtl</Filter>
     </ClInclude>
     <ClInclude Include="util_hook.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="rectangle.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="size.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="util.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="point.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="http.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="flag.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="color.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="ui.hpp">
-      <Filter>ヘッダー ファイル\UI</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="file.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="version.hpp">
-      <Filter>ヘッダー ファイル\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="button_label.hpp">
-      <Filter>ヘッダー ファイル\UI\Control</Filter>
+      <Filter>Header Files\UI\Control</Filter>
     </ClInclude>
     <ClInclude Include="button_icon.hpp">
-      <Filter>ヘッダー ファイル\UI\Control</Filter>
+      <Filter>Header Files\UI\Control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphics_directx.cpp">
-      <Filter>ソース ファイル\Graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="graphics_gdiplus.cpp">
-      <Filter>ソース ファイル\Graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="graphics_factory.cpp">
-      <Filter>ソース ファイル\Graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="window.cpp">
-      <Filter>ソース ファイル\UI</Filter>
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="button.cpp">
-      <Filter>ソース ファイル\UI\Control</Filter>
+      <Filter>Source Files\UI\Control</Filter>
     </ClCompile>
     <ClCompile Include="control.cpp">
-      <Filter>ソース ファイル\UI\Control</Filter>
+      <Filter>Source Files\UI\Control</Filter>
     </ClCompile>
     <ClCompile Include="path_base.cpp">
-      <Filter>ソース ファイル\Graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="bitmap_gdiplus.cpp">
-      <Filter>ソース ファイル\Graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="path_gdiplus.cpp">
-      <Filter>ソース ファイル\Graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="bitmap_directx.cpp">
-      <Filter>ソース ファイル\Graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="path_directx.cpp">
-      <Filter>ソース ファイル\Graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="ui_list.cpp">
-      <Filter>ソース ファイル\UI</Filter>
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="exedit.cpp">
-      <Filter>ソース ファイル\AviUtl</Filter>
+      <Filter>Source Files\AviUtl</Filter>
     </ClCompile>
     <ClCompile Include="util_hook.cpp">
-      <Filter>ソース ファイル\Util</Filter>
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="http.cpp">
-      <Filter>ソース ファイル\Util</Filter>
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="rectangle.cpp">
-      <Filter>ソース ファイル\Util</Filter>
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="aviutl.cpp">
-      <Filter>ソース ファイル\AviUtl</Filter>
+      <Filter>Source Files\AviUtl</Filter>
     </ClCompile>
     <ClCompile Include="graphics_base.cpp">
-      <Filter>ソース ファイル\Graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="file.cpp">
-      <Filter>ソース ファイル\Util</Filter>
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="version.cpp">
-      <Filter>ソース ファイル\Util</Filter>
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="button_label.cpp">
-      <Filter>ソース ファイル\UI\Control</Filter>
+      <Filter>Source Files\UI\Control</Filter>
     </ClCompile>
     <ClCompile Include="button_icon.cpp">
-      <Filter>ソース ファイル\UI\Control</Filter>
+      <Filter>Source Files\UI\Control</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
