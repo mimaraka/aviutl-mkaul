@@ -29,9 +29,10 @@ namespace mkaul {
 
 	// 範囲内判定
 	inline constexpr bool in_range(auto val, auto min, auto max, bool equal = false) noexcept {
-		if (val >= min and val <= max) {
-			if (val == min or val == max)
+		if (min <= val and val <= max) {
+			if (val == min or val == max) {
 				return equal;
+			}
 			else return true;
 		}
 		else return false;
@@ -73,16 +74,22 @@ namespace mkaul {
 
 
 	// 浮動小数点の誤差を考慮した等価比較
-	inline constexpr bool real_equal(float val1, float val2) noexcept {
-		const float diff = val1 - val2;
-		return mkaul::in_range(diff, -std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon());
+	template <typename T>
+	inline constexpr bool real_equal(T val1, T val2) noexcept {
+		const T diff = val1 - val2;
+		return mkaul::in_range(diff, -std::numeric_limits<T>::epsilon(), std::numeric_limits<T>::epsilon());
 	}
 
-	inline constexpr bool real_equal(double val1, double val2) noexcept {
-		const double diff = val1 - val2;
-		return mkaul::in_range(diff, -std::numeric_limits<double>::epsilon(), std::numeric_limits<double>::epsilon());
+	template <typename T>
+	inline constexpr bool real_in_range(T val, T min, T max, bool equal = false) noexcept {
+		if (min - std::numeric_limits<T>::epsilon() <= val and val <= max + std::numeric_limits<T>::epsilon()) {
+			if (real_equal(val, min) or real_equal(val, max)) {
+				return equal;
+			}
+			else return true;
+		}
+		else return false;
 	}
-
 
 	// 符号関数
 	inline constexpr auto sign(auto val) noexcept {
