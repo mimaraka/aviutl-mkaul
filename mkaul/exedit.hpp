@@ -8,68 +8,39 @@
 namespace mkaul {
 	namespace exedit {
 		class Internal {
-		private:
-			AviUtl::FilterPlugin* fp_;
+			AviUtl::FilterPlugin* fp_ = nullptr;
 
-			HWND* p_hwnd_timeline_;
-			HWND* p_hwnd_objdialog_;
-			BOOL(*wndproc_timeline_)(HWND, UINT, WPARAM, LPARAM, AviUtl::EditHandle*, AviUtl::FilterPlugin*);
-			WNDPROC wndproc_objdialog_orig_;
-			WNDPROC wndproc_objdialog_;
-			WNDPROC* p_wndproc_objdialog_;
-			ExEdit::Object** p_obj_table_;
-			ExEdit::Filter** p_filter_table_;
-			int32_t* p_current_scene_idx_;
-			int32_t* p_current_obj_idx_;
-			int32_t* p_current_filter_idx_;
-			int32_t* p_obj_num_;
-			int32_t* p_current_scene_obj_num_;
-			ExEdit::Object** p_array_obj_;
-			uint8_t** p_obj_exdata_;
-			int32_t* array_next_obj_idcs_;
-			int32_t* array_selected_obj_idcs_;
-			int32_t* p_selected_obj_num_;
-			ExEdit::SceneSetting* p_scene_setting_;
-			AviUtl::EditHandle* editp_;
-			int32_t* p_layer_width_;
-			int32_t* p_layer_height_;
-			int32_t* p_visible_layer_num_;
-			ExEdit::LayerSetting** array_layer_setting_;
-			int32_t* p_aviutl_final_frame_;
-			int32_t* p_exedit_final_frame_;
-			int32_t* p_exedit_current_frame_;
+			HWND* p_hwnd_aviutl_ = nullptr;
+			HWND* p_hwnd_timeline_ = nullptr;
+			HWND* p_hwnd_objdialog_ = nullptr;
+			BOOL(*wndproc_timeline_)(HWND, UINT, WPARAM, LPARAM, AviUtl::EditHandle*, AviUtl::FilterPlugin*) = nullptr;
+			WNDPROC wndproc_objdialog_orig_ = nullptr;
+			WNDPROC wndproc_objdialog_ = nullptr;
+			WNDPROC* p_wndproc_objdialog_ = nullptr;
+			ExEdit::Object** p_obj_table_ = nullptr;
+			ExEdit::Filter** p_filter_table_ = nullptr;
+			int32_t* p_current_scene_idx_ = nullptr;
+			int32_t* p_current_obj_idx_ = nullptr;
+			int32_t* p_current_filter_idx_ = nullptr;
+			int32_t* p_obj_num_ = nullptr;
+			int32_t* p_current_scene_obj_num_ = nullptr;
+			ExEdit::Object** p_array_obj_ = nullptr;
+			uint8_t** p_obj_exdata_ = nullptr;
+			int32_t* array_next_obj_idcs_ = nullptr;
+			int32_t* array_selected_obj_idcs_ = nullptr;
+			int32_t* p_selected_obj_num_ = nullptr;
+			ExEdit::SceneSetting* p_scene_setting_ = nullptr;
+			AviUtl::EditHandle* editp_ = nullptr;
+			int32_t* p_layer_width_ = nullptr;
+			int32_t* p_layer_height_ = nullptr;
+			int32_t* p_visible_layer_num_ = nullptr;
+			ExEdit::LayerSetting** array_layer_setting_ = nullptr;
+			int32_t* p_aviutl_final_frame_ = nullptr;
+			int32_t* p_exedit_final_frame_ = nullptr;
+			int32_t* p_exedit_current_frame_ = nullptr;
 
 		public:
-			Internal() :
-				fp_(nullptr),
-				p_hwnd_timeline_(nullptr),
-				p_hwnd_objdialog_(nullptr),
-				wndproc_timeline_(nullptr),
-				wndproc_objdialog_orig_(nullptr),
-				wndproc_objdialog_(nullptr),
-				p_wndproc_objdialog_(nullptr),
-				p_obj_table_(nullptr),
-				p_filter_table_(nullptr),
-				p_current_scene_idx_(nullptr),
-				p_current_obj_idx_(nullptr),
-				p_current_filter_idx_(nullptr),
-				p_obj_num_(nullptr),
-				p_current_scene_obj_num_(nullptr),
-				p_array_obj_(nullptr),
-				p_obj_exdata_(nullptr),
-				array_next_obj_idcs_(nullptr),
-				array_selected_obj_idcs_(nullptr),
-				p_selected_obj_num_(nullptr),
-				p_scene_setting_(nullptr),
-				editp_(nullptr),
-				p_layer_width_(nullptr),
-				p_layer_height_(nullptr),
-				p_visible_layer_num_(nullptr),
-				array_layer_setting_(nullptr),
-				p_aviutl_final_frame_(nullptr),
-				p_exedit_final_frame_(nullptr),
-				p_exedit_current_frame_(nullptr)
-			{}
+			Internal() {}
 
 			bool init(AviUtl::FilterPlugin* fp) noexcept;
 
@@ -79,6 +50,7 @@ namespace mkaul {
 			}
 
 			auto fp() const noexcept { return fp_; }
+			auto p_hwnd_aviutl() const noexcept { return p_hwnd_aviutl_; }
 			auto p_hwnd_timeline() const noexcept { return p_hwnd_timeline_; }
 			auto p_hwnd_objdialog() const noexcept { return p_hwnd_objdialog_; }
 			auto get_wndproc_timeline() const noexcept { return wndproc_timeline_; }

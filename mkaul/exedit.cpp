@@ -11,6 +11,7 @@ namespace mkaul {
 				fp_ = exedit_fp;
 				auto exedit_base = (uint32_t)exedit_fp->dll_hinst;
 
+				p_hwnd_aviutl_ = reinterpret_cast<HWND*>(exedit_base + 0x135c6c);
 				p_hwnd_timeline_ = reinterpret_cast<HWND*>(exedit_base + 0x177a44);
 				p_hwnd_objdialog_ = reinterpret_cast<HWND*>(exedit_base + 0x1539c8);
 				wndproc_objdialog_orig_ = reinterpret_cast<WNDPROC>(exedit_base + 0x02cde0);
