@@ -77,7 +77,7 @@ namespace mkaul {
 	template <typename T>
 	inline constexpr bool real_equal(T val1, T val2) noexcept {
 		const T diff = val1 - val2;
-		return mkaul::in_range(diff, -std::numeric_limits<T>::epsilon(), std::numeric_limits<T>::epsilon());
+		return mkaul::in_range(diff, -std::numeric_limits<T>::epsilon(), std::numeric_limits<T>::epsilon(), true);
 	}
 
 	template <typename T>
