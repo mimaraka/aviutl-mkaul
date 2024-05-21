@@ -781,6 +781,21 @@ namespace mkaul {
 			default:
 				y = point.y - height * 0.5f;
 			}
+
+			Gdiplus::ColorMatrix color_matrix{
+				1.f, 0.f, 0.f, 0.f, 0.f,
+				0.f, 1.f, 0.f, 0.f, 0.f,
+				0.f, 0.f, 1.f, 0.f, 0.f,
+				0.f, 0.f, 0.f, opacity, 0.f,
+				0.f, 0.f, 0.f, 0.f, 1.f
+			};
+
+			Gdiplus::ImageAttributes image_attributes;
+			image_attributes.SetColorMatrix(
+				&color_matrix,
+				Gdiplus::ColorMatrixFlagsDefault,
+				Gdiplus::ColorAdjustTypeBitmap
+			);
 	
 			p_graphics_buffer_->DrawImage(
 				p_gdip_bitmap,
@@ -795,6 +810,21 @@ namespace mkaul {
 			const Rectangle<float>& rect,
 			float opacity
 		) noexcept {
+			Gdiplus::ColorMatrix color_matrix{
+				1.f, 0.f, 0.f, 0.f, 0.f,
+				0.f, 1.f, 0.f, 0.f, 0.f,
+				0.f, 0.f, 1.f, 0.f, 0.f,
+				0.f, 0.f, 0.f, opacity, 0.f,
+				0.f, 0.f, 0.f, 0.f, 1.f
+			};
+
+			Gdiplus::ImageAttributes image_attributes;
+			image_attributes.SetColorMatrix(
+				&color_matrix,
+				Gdiplus::ColorMatrixFlagsDefault,
+				Gdiplus::ColorAdjustTypeBitmap
+			);
+
 			p_graphics_buffer_->DrawImage(
 				bitmap->get_data<Gdiplus::Bitmap*>(),
 				Gdiplus::RectF{
@@ -802,7 +832,9 @@ namespace mkaul {
 					rect.top,
 					rect.right - rect.left,
 					rect.bottom - rect.top
-				}
+				},
+				0.f, 0.f, (Gdiplus::REAL)bitmap->get_width(), (Gdiplus::REAL)bitmap->get_height(),
+				Gdiplus::UnitPixel, &image_attributes
 			);
 		}
 
