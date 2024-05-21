@@ -21,14 +21,11 @@ namespace mkaul {
 		// グラフィックス抽象クラス
 		class Graphics {
 		protected:
-			HWND hwnd_;
-			bool drawing_;
+			HWND hwnd_ = NULL;
+			bool drawing_ = false;
 
 		public:
-			Graphics():
-				hwnd_(NULL),
-				drawing_(false)
-			{}
+			Graphics() {}
 			virtual ~Graphics() {}
 
 			virtual bool init(HWND hwnd) noexcept = 0;

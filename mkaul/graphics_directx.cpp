@@ -217,6 +217,7 @@ namespace mkaul {
 
 				if (hdc) {
 					p_render_target_->BeginDraw();
+					p_render_target_->SetTransform(D2D1::Matrix3x2F::Identity());
 					drawing_ = true;
 
 					return true;
@@ -230,7 +231,7 @@ namespace mkaul {
 		bool DirectxGraphics::end_draw() noexcept {
 			if (drawing_) {
 				auto hresult = p_render_target_->EndDraw();
-				::EndPaint(hwnd_, &paint_struct_);
+					::EndPaint(hwnd_, &paint_struct_);
 				paint_struct_ = { 0 };
 				drawing_ = false;
 
@@ -753,7 +754,7 @@ namespace mkaul {
 			IWICFormatConverter* p_converter = nullptr;
 			HRESULT hresult = E_FAIL;
 			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
-			std::unique_ptr<DirectxBitmap> p_bitmap;
+			std::unique_ptr<DirectxBitmap> p_bitmap = nullptr;
 
 			// デコーダを生成
 			hresult = p_imaging_factory_->CreateDecoderFromFilename(
@@ -803,7 +804,7 @@ namespace mkaul {
 			dx_release(&p_source);
 			dx_release(&p_decoder);
 
-			return p_bitmap;
+			return std::move(p_bitmap);
 		}
 
 
@@ -836,7 +837,7 @@ namespace mkaul {
 
 			// ビットマップ(Direct2D)のポインタ
 			ID2D1Bitmap* p_d2d1_bitmap = nullptr;
-			std::unique_ptr<Bitmap> p_bitmap;
+			std::unique_ptr<Bitmap> p_bitmap = nullptr;
 
 			// リソースを探す
 			img_res_handle = ::FindResourceA(
@@ -940,7 +941,7 @@ namespace mkaul {
 			dx_release(&p_decoder);
 			dx_release(&p_stream);
 
-			return p_bitmap;
+			return std::move(p_bitmap);
 		}
 
 

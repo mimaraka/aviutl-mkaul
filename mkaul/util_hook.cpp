@@ -8,7 +8,7 @@
 
 namespace mkaul {
 	// 指定アドレス、サイズ分の機械語を書き換え
-	bool replace_x86(uint32_t address, uint8_t code[], size_t n) {
+	bool replace_x86(uint32_t address, const uint8_t code[], size_t n) {
 		DWORD old_protect;
 
 		if (!::VirtualProtect(reinterpret_cast<void*>(address), n, PAGE_EXECUTE_READWRITE, &old_protect)) {
