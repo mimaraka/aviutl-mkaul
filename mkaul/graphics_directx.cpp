@@ -1,6 +1,6 @@
 #include "graphics_directx.hpp"
 #include "bitmap_directx.hpp"
-#include <strconv2/strconv2.h>
+#include <strconv2.h>
 
 
 

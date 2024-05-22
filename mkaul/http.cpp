@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <string>
 #include <winhttp.h>
-#include <strconv2/strconv2.h>
+#include <strconv2.h>
 #include "http.hpp"
 
 #pragma comment (lib, "winhttp.lib")

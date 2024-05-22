@@ -80,7 +80,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\;C:\cpplibs\boost_1_69_0\include\boost-1_83</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\cpplibs\;C:\cpplibs\boost_1_69_0\include\boost-1_83;$(ProjectDir)external\strconv\;$(ProjectDir)external\aviutl_exedit_sdk\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -104,8 +105,9 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\;C:\cpplibs\boost_1_69_0\include\boost-1_83</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\;C:\cpplibs\;C:\cpplibs\boost_1_69_0\include\boost-1_83;$(ProjectDir)external\strconv\;$(ProjectDir)external\aviutl_exedit_sdk\</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>

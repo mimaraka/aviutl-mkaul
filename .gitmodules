@@ -1,0 +1,6 @@
+[submodule "mkaul/external/strconv"]
+	path = mkaul/external/strconv
+	url = https://github.com/javacommons/strconv
+[submodule "mkaul/external/aviutl_exedit_sdk"]
+	path = mkaul/external/aviutl_exedit_sdk
+	url = https://github.com/ePi5131/aviutl_exedit_sdk

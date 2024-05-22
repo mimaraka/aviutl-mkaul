@@ -1,7 +1,7 @@
 #define NOMINMAX
 #include "graphics_gdiplus.hpp"
 #include "bitmap_gdiplus.hpp"
-#include <strconv2/strconv2.h>
+#include <strconv2.h>
 
 
 
