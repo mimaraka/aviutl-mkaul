@@ -96,10 +96,18 @@ namespace mkaul {
 
 		using Rectangle<LONG>::Rectangle;
 
-		void set(int left, int top, int right, int bottom) noexcept;
+		void set(int l, int t, int r, int b) noexcept {
+			left = l;
+			top = t;
+			right = r;
+			bottom = b;
+		}
+		void set(const RECT& rc) noexcept { set(rc.left, rc.top, rc.right, rc.bottom); }
 		void set_margin(int left, int top, int right, int bottom) noexcept;
 		constexpr auto get_rect() const noexcept { return RECT{ left, top, right, bottom }; };
 		void client_to_screen(HWND hwnd) noexcept;
 		void screen_to_client(HWND hwnd) noexcept;
+		bool from_client_rect(HWND hwnd) noexcept;
+		bool from_window_rect(HWND hwnd) noexcept;
 	};
 }

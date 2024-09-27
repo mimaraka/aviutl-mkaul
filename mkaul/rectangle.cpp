@@ -4,19 +4,8 @@
 
 
 namespace mkaul {
-	// 初期化
-	void WindowRectangle::set(int l, int t, int r, int b) noexcept
-	{
-		left = l;
-		top = t;
-		right = r;
-		bottom = b;
-	}
-
-
 	// マージンを設定
-	void WindowRectangle::set_margin(int l, int t, int r, int b) noexcept
-	{
+	void WindowRectangle::set_margin(int l, int t, int r, int b) noexcept {
 		left += l;
 		top += t;
 		right -= r;
@@ -30,8 +19,7 @@ namespace mkaul {
 
 
 	// クライアント -> スクリーン
-	void WindowRectangle::client_to_screen(HWND hwnd) noexcept
-	{
+	void WindowRectangle::client_to_screen(HWND hwnd) noexcept {
 		POINT pt_lefttop = { left, top };
 		POINT pt_rightbottom = { right, bottom };
 
@@ -46,8 +34,7 @@ namespace mkaul {
 
 
 	// スクリーン -> クライアント
-	void WindowRectangle::screen_to_client(HWND hwnd) noexcept
-	{
+	void WindowRectangle::screen_to_client(HWND hwnd) noexcept {
 		POINT pt_lefttop = { left, top };
 		POINT pt_rightbottom = { right, bottom };
 
@@ -59,4 +46,24 @@ namespace mkaul {
 		right = pt_rightbottom.x;
 		bottom = pt_rightbottom.y;
 	}
-}
+
+
+	// クライアント領域の矩形を取得
+	bool WindowRectangle::from_client_rect(HWND hwnd) noexcept {
+		RECT rc;
+		if (!::GetClientRect(hwnd, &rc))
+			return false;
+		set(rc);
+		return true;
+	}
+
+
+	// ウィンドウ領域の矩形を取得
+	bool WindowRectangle::from_window_rect(HWND hwnd) noexcept {
+		RECT rc;
+		if (!::GetWindowRect(hwnd, &rc))
+			return false;
+		set(rc);
+		return true;
+	}
+} // namespace mkaul
