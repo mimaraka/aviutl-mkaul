@@ -173,7 +173,9 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="bitmap_gdiplus.hpp" />
     <ClInclude Include="button_icon.hpp" />
     <ClInclude Include="button_label.hpp" />
+    <ClInclude Include="disp_params.hpp" />
     <ClInclude Include="file.hpp" />
+    <ClInclude Include="host_object.hpp" />
     <ClInclude Include="ui.hpp" />
     <ClInclude Include="ui_component.hpp" />
     <ClInclude Include="directx_common.hpp" />
@@ -201,6 +203,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="util.hpp" />
     <ClInclude Include="util_hook.hpp" />
     <ClInclude Include="http.hpp" />
+    <ClInclude Include="variant.hpp" />
     <ClInclude Include="version.hpp" />
     <ClInclude Include="window.hpp" />
   </ItemGroup>
@@ -218,6 +221,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClCompile Include="button_label.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="graphics_base.cpp" />
+    <ClCompile Include="host_object.cpp" />
     <ClCompile Include="ui_list.cpp" />
     <ClCompile Include="control.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -243,7 +247,19 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Web.WebView2.1.0.2792.45\build\native\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.2792.45\build\native\Microsoft.Web.WebView2.targets')" />
+    <Import Project="..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Web.WebView2.1.0.2792.45\build\native\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebView2.1.0.2792.45\build\native\Microsoft.Web.WebView2.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+  </Target>
 </Project>

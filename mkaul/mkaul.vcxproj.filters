@@ -43,6 +43,18 @@
     <Filter Include="Header Files\Util">
       <UniqueIdentifier>{2cd0d1ea-4abe-494c-ae8d-55a6af067321}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\WebView2">
+      <UniqueIdentifier>{c6b6de71-d4bf-4d23-9dd4-4c1cc88dc3e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\WebView2\Host Object">
+      <UniqueIdentifier>{d91cb1b4-6ed2-458c-bde3-1540b096d396}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\WebView2">
+      <UniqueIdentifier>{d3799656-7b95-4f57-81b2-f6f900083955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\WebView2\Host Object">
+      <UniqueIdentifier>{5397a942-e602-4e5e-a3b2-de5d2edd2bb6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mkaul.hpp">
@@ -156,6 +168,15 @@
     <ClInclude Include="button_icon.hpp">
       <Filter>Header Files\UI\Control</Filter>
     </ClInclude>
+    <ClInclude Include="host_object.hpp">
+      <Filter>Header Files\WebView2\Host Object</Filter>
+    </ClInclude>
+    <ClInclude Include="variant.hpp">
+      <Filter>Header Files\WebView2\Host Object</Filter>
+    </ClInclude>
+    <ClInclude Include="disp_params.hpp">
+      <Filter>Header Files\WebView2\Host Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphics_directx.cpp">
@@ -224,5 +245,11 @@
     <ClCompile Include="button_icon.cpp">
       <Filter>Source Files\UI\Control</Filter>
     </ClCompile>
+    <ClCompile Include="host_object.cpp">
+      <Filter>Source Files\WebView2\Host Object</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
