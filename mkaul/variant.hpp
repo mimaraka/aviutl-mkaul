@@ -181,7 +181,7 @@ namespace mkaul {
 							variant_.boolVal = val ? VARIANT_TRUE : VARIANT_FALSE;
 						}
 						else if constexpr (std::is_same_v<T, std::wstring>) {
-							variant_.bstrVal = val.c_str();
+							variant_.bstrVal = val.data();
 						}
 						else if constexpr (std::is_same_v<T, IDispatch*>) {
 							variant_.pdispVal = val;
