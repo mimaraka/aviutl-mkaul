@@ -47,7 +47,7 @@ namespace mkaul {
 				return S_OK;
 			}
 
-			template <int N = 0, typename... Args>
+			template<int N = 0, typename... Args>
 			void make_tuple_from_args(std::tuple<Args...>& t, const std::vector<Variant>& args) {
 				constexpr size_t n_args = sizeof...(Args);
 				if constexpr (0 < n_args) {
@@ -61,7 +61,7 @@ namespace mkaul {
 			}
 
 		protected:
-			template <typename Ret, typename... Args>
+			template<typename Ret, typename... Args>
 			void register_member(const std::wstring& name, DispatchType dispatch_type, Ret(*func)(Args...)) {
 				auto it = std::find(member_names_.begin(), member_names_.end(), name);
 				DISPID id;
@@ -98,6 +98,14 @@ namespace mkaul {
 						return S_OK;
 					}
 				});
+			}
+
+			template<typename HostObjectType>
+			static IDispatch* create_host_object() {
+				wil::com_ptr<HostObjectType> host_object = Microsoft::WRL::Make<HostObjectType>();
+				IDispatch* ret;
+				host_object.query_to<IDispatch>(&ret);
+				return ret;
 			}
 
 		public:

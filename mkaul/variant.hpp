@@ -16,7 +16,7 @@ namespace mkaul {
 		class Variant {
 			VARIANT variant_;
 
-			template <typename T>
+			template<typename T>
 			static VARTYPE get_vt() {
 				if constexpr (std::is_enum_v<T>) {
 					return get_vt<std::underlying_type_t<T>>();
@@ -73,7 +73,7 @@ namespace mkaul {
 
 			auto& variant() noexcept { return variant_; }
 
-			template <typename T>
+			template<typename T>
 			constexpr T get() const noexcept {
 				if constexpr (std::is_enum_v<T>) {
 					return static_cast<T>(get<std::underlying_type_t<T>>());
@@ -122,7 +122,7 @@ namespace mkaul {
 				}
 			}
 
-			template <typename T>
+			template<typename T>
 			HRESULT set(T val) {
 				if constexpr (detail::is_vector<T>::value) {
 					using value_type = typename T::value_type;
@@ -194,7 +194,7 @@ namespace mkaul {
 				}
 			}
 
-			template <typename T>
+			template<typename T>
 			HRESULT change_type() {
 				return ::VariantChangeType(&variant_, &variant_, VARIANT_ALPHABOOL, get_vt<T>());
 			}
