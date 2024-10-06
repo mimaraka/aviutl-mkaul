@@ -183,8 +183,14 @@ namespace mkaul {
 						else if constexpr (std::is_same_v<T, std::wstring>) {
 							variant_.bstrVal = ::SysAllocString(val.data());
 						}
+						else if constexpr (std::is_same_v<T, wchar_t*> or std::is_same_v<T, const wchar_t*>) {
+							variant_.bstrVal = ::SysAllocString(val);
+						}
 						else if constexpr (std::is_same_v<T, IDispatch*>) {
 							variant_.pdispVal = val;
+						}
+						else if constexpr (std::is_same_v<T, VARIANT>) {
+							variant_ = val;
 						}
 						else {
 							static_assert(false, "Unsupported type");
