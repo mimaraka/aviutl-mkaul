@@ -28,7 +28,7 @@ namespace mkaul {
 				}
 				else return this->minor_ < ver.minor_;
 			}
-			else return this->major_ < ver.minor_;
+			else return this->major_ < ver.major_;
 		}
 
 		constexpr bool operator > (const VersionNumber& ver) const {
