@@ -4,6 +4,7 @@
 #include <vector>
 #include <type_traits>
 #include <oaidl.h>
+#include <strconv2.h>
 
 
 
@@ -56,7 +57,12 @@ namespace mkaul {
 					else if constexpr (std::is_same_v<T, double>) {
 						ret = VT_R8;
 					}
-					else if constexpr (std::is_same_v<T, std::wstring>) {
+					else if constexpr (
+						std::is_same_v<T, std::wstring>
+						or std::is_same_v<T, std::string>
+						or std::is_same_v<std::remove_const_t<T>, wchar_t*>
+						or std::is_same_v<std::remove_const_t<T>, char*>
+					) {
 						ret = VT_BSTR;
 					}
 					else if constexpr (std::is_same_v<T, IDispatch*>) {
@@ -113,6 +119,15 @@ namespace mkaul {
 				}
 				else if constexpr (std::is_same_v<T, std::wstring>) {
 					return std::wstring(variant_.bstrVal);
+				}
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, wchar_t*>) {
+					return const_cast<T>(variant_.bstrVal);
+				}
+				else if constexpr (std::is_same_v<T, std::string>) {
+					return ::wide_to_sjis(variant_.bstrVal);
+				}
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, char*>) {
+					return const_cast<T>(::wide_to_sjis(variant_.bstrVal).c_str());
 				}
 				else if constexpr (std::is_same_v<T, IDispatch*>) {
 					return variant_.pdispVal;
@@ -183,8 +198,11 @@ namespace mkaul {
 						else if constexpr (std::is_same_v<T, std::wstring>) {
 							variant_.bstrVal = ::SysAllocString(val.data());
 						}
-						else if constexpr (std::is_same_v<T, wchar_t*> or std::is_same_v<T, const wchar_t*>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, wchar_t*>) {
 							variant_.bstrVal = ::SysAllocString(val);
+						}
+						else if constexpr (std::is_same_v<T, std::string> or std::is_same_v<std::remove_const_t<T>, char*>) {
+							variant_.bstrVal = ::SysAllocString(::sjis_to_wide(val).c_str());
 						}
 						else if constexpr (std::is_same_v<T, IDispatch*>) {
 							variant_.pdispVal = val;
