@@ -24,48 +24,48 @@ namespace mkaul {
 				}
 				else {
 					VARENUM ret = VT_UNKNOWN;
-					if constexpr (std::is_same_v<T, int8_t>) {
+					if constexpr (std::is_same_v<std::remove_const_t<T>, int8_t>) {
 						ret = VT_I1;
 					}
-					else if constexpr (std::is_same_v<T, int16_t>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, int16_t>) {
 						ret = VT_I2;
 					}
-					else if constexpr (std::is_same_v<T, int32_t>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, int32_t>) {
 						ret = VT_I4;
 					}
-					else if constexpr (std::is_same_v<T, int64_t>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, int64_t>) {
 						ret = VT_I8;
 					}
-					else if constexpr (std::is_same_v<T, uint8_t>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, uint8_t>) {
 						ret = VT_UI1;
 					}
-					else if constexpr (std::is_same_v<T, uint16_t>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, uint16_t>) {
 						ret = VT_UI2;
 					}
-					else if constexpr (std::is_same_v<T, uint32_t>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, uint32_t>) {
 						ret = VT_UI4;
 					}
-					else if constexpr (std::is_same_v<T, uint64_t>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, uint64_t>) {
 						ret = VT_UI8;
 					}
-					else if constexpr (std::is_same_v<T, bool>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, bool>) {
 						ret = VT_BOOL;
 					}
-					else if constexpr (std::is_same_v<T, float>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, float>) {
 						ret = VT_R4;
 					}
-					else if constexpr (std::is_same_v<T, double>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, double>) {
 						ret = VT_R8;
 					}
 					else if constexpr (
-						std::is_same_v<T, std::wstring>
-						or std::is_same_v<T, std::string>
+						std::is_same_v<std::remove_const_t<T>, std::wstring>
+						or std::is_same_v<std::remove_const_t<T>, std::string>
 						or std::is_same_v<std::add_pointer_t<std::remove_const_t<std::remove_pointer_t<T>>>, wchar_t*>
 						or std::is_same_v<std::add_pointer_t<std::remove_const_t<std::remove_pointer_t<T>>>, char*>
 					) {
 						ret = VT_BSTR;
 					}
-					else if constexpr (std::is_same_v<T, IDispatch*>) {
+					else if constexpr (std::is_same_v<std::remove_const_t<T>, IDispatch*>) {
 						ret = VT_DISPATCH;
 					}
 					return static_cast<VARTYPE>(ret);
@@ -84,52 +84,52 @@ namespace mkaul {
 				if constexpr (std::is_enum_v<T>) {
 					return static_cast<T>(get<std::underlying_type_t<T>>());
 				}
-				else if constexpr (std::is_same_v<T, int8_t>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, int8_t>) {
 					return variant_.cVal;
 				}
-				else if constexpr (std::is_same_v<T, int16_t>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, int16_t>) {
 					return variant_.iVal;
 				}
-				else if constexpr (std::is_same_v<T, int32_t>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, int32_t>) {
 					return variant_.lVal;
 				}
-				else if constexpr (std::is_same_v<T, int64_t>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, int64_t>) {
 					return variant_.llVal;
 				}
-				else if constexpr (std::is_same_v<T, uint8_t>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, uint8_t>) {
 					return variant_.bVal;
 				}
-				else if constexpr (std::is_same_v<T, uint16_t>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, uint16_t>) {
 					return variant_.uiVal;
 				}
-				else if constexpr (std::is_same_v<T, uint32_t>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, uint32_t>) {
 					return variant_.ulVal;
 				}
-				else if constexpr (std::is_same_v<T, uint64_t>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, uint64_t>) {
 					return variant_.ullVal;
 				}
-				else if constexpr (std::is_same_v<T, float>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, float>) {
 					return variant_.fltVal;
 				}
-				else if constexpr (std::is_same_v<T, double>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, double>) {
 					return variant_.dblVal;
 				}
-				else if constexpr (std::is_same_v<T, bool>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, bool>) {
 					return variant_.boolVal;
 				}
-				else if constexpr (std::is_same_v<T, std::wstring>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, std::wstring>) {
 					return std::wstring(variant_.bstrVal);
 				}
 				else if constexpr (std::is_same_v<std::add_pointer_t<std::remove_const_t<std::remove_pointer_t<T>>>, wchar_t*>) {
 					return const_cast<T>(variant_.bstrVal);
 				}
-				else if constexpr (std::is_same_v<T, std::string>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, std::string>) {
 					return ::wide_to_sjis(variant_.bstrVal);
 				}
 				else if constexpr (std::is_same_v<std::add_pointer_t<std::remove_const_t<std::remove_pointer_t<T>>>, char*>) {
 					return const_cast<T>(::wide_to_sjis(variant_.bstrVal).c_str());
 				}
-				else if constexpr (std::is_same_v<T, IDispatch*>) {
+				else if constexpr (std::is_same_v<std::remove_const_t<T>, IDispatch*>) {
 					return variant_.pdispVal;
 				}
 				else {
@@ -162,55 +162,55 @@ namespace mkaul {
 						return set<underlying_type>(static_cast<underlying_type>(val));
 					}
 					else {
-						if constexpr (std::is_same_v<T, int8_t>) {
+						if constexpr (std::is_same_v<std::remove_const_t<T>, int8_t>) {
 							variant_.cVal = val;
 						}
-						else if constexpr (std::is_same_v<T, int16_t>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, int16_t>) {
 							variant_.iVal = val;
 						}
-						else if constexpr (std::is_same_v<T, int32_t>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, int32_t>) {
 							variant_.lVal = val;
 						}
-						else if constexpr (std::is_same_v<T, int64_t>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, int64_t>) {
 							variant_.llVal = val;
 						}
-						else if constexpr (std::is_same_v<T, uint8_t>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, uint8_t>) {
 							variant_.bVal = val;
 						}
-						else if constexpr (std::is_same_v<T, uint16_t>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, uint16_t>) {
 							variant_.uiVal = val;
 						}
-						else if constexpr (std::is_same_v<T, uint32_t>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, uint32_t>) {
 							variant_.ulVal = val;
 						}
-						else if constexpr (std::is_same_v<T, uint64_t>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, uint64_t>) {
 							variant_.ullVal = val;
 						}
-						else if constexpr (std::is_same_v<T, float>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, float>) {
 							variant_.fltVal = val;
 						}
-						else if constexpr (std::is_same_v<T, double>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, double>) {
 							variant_.dblVal = val;
 						}
-						else if constexpr (std::is_same_v<T, bool>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, bool>) {
 							variant_.boolVal = val ? VARIANT_TRUE : VARIANT_FALSE;
 						}
-						else if constexpr (std::is_same_v<T, std::wstring>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, std::wstring>) {
 							variant_.bstrVal = ::SysAllocString(val.data());
 						}
 						else if constexpr (std::is_same_v<std::add_pointer_t<std::remove_const_t<std::remove_pointer_t<T>>>, wchar_t*>) {
 							variant_.bstrVal = ::SysAllocString(val);
 						}
 						else if constexpr (
-							std::is_same_v<T, std::string>
+							std::is_same_v<std::remove_const_t<T>, std::string>
 							or std::is_same_v<std::add_pointer_t<std::remove_const_t<std::remove_pointer_t<T>>>, char*>
 							) {
 							variant_.bstrVal = ::SysAllocString(::sjis_to_wide(val).c_str());
 						}
-						else if constexpr (std::is_same_v<T, IDispatch*>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, IDispatch*>) {
 							variant_.pdispVal = val;
 						}
-						else if constexpr (std::is_same_v<T, VARIANT>) {
+						else if constexpr (std::is_same_v<std::remove_const_t<T>, VARIANT>) {
 							variant_ = val;
 						}
 						else {
