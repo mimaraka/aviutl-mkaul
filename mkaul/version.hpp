@@ -40,7 +40,7 @@ namespace mkaul {
 		}
 
 		constexpr bool operator <= (const VersionNumber& ver) const {
-			return not (*this < ver);
+			return not (*this > ver);
 		}
 
 		constexpr bool operator != (const VersionNumber& ver) const {
