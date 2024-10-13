@@ -28,7 +28,7 @@ namespace mkaul {
 
 
 	// 範囲内判定
-	inline constexpr bool in_range(auto val, auto min, auto max, bool equal = false) noexcept {
+	inline constexpr bool in_range(auto val, auto min, auto max, bool equal = true) noexcept {
 		if (min <= val and val <= max) {
 			if (val == min or val == max) {
 				return equal;
@@ -77,11 +77,11 @@ namespace mkaul {
 	template <typename T>
 	inline constexpr bool real_equal(T val1, T val2) noexcept {
 		const T diff = val1 - val2;
-		return mkaul::in_range(diff, -std::numeric_limits<T>::epsilon(), std::numeric_limits<T>::epsilon(), true);
+		return mkaul::in_range(diff, -std::numeric_limits<T>::epsilon(), std::numeric_limits<T>::epsilon());
 	}
 
 	template <typename T>
-	inline constexpr bool real_in_range(T val, T min, T max, bool equal = false) noexcept {
+	inline constexpr bool real_in_range(T val, T min, T max, bool equal = true) noexcept {
 		if (min - std::numeric_limits<T>::epsilon() <= val and val <= max + std::numeric_limits<T>::epsilon()) {
 			if (real_equal(val, min) or real_equal(val, max)) {
 				return equal;
