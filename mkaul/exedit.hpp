@@ -60,6 +60,15 @@ namespace mkaul {
 				else return nullptr;
 			}
 
+			template <typename Ret, typename...Args>
+			Ret call(uint32_t offset_address, Args...args) const noexcept {
+				if (fp_) {
+					auto func = std::bit_cast<Ret(*)(Args...)>(base_address() + offset_address);
+					return func(args...);
+				}
+				else return Ret{};
+			}
+
 			auto fp() const noexcept { return fp_; }
 			auto p_hwnd_aviutl() const noexcept { return p_hwnd_aviutl_; }
 			auto p_hwnd_timeline() const noexcept { return p_hwnd_timeline_; }
