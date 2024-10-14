@@ -1,6 +1,7 @@
 #pragma once
 
 #include <aviutl.hpp>
+#include <bit>
 #include <exedit.hpp>
 
 
@@ -45,8 +46,18 @@ namespace mkaul {
 			bool init(AviUtl::FilterPlugin* fp) noexcept;
 
 			auto base_address() const noexcept {
-				if (fp_) return (uint32_t)fp_->dll_hinst;
-				else return 0x0u;
+				if (fp_) {
+					return (uint32_t)fp_->dll_hinst;
+				}
+				else return 0u;
+			}
+
+			template <typename T>
+			T* get(uint32_t offset_address) const noexcept {
+				if (fp_) {
+					return std::bit_cast<T*>(base_address() + offset_address);
+				}
+				else return nullptr;
 			}
 
 			auto fp() const noexcept { return fp_; }
