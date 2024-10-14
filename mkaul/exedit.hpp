@@ -61,9 +61,18 @@ namespace mkaul {
 			}
 
 			template <typename Ret, typename...Args>
-			Ret call(uint32_t offset_address, Args...args) const noexcept {
+			Ret call_cdecl(uint32_t offset_address, Args...args) const noexcept {
 				if (fp_) {
-					auto func = std::bit_cast<Ret(*)(Args...)>(base_address() + offset_address);
+					auto func = std::bit_cast<Ret(__cdecl*)(Args...)>(base_address() + offset_address);
+					return func(args...);
+				}
+				else return Ret{};
+			}
+
+			template <typename Ret, typename...Args>
+			Ret call_stdcall(uint32_t offset_address, Args...args) const noexcept {
+				if (fp_) {
+					auto func = std::bit_cast<Ret(__stdcall*)(Args...)>(base_address() + offset_address);
 					return func(args...);
 				}
 				else return Ret{};
