@@ -20,7 +20,7 @@ namespace mkaul {
 
 			static void* to_element_ptr(VARIANT& var) noexcept {
 				if (var.vt & VT_ARRAY) {
-					return &var.parray;
+					return var.parray;
 				}
 				switch (var.vt) {
 				case VT_I1: return &var.cVal;
@@ -34,8 +34,8 @@ namespace mkaul {
 				case VT_R4: return &var.fltVal;
 				case VT_R8: return &var.dblVal;
 				case VT_BOOL: return &var.boolVal;
-				case VT_BSTR: return &var.bstrVal;
-				case VT_DISPATCH: return &var.pdispVal;
+				case VT_BSTR: return var.bstrVal;
+				case VT_DISPATCH: return var.pdispVal;
 				default: return nullptr;
 				}
 			}
