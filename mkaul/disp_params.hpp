@@ -13,7 +13,7 @@ namespace mkaul {
 
 			DispParams(DISPPARAMS* disp_params) {
 				for (size_t i = 0; i < disp_params->cArgs; i++) {
-					args.emplace_back(Variant{ &disp_params->rgvarg[disp_params->cArgs - i - 1] });
+					args.emplace_back(Variant{ disp_params->rgvarg[disp_params->cArgs - i - 1] });
 				}
 				for (size_t i = 0; i < disp_params->cNamedArgs; i++) {
 					dispid_named_args.emplace_back(disp_params->rgdispidNamedArgs[disp_params->cNamedArgs - i - 1]);

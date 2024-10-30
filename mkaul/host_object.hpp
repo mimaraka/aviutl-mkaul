@@ -78,9 +78,9 @@ namespace mkaul {
 					.func = [this, func](DISPPARAMS* disp_params, VARIANT* p_result) -> HRESULT {
 						constexpr size_t n_args = sizeof...(Args);
 						DispParams dp{ disp_params };
-						Variant result{ p_result };
 						if (dp.args.size() != n_args) return DISP_E_BADPARAMCOUNT;
 						if (!p_result) return E_POINTER;
+						Variant result{ *p_result };
 
 						auto hr = change_type<0, Args...>(dp.args);
 						if (FAILED(hr)) return hr;

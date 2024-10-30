@@ -91,7 +91,7 @@ namespace mkaul {
 			}
 
 		public:
-			Variant(VARIANT* variant) : variant_{ *variant } {}
+			Variant(const VARIANT& variant) : variant_{ variant } {}
 
 			void init() noexcept { ::VariantInit(&variant_); }
 
@@ -164,7 +164,7 @@ namespace mkaul {
 					SAFEARRAY* p_safe_array = ::SafeArrayCreateVector(vt, 0, val.size());
 					if (!p_safe_array) return E_OUTOFMEMORY;
 					for (size_t i = 0; i < val.size(); i++) {
-						Variant tmp;
+						Variant tmp{ VARIANT{} };
 						auto hr = tmp.set(val[i]);
 						if (SUCCEEDED(hr)) {
 							hr = ::SafeArrayPutElement(p_safe_array, (LONG*)&i, to_element_ptr(tmp.variant_));
