@@ -156,7 +156,7 @@ namespace mkaul {
 			}
 
 			template<typename T>
-			HRESULT set(T&& val) {
+			HRESULT set(T val) {
 				if constexpr (detail::is_vector<T>::value) {
 					using value_type = typename T::value_type;
 					auto vt = get_vt<value_type>();
