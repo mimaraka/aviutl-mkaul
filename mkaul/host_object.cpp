@@ -3,7 +3,7 @@
 
 
 namespace mkaul {
-	namespace wv2 {
+	namespace ole {
 		STDMETHODIMP HostObject::GetTypeInfoCount(UINT* p_count) {
 			*p_count = 0;
 			return S_OK;

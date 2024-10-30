@@ -6,7 +6,7 @@
 
 
 namespace mkaul {
-	namespace wv2 {
+	namespace ole {
 		struct DispParams {
 			std::vector<Variant> args;
 			std::vector<int32_t> dispid_named_args;
@@ -32,5 +32,5 @@ namespace mkaul {
 				return true;
 			}
 		};
-	} // namespace wv2
+	} // namespace ole
 } // namespace mkaul

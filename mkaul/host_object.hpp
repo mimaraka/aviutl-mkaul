@@ -13,7 +13,7 @@
 
 
 namespace mkaul {
-	namespace wv2 {
+	namespace ole {
 		class HostObject : public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, IDispatch> {
 		public:
 			enum class DispatchType : WORD {
@@ -135,5 +135,5 @@ namespace mkaul {
 				UINT* p_arg_err
 			) override;
 		};
-	} // namespace wv2
+	} // namespace ole
 } // namespace mkaul

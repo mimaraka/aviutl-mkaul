@@ -9,7 +9,7 @@
 
 
 namespace mkaul {
-	namespace wv2 {
+	namespace ole {
 		namespace detail {
 			template<typename> struct is_vector : std::false_type {};
 			template<typename T, typename A> struct is_vector<std::vector<T, A>> : std::true_type {};
@@ -242,5 +242,5 @@ namespace mkaul {
 				return ::VariantChangeType(&variant_, &variant_, VARIANT_ALPHABOOL, get_vt<T>());
 			}
 		};
-	} // namespace wv2
+	} // namespace ole
 } // namespace mkaul
