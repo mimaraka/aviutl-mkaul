@@ -51,5 +51,5 @@ namespace mkaul {
 			}
 			return DISP_E_MEMBERNOTFOUND;
 		}
-	}
-}
+	} // namespace ole
+} // namespace mkaul

@@ -5,7 +5,6 @@
 #include <vector>
 #include <functional>
 #include <Windows.h>
-#include <WebView2.h>
 #include <wil/com.h>
 #include <wrl/implements.h>
 #include "disp_params.hpp"
