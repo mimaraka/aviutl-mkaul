@@ -173,4 +173,4 @@ namespace mkaul {
 		const auto& preview_type() const noexcept { return preview_type_; }
 		const auto& number_preview() const noexcept { return number_preview_; }
 	};
-}
+} // namespace mkaul

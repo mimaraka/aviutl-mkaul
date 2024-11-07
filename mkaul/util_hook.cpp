@@ -81,4 +81,4 @@ namespace mkaul {
 		}
 		return nullptr;
 	}
-}
+} // namespace mkaul

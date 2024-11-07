@@ -5,22 +5,20 @@
 
 
 
-namespace mkaul {
-	namespace graphics {
-		DirectxBitmap::~DirectxBitmap() {
-			release();
-		}
+namespace mkaul::graphics {
+	DirectxBitmap::~DirectxBitmap() {
+		release();
+	}
 
-		void DirectxBitmap::release() noexcept {
-			dx_release(reinterpret_cast<ID2D1Bitmap**>(&data));
-		}
+	void DirectxBitmap::release() noexcept {
+		dx_release(reinterpret_cast<ID2D1Bitmap**>(&data));
+	}
 
-		size_t DirectxBitmap::get_width() const {
-			return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).width;
-		}
+	size_t DirectxBitmap::width() const {
+		return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).width;
+	}
 
-		size_t DirectxBitmap::get_height() const {
-			return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).height;
-		}
+	size_t DirectxBitmap::height() const {
+		return (reinterpret_cast<ID2D1Bitmap*>(data)->GetPixelSize()).height;
 	}
 }

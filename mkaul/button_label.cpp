@@ -1,11 +1,11 @@
-#include "button_label.hpp"
+#include "button_text.hpp"
 
 
 
 namespace mkaul {
 	namespace ui {
 		// ボタンを作成(ラベル)
-		HWND LabelButton::create(
+		HWND TextButton::create(
 			HINSTANCE hinst,
 			HWND hwnd_parent,
 			int id,
@@ -21,9 +21,9 @@ namespace mkaul {
 			float round_radius,
 			float hover_highlight
 		) noexcept {
-			label_ = label;
+			text_ = label;
 			font_ = font;
-			p_color_label_ = const_cast<ColorF*>(p_color_label);
+			p_color_text_ = const_cast<ColorF*>(p_color_label);
 
 			return Button::create(
 				hinst,
@@ -41,13 +41,13 @@ namespace mkaul {
 		}
 
 
-		void LabelButton::set_label(const std::string& label) noexcept {
-			label_ = label;
+		void TextButton::set_text(const std::string& label) noexcept {
+			text_ = label;
 			redraw();
 		}
 
 
-		LRESULT LabelButton::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+		LRESULT TextButton::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 			RECT rect_wnd;
 			::GetClientRect(hwnd, &rect_wnd);
 
@@ -64,7 +64,7 @@ namespace mkaul {
 				p_graphics_->begin_draw();
 				p_graphics_->fill_background(color);
 				p_graphics_->draw_text(
-					label_,
+					text_,
 					Rectangle<float>{
 					0.f, 0.f,
 						(float)rect_wnd.right,
@@ -73,7 +73,7 @@ namespace mkaul {
 					font_,
 					graphics::AnchorPosition{},
 					true,
-					* p_color_label_
+					* p_color_text_
 				);
 				if ((uint32_t)(status_ & flag::Status::Disabled)) {
 					ColorF tmp = color;

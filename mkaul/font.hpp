@@ -12,7 +12,8 @@ namespace mkaul {
 			Italic = 1u << 0,
 			UnderLine = 1u << 1
 		};
-	}
+	} // namespace flag
+
 	namespace graphics {
 		// フォント
 		struct Font {
@@ -33,5 +34,5 @@ namespace mkaul {
 				weight(weight_)
 			{}
 		};
-	}
-}
+	} // namespace graphics
+} // namespace mkaul

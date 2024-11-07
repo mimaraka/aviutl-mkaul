@@ -5,10 +5,6 @@
 
 
 
-namespace mkaul {
-	namespace aviutl {
-		using namespace AviUtl;
-
-		FilterPlugin* get_fp_by_name(FilterPlugin* fp, const std::string& name, bool by_filter_name=false);
-	}
-}
+namespace mkaul::aviutl {
+	AviUtl::FilterPlugin* get_fp_by_name(AviUtl::FilterPlugin* fp, const std::string& name, bool by_filter_name = false);
+} // namespace mkaul::aviutl

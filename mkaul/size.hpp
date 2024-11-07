@@ -100,4 +100,4 @@ namespace mkaul {
 			height *= std::abs(scale);
 		}
 	};
-}
+} // namespace mkaul

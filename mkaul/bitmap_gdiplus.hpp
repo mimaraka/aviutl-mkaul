@@ -5,18 +5,16 @@
 
 
 
-namespace mkaul {
-	namespace graphics {
-		// ビットマップ
-		struct GdiplusBitmap : public Bitmap, protected GdiplusBase {
-		public:
-			using Bitmap::Bitmap;
-			~GdiplusBitmap();
+namespace mkaul::graphics {
+	// ビットマップ
+	struct GdiplusBitmap : public Bitmap, protected GdiplusBase {
+	public:
+		using Bitmap::Bitmap;
+		~GdiplusBitmap();
 
-			void release() noexcept override;
+		void release() noexcept override;
 
-			size_t get_width() const override;
-			size_t get_height() const override;
-		};
-	}
-}
+		size_t width() const override;
+		size_t height() const override;
+	};
+} // namespace mkaul::graphics

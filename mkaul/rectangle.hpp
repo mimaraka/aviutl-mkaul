@@ -56,9 +56,9 @@ namespace mkaul {
 			r->bottom = static_cast<U>(bottom);
 		}
 
-		constexpr T get_width() const noexcept { return static_cast<T>(std::abs(right - left)); }
-		constexpr T get_height() const noexcept { return static_cast<T>(std::abs(bottom - top)); }
-		constexpr T get_area() const noexcept { return get_width() * get_height(); }
+		constexpr T width() const noexcept { return static_cast<T>(std::abs(right - left)); }
+		constexpr T height() const noexcept { return static_cast<T>(std::abs(bottom - top)); }
+		constexpr T get_area() const noexcept { return width() * height(); }
 		
 		constexpr auto left_top() const noexcept { return mkaul::Point{left, top}; }
 		constexpr auto right_top() const noexcept { return mkaul::Point{ right, top }; }
@@ -110,4 +110,4 @@ namespace mkaul {
 		bool from_client_rect(HWND hwnd) noexcept;
 		bool from_window_rect(HWND hwnd) noexcept;
 	};
-}
+} // namespace mkaul

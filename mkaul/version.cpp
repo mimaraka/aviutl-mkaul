@@ -88,4 +88,4 @@ namespace mkaul {
 		}
 		else return false;
 	}
-}
+} // namespace mkaul

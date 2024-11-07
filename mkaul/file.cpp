@@ -21,4 +21,4 @@ namespace mkaul {
 			return false;
 		}
 	}
-}
+} // namespace mkaul

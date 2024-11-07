@@ -5,18 +5,16 @@
 
 
 
-namespace mkaul {
-	namespace graphics {
-		// ビットマップ
-		struct DirectxBitmap : public Bitmap, protected DirectxBase {
-		public:
-			using Bitmap::Bitmap;
-			~DirectxBitmap();
+namespace mkaul::graphics {
+	// ビットマップ
+	struct DirectxBitmap : public Bitmap, protected DirectxBase {
+	public:
+		using Bitmap::Bitmap;
+		~DirectxBitmap();
 
-			void release() noexcept override;
+		void release() noexcept override;
 
-			size_t get_width() const override;
-			size_t get_height() const override;
-		};
-	}
-}
+		size_t width() const override;
+		size_t height() const override;
+	};
+} // namespace mkaul::graphics

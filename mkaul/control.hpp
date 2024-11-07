@@ -23,7 +23,7 @@ namespace mkaul {
 			RightBottom = 1u << 3,
 			All = 0b1111
 		};
-	}
+	} // namespace flag
 
 	namespace ui {
 		//---------------------------------------------------------------------
@@ -76,5 +76,5 @@ namespace mkaul {
 			// ラウンドエッジを描画
 			void draw_round_edge() noexcept;
 		};
-	}
-}
+	} // namespace ui
+} // namespace mkaul

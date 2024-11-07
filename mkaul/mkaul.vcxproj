@@ -173,7 +173,7 @@ copy "$(ProjectDir)*.hpp" "C:\aviutl_libs\mkaul\include\"</Command>
     <ClInclude Include="bitmap_directx.hpp" />
     <ClInclude Include="bitmap_gdiplus.hpp" />
     <ClInclude Include="button_icon.hpp" />
-    <ClInclude Include="button_label.hpp" />
+    <ClInclude Include="button_text.hpp" />
     <ClInclude Include="disp_params.hpp" />
     <ClInclude Include="file.hpp" />
     <ClInclude Include="host_object.hpp" />

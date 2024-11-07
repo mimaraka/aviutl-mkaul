@@ -1,40 +1,37 @@
 #pragma once
 
-#include "control.hpp"
-#include <CommCtrl.h>
-
-#pragma comment(lib, "comctl32.lib")
+#include "button.hpp"
 
 
 
 namespace mkaul::ui {
-	// ボタン
-	class Button : public Control {
+	// ボタン(文字)
+	class TextButton : public Button {
 	protected:
-		HWND                    hwnd_tooltip_;
-		TOOLINFO	    		tool_info_;
-		std::string				tooltip_label_;
-		float					hover_highlight_;
-		bool			    	hovered_, clicked_;
+		std::string text_;
+		graphics::Font font_;
+		ColorF* p_color_text_;
 
 		virtual LRESULT wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 
 	public:
-		Button() :
-			hwnd_tooltip_(NULL),
-			tool_info_({ 0 }),
-			tooltip_label_(),
-			hover_highlight_(0.f),
-			hovered_(false),
-			clicked_(false)
+
+		TextButton() :
+			text_(),
+			font_(),
+			p_color_text_(nullptr)
 		{}
 
+		// ボタンを作成
 		virtual HWND create(
 			HINSTANCE hinst,
-			HWND hwnd_parent,
-			int id,
+			HWND hwnd_parent_,
+			int id_,
+			const std::string& label,
+			const graphics::Font font,
 			const ColorF* p_color_bg,
 			const ColorF* p_color_control,
+			const ColorF* p_color_label,
 			const std::string& tooltip_label = "",
 			const WindowRectangle& rect = WindowRectangle{},
 			const WindowRectangle& padding = WindowRectangle{},
@@ -42,5 +39,8 @@ namespace mkaul::ui {
 			float round_radius = 0.f,
 			float hover_highlight = 0.05f
 		) noexcept;
+
+		auto get_text() const noexcept { return text_; }
+		void set_text(const std::string& label) noexcept;
 	};
-} // namespace mkaul::ui
+}

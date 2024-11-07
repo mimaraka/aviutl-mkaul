@@ -41,23 +41,23 @@ namespace mkaul {
 
 	// 距離を算出 (lower)
 	inline constexpr double distance(const pt_lower auto& pt1, const pt_lower auto& pt2) noexcept {
-		return std::sqrt(std::pow(pt2.x - pt1.x, 2) + std::pow(pt2.y - pt1.y, 2));
+		return std::hypot(pt2.x - pt1.x, pt2.y - pt1.y);
 	}
 
 
 	inline constexpr double distance(const pt_lower auto& pt) noexcept {
-		return std::sqrt(std::pow(pt.x, 2) + std::pow(pt.y, 2));
+		return std::hypot(pt.x, pt.y);
 	}
 
 
 	// 距離を算出 (upper)
 	inline constexpr double distance(const pt_upper auto& pt1, const pt_upper auto& pt2) noexcept {
-		return std::sqrt(std::pow(pt2.X - pt1.X, 2) + std::pow(pt2.Y - pt1.Y, 2));
+		return std::hypot(pt2.X - pt1.X, pt2.Y - pt1.Y);
 	}
 
 
 	inline constexpr double distance(const pt_upper auto& pt) noexcept {
-		return std::sqrt(std::pow(pt.X, 2) + std::pow(pt.Y, 2));
+		return std::hypot(pt.X, pt.Y);
 	}
 
 
@@ -109,4 +109,4 @@ namespace mkaul {
 	inline constexpr T clamp(T val, T min_or_max1, T min_or_max2) {
 		return std::clamp(val, std::min(min_or_max1, min_or_max2), std::max(min_or_max1, min_or_max2));
 	}
-}
+} // namespace mkaul

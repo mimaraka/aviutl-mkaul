@@ -143,4 +143,4 @@ namespace mkaul {
 			y = (T)(t * std::sin(rad) + y * std::cos(rad));
 		}
 	};
-}
+} // namespace mkaul

@@ -162,7 +162,7 @@
     <ClInclude Include="version.hpp">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="button_label.hpp">
+    <ClInclude Include="button_text.hpp">
       <Filter>Header Files\UI\Control</Filter>
     </ClInclude>
     <ClInclude Include="button_icon.hpp">

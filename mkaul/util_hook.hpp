@@ -22,4 +22,4 @@ namespace mkaul {
 
 	// 関数の置き換え(関数名から)
 	void* replace_func(uint32_t base_address, const char* func_name, void* replaced_func);
-}
+} // namespace mkaul
