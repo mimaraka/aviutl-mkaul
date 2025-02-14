@@ -9,7 +9,7 @@
 
 
 namespace mkaul::http {
-	bool Client::open(std::string url, std::string user_agent) {
+	bool Client::open(const std::string& url, const std::string& user_agent) {
 		auto wsurl = ::utf8_to_wide(url);
 		url_comp_.dwStructSize = sizeof(URL_COMPONENTS);
 		url_comp_.lpszHostName = host_name_;

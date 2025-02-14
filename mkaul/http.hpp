@@ -24,7 +24,7 @@ namespace mkaul::http {
 			url_path_{}
 		{}
 
-		bool open(std::string url, std::string user_agent = "UserAgent/1.0");
+		bool open(const std::string& url, const std::string& user_agent = "UserAgent/1.0");
 		void close();
 		bool get(std::vector<byte>* stream, LPDWORD p_status_code);
 	};

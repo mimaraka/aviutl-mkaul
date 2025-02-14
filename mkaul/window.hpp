@@ -41,6 +41,8 @@ namespace mkaul::ui {
 			LPVOID					lp_param = nullptr
 		) noexcept;
 
+		explicit operator bool() const noexcept { return ::IsWindow(hwnd_); }
+
 		HWND get_hwnd() const noexcept { return hwnd_; }
 		void get_rect(WindowRectangle* p_wnd_rect, bool include_padding = false) const noexcept;
 		void set_padding(const WindowRectangle& rect) noexcept;
