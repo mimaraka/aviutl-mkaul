@@ -79,7 +79,12 @@ namespace mkaul::ole {
 				else if constexpr (std::is_same_v<std::remove_const_t<std::remove_reference_t<T>>, double>) {
 					ret = VT_R8;
 				}
-				else if constexpr (std::is_convertible_v<T, std::string> or std::is_convertible_v<T, std::wstring>) {
+				else if constexpr (
+					std::is_convertible_v<T, std::string>
+					or std::is_convertible_v<T, std::wstring>
+					or std::is_convertible_v<T, std::string_view>
+					or std::is_convertible_v<T, std::wstring_view>
+				) {
 					ret = VT_BSTR;
 				}
 				else if constexpr (std::is_convertible_v<T, IDispatch*>) {
@@ -140,11 +145,17 @@ namespace mkaul::ole {
 			else if constexpr (std::is_same_v<std::add_pointer_t<std::remove_const_t<std::remove_pointer_t<T>>>, wchar_t*>) {
 				return const_cast<T>(variant_.bstrVal);
 			}
+			else if constexpr (std::is_same_v<std::remove_const_t<std::remove_reference_t<T>>, std::wstring_view>) {
+				return variant_.bstrVal;
+			}
 			else if constexpr (std::is_same_v<std::remove_const_t<std::remove_reference_t<T>>, std::string>) {
 				return ::wide_to_sjis(variant_.bstrVal);
 			}
 			else if constexpr (std::is_same_v<std::add_pointer_t<std::remove_const_t<std::remove_pointer_t<T>>>, char*>) {
 				return const_cast<T>(::wide_to_sjis(variant_.bstrVal).c_str());
+			}
+			else if constexpr (std::is_same_v<std::remove_const_t<std::remove_reference_t<T>>, std::string_view>) {
+				return ::wide_to_sjis(variant_.bstrVal);
 			}
 			else if constexpr (std::is_same_v<std::remove_const_t<std::remove_reference_t<T>>, IDispatch*>) {
 				return variant_.pdispVal;
@@ -219,8 +230,14 @@ namespace mkaul::ole {
 					else if constexpr (std::is_convertible_v<T, std::wstring>) {
 						variant_.bstrVal = ::SysAllocString(std::wstring(val).data());
 					}
+					else if constexpr (std::is_same_v<std::remove_const_t<std::remove_reference_t<T>>, std::wstring_view>) {
+						variant_.bstrVal = ::SysAllocStringLen(val.data(), val.size());
+					}
 					else if constexpr (std::is_convertible_v<T, std::string>) {
 						variant_.bstrVal = ::SysAllocString(::sjis_to_wide(val).c_str());
+					}
+					else if constexpr (std::is_same_v<std::remove_const_t<std::remove_reference_t<T>>, std::string_view>) {
+						variant_.bstrVal = ::SysAllocString(::sjis_to_wide(val.data()).c_str());
 					}
 					else if constexpr (std::is_convertible_v<T, IDispatch*>) {
 						variant_.pdispVal = val;
