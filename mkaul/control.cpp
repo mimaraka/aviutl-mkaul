@@ -34,7 +34,7 @@ namespace mkaul {
 			return Window::create(
 				hinst,
 				hwnd_parent,
-				"",
+				L"",
 				class_name,
 				wndproc_static,
 				WS_CHILD | window_style,

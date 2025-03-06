@@ -634,31 +634,15 @@ namespace mkaul::graphics {
 	// リソースからビットマップを作成
 	std::unique_ptr<Bitmap> GdiplusGraphics::load_bitmap_from_resource(
 		HINSTANCE hinst,
-		const char* res_name,
-		const char* res_type
+		const wchar_t* res_name,
+		const wchar_t* res_type
 	) noexcept {
-		wchar_t* wc = nullptr;
 		// ビットマップ(GDI+)のポインタ
 		Gdiplus::Bitmap* p_gdip_bitmap = nullptr;
 
 		// リソースタイプがBITMAPのとき
 		if (res_type == RT_BITMAP) {
-			// リソース識別子が文字列の場合
-			if (HIWORD(res_name)) {
-				// const char* から wchar_t* に変換
-				size_t size_resource = strlen(res_name) + 1;
-				wc = new wchar_t[size_resource];
-
-				size_t size;
-				::mbstowcs_s(&size, wc, size_resource, res_name, size_resource);
-			}
-			// リソース識別子が数値の場合
-			else
-				wc = reinterpret_cast<wchar_t*>(const_cast<char*>(res_name));
-
-			p_gdip_bitmap = Gdiplus::Bitmap::FromResource(hinst, wc);
-
-			if (HIWORD(res_name)) delete[] wc;
+			p_gdip_bitmap = Gdiplus::Bitmap::FromResource(hinst, res_name);
 		}
 		// それ意外のとき
 		else {

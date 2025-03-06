@@ -18,6 +18,6 @@ namespace mkaul::ui {
 		{}
 
 		void set_icon_from_filename(const std::filesystem::path& path);
-		void set_icon_from_resource(HINSTANCE hinst, const char* res_name, const char* res_type);
+		void set_icon_from_resource(HINSTANCE hinst, const wchar_t* res_name, const wchar_t* res_type);
 	};
 }

@@ -810,8 +810,8 @@ namespace mkaul::graphics {
 	// リソースからビットマップを作成
 	std::unique_ptr<Bitmap> DirectxGraphics::load_bitmap_from_resource(
 		HINSTANCE hinst,
-		const char* res_name,
-		const char* res_type
+		const wchar_t* res_name,
+		const wchar_t* res_type
 	) noexcept {
 		// ビットマップデコーダ
 		IWICBitmapDecoder* p_decoder = nullptr;
@@ -839,7 +839,7 @@ namespace mkaul::graphics {
 		std::unique_ptr<Bitmap> p_bitmap = nullptr;
 
 		// リソースを探す
-		img_res_handle = ::FindResourceA(
+		img_res_handle = ::FindResource(
 			hinst,
 			res_name,
 			res_type

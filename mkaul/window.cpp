@@ -98,7 +98,7 @@ namespace mkaul::ui {
 		padding_ = padding;
 		WNDCLASSEX tmp;
 		// 同名クラスが存在しない場合は作成
-		if (!::GetClassInfoExA(hinst, class_name, &tmp)) {
+		if (!::GetClassInfoEx(hinst, class_name, &tmp)) {
 			WNDCLASSEX ws;
 			ws.cbSize = sizeof(ws);
 			ws.style = CS_HREDRAW | CS_VREDRAW | class_style;
@@ -113,10 +113,10 @@ namespace mkaul::ui {
 			ws.lpszClassName = class_name;
 			ws.hIconSm = NULL;
 
-			if (!::RegisterClassExA(&ws)) return NULL;
+			if (!::RegisterClassEx(&ws)) return NULL;
 		}
 
-		return hwnd_ = ::CreateWindowExA(
+		return hwnd_ = ::CreateWindowEx(
 			NULL,
 			class_name,
 			window_name,

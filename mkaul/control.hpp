@@ -65,7 +65,7 @@ namespace mkaul {
 				const WindowRectangle& padding = WindowRectangle{},
 				flag::RoundEdge round_edge = flag::RoundEdge::None,
 				float round_radius = 0.f,
-				HCURSOR cursor = ::LoadCursorA(NULL, IDC_ARROW)
+				HCURSOR cursor = ::LoadCursor(NULL, IDC_ARROW)
 			) noexcept;
 			auto get_id() const noexcept { return id_; }
 			auto get_status() const noexcept { return status_; }

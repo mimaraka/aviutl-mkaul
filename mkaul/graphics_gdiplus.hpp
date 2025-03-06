@@ -163,8 +163,8 @@ namespace mkaul::graphics {
 		// リソースからビットマップを作成
 		std::unique_ptr<Bitmap> load_bitmap_from_resource(
 			HINSTANCE hinst,
-			const char* res_name,
-			const char* res_type = RT_BITMAP
+			const wchar_t* res_name,
+			const wchar_t* res_type = RT_BITMAP
 		) noexcept override;
 
 		// ビットマップを描画(アンカーポイント指定)

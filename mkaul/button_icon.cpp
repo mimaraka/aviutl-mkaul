@@ -53,7 +53,7 @@ namespace mkaul {
 			icon_ = p_graphics_->load_bitmap_from_filename(path);
 		}
 
-		void IconButton::set_icon_from_resource(HINSTANCE hinst, const char* res_name, const char* res_type) {
+		void IconButton::set_icon_from_resource(HINSTANCE hinst, const wchar_t* res_name, const wchar_t* res_type) {
 			if (icon_.get()) {
 				icon_.release();
 			}

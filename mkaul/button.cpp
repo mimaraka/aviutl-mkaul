@@ -27,7 +27,7 @@ namespace mkaul {
 				hinst,
 				hwnd_parent,
 				id,
-				"MKAUL_BUTTON",
+				L"MKAUL_BUTTON",
 				NULL,
 				NULL,
 				p_color_bg,
@@ -36,7 +36,7 @@ namespace mkaul {
 				padding,
 				round_edge,
 				round_radius,
-				::LoadCursorA(NULL, IDC_HAND)
+				::LoadCursor(NULL, IDC_HAND)
 			);
 		}
 
@@ -51,13 +51,13 @@ namespace mkaul {
 				p_graphics_->init(hwnd);
 
 				if (!tooltip_label_.empty()) {
-					hwnd_tooltip_ = ::CreateWindowExA(
+					hwnd_tooltip_ = ::CreateWindowEx(
 						0, TOOLTIPS_CLASS,
 						NULL, TTS_ALWAYSTIP,
 						CW_USEDEFAULT, CW_USEDEFAULT,
 						CW_USEDEFAULT, CW_USEDEFAULT,
 						hwnd, NULL,
-						(HINSTANCE)::GetWindowLongA(hwnd, GWL_HINSTANCE),
+						(HINSTANCE)::GetWindowLong(hwnd, GWL_HINSTANCE),
 						NULL
 					);
 

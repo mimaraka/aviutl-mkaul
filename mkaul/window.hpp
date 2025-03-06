@@ -37,7 +37,7 @@ namespace mkaul::ui {
 			LONG					class_style,
 			const WindowRectangle& rect = WindowRectangle{},
 			const WindowRectangle& padding = WindowRectangle{},
-			HCURSOR					cursor = ::LoadCursorA(NULL, IDC_ARROW),
+			HCURSOR					cursor = ::LoadCursor(NULL, IDC_ARROW),
 			LPVOID					lp_param = nullptr
 		) noexcept;
 
